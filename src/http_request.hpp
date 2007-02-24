@@ -1,5 +1,41 @@
+//
+// http_request.hpp for zia in /home/elthariel/code/zia/src
+//
+// Made by Nahlwe
+// Login   <elthariel@epita.fr>
+//
+// Started on  Sat Feb 24 15:32:05 2007 Nahlwe
+// Last update Sat Feb 24 15:32:08 2007 Nahlwe
+//
 
 #include <string>
+
+class Uri
+{
+public:
+  Uri(std::string a_uri);
+
+  const std::string     &proto() const;
+  const std::string     &host() const;
+  const std::string     &path() const;
+  const UriType         &type() const;
+
+  enum UriType
+    {
+      UriAbs_Host,
+      UriAbs,
+      UriRel,
+      UriTypeCount
+    };
+
+private:
+  Uri();
+
+  UriType               m_type;
+  std::string           m_proto;
+  std::string           m_host;
+  std::string           m_path;
+};
 
 class HttpRequest
 {

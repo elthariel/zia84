@@ -1,7 +1,71 @@
+//
+// http_request.cpp for zia in /home/elthariel/code/zia/src
+//
+// Made by Nahlwe
+// Login   <elthariel@epita.fr>
+//
+// Started on  Sat Feb 24 15:31:55 2007 Nahlwe
+// Last update Sat Feb 24 15:32:00 2007 Nahlwe
+//
 
 #include "http_request.hpp"
 
 using namespace std;
+
+/*
+ * Uri class
+ */
+
+//a_uri.npos
+
+Uri::Uri(std::string a_uri)
+{
+  if (a_uri.find("http://", 0, 8) != a_uri.npos) //FIXME check https
+    {
+      m_type = UriAbs_Host;
+      // FIXME parse
+    }
+  else if (a_uri.c_str()[0] == /)
+    {
+      m_type = UriAbs;
+      // FIXME parse
+    }
+  else // FIXME check for ../[../]etc/passwd-like uri :p
+    {
+      m_type = UriRel;
+
+    }
+
+}
+
+Uri::Uri()
+{
+}
+
+const std::string       &Uri::proto()
+{
+  return m_proto;
+}
+
+const std::string       &Uri::host()
+{
+  return m_host;
+}
+
+const std::string       &Uri::path()
+{
+  return m_path;
+}
+
+const UriType           &Uri::type()
+{
+  return m_type;
+}
+
+
+/*
+ * HttpRequest class
+ */
 
 HttpRequest::HttpRequest()
   : m_rtype(HTTP_UNSET),
