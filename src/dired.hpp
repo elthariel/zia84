@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Sat Feb 24 15:31:48 2007 Nahlwe
-// Last update Sat Feb 24 15:56:52 2007 Nahlwe
+// Last update Sat Feb 24 16:10:32 2007 Nahlwe
 //
 
 #include <string>
@@ -21,7 +21,7 @@ public:
 private:
   ~Dired(); // Generate an html error.
 
-  void                          read_directory;
+  void                          read_directory();
 
   std::string                   m_path;
   std::list<std::string>        m_dir;
