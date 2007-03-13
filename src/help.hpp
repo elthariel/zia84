@@ -5,8 +5,11 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 09:32:22 2007 Nahlwe
-// Last update Thu Mar  8 18:05:27 2007 Nahlwe
+// Last update Tue Mar 13 05:09:58 2007 Nahlwe
 //
+
+#ifndef HELP_HPP_
+# define HELP_HPP_
 
 #include <string>
 
@@ -35,3 +38,5 @@ private:
 
   static CopyExcexption         m_copy_exp;
 };
+
+#endif

@@ -5,19 +5,31 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 08:05:03 2007 Nahlwe
-// Last update Thu Mar  8 17:53:05 2007 Nahlwe
+// Last update Tue Mar 13 06:55:03 2007 Nahlwe
 //
 
+#include <iostream>
 #include <sched.h>
 #include "thread.hpp"
+
+using namespace std;
 
 /*
  * Thread class
  */
+void            *run_thread(void *arg)
+{
+  iFoncteur0<void>      *fonc = (iFoncteur0<void>*)arg;
+  (*fonc)();
+  return 0;
+}
 
 Thread::Thread(iFoncteur0<void> &a_foncteur)
   : m_fonc(a_foncteur)
 {
+  if (pthread_create(&m_thread, 0,
+                     &run_thread, (void *)&a_foncteur) != 0)
+    cerr << "Thread wasn't created" << endl;
 }
 
 Thread::~Thread()
