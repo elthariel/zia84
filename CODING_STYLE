@@ -1,0 +1,31 @@
+##
+## CODING_STYLE for zia in /home/elthariel/code/httpd
+##
+## Made by Nahlwe
+## Login   <lse.elthariel@epita.fr>
+##
+## Started on  Fri Feb 16 05:01:46 2007 Nahlwe
+## Last update Fri Feb 16 05:10:52 2007 Nahlwe
+##
+
+Ce document est un brouillon de recommandations de coding style pour
+zia.
+
+[ Ces regles ne sont pas imposees est peuvent etre discutees avant que
+  trop de code ne soit ecrit ]
+
+Il vise a etablir une certaine uniformite a l'interieur du projet afin
+de facilite le travail en groupe et la lisibilite generale du code :
+
+  - La norme C epitech s'applique la ou elle a encore du sens en C++
+    notamment en terme d'indentation.
+  - Les noms de classes utilise la CamelCase.
+  - Les classes abstraites (interfaces) voient leur noms prefixees
+    d'un i (eg. iInterfaceXOuY).
+  - Les donnes membres sont prefixes d'un "m_" (eg m_internal_data)
+  - L'encapsulation des donnes membres est respectee le plus possible
+  - Les accesseurs pour un membre m_intern_data sont nommes :
+    - get_intern_data
+    - set_intern_data
+  - Sauf cas specifique aucune fonction n'est definie ds le header.
+
