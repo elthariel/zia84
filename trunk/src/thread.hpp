@@ -5,8 +5,11 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 08:04:50 2007 Nahlwe
-// Last update Thu Mar  8 17:52:11 2007 Nahlwe
+// Last update Tue Mar 13 06:52:43 2007 Nahlwe
 //
+
+#ifndef THREAD_HPP_
+# define THREAD_HPP_
 
 #include <pthread.h>
 #include <unistd.h>
@@ -17,6 +20,8 @@
  * Still lacks of a semaphore class
  * for productor_/consommatorS.
  */
+
+void            *run_thread(void *arg);
 
 class Thread : public NonCopyable
 {
@@ -67,3 +72,5 @@ public:
 private:
   pthread_cond_t        m_event;
 };
+
+#endif

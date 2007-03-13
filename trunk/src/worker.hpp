@@ -5,13 +5,27 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 12:18:17 2007 Nahlwe
-// Last update Mon Mar 12 19:28:11 2007 Nahlwe
+// Last update Tue Mar 13 07:02:13 2007 Nahlwe
 //
+
+#ifndef WORKER_HPP_
+# define WORKER_HPP_
 
 #include <list>
 #include <vector>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/select.h>
 #include "thread.hpp"
-#include "socket.hpp"
+//#include "socket.hpp"
+
+class Socket
+{
+public :
+  Socket(int fd)
+  {
+  }
+};
 
 class TaskList
 {
@@ -27,7 +41,7 @@ public:
     TaskType    type;
     union
     {
-      Socket    &sock;
+      Socket    *sock;
     } content;
   };
 
@@ -42,7 +56,7 @@ public:
    * task until the main process puts enought tasks to wake it
    * (depending on the number of inactive workers).
    */
-  Task                  &get();
+  Task                  get();
 
 private:
   std::list<Task>       m_tasks;
@@ -54,6 +68,7 @@ class Worker : public iFoncteur0<void>, public NonCopyable
 {
 public:
   Worker(TaskList &a_tasks);
+  ~Worker();
 
   void                  operator()();
 
@@ -76,6 +91,9 @@ private:
   WorkerPool();
 
   unsigned int          m_worker_count;
-  std::vector<Worker &> m_workers;
+  std::vector<Worker *> m_workers;
   TaskList              m_tasks;
+  int                   m_main_socket;
 };
+
+#endif

@@ -5,8 +5,11 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 08:08:39 2007 Nahlwe
-// Last update Thu Mar  8 18:20:10 2007 Nahlwe
+// Last update Tue Mar 13 05:52:27 2007 Nahlwe
 //
+
+#ifndef IFONC_HPP_
+# define IFONC_HPP_
 
 template <class return_type>
 class iFoncteur0
@@ -17,32 +20,10 @@ public:
 };
 
 
-/*
 template <class return_type>
-class foncteur0\
+iFoncteur0<return_type>::~iFoncteur0()
 {
-public:
-  typedef return_type (&Fun)();
-
-  foncteur0(Fun a_fun);
-  virtual return_type   operator()();
-
-private:
-  Fun                   m_fun;
-};
+}
 
 
-
-template <class return_type, class arg0>
-class foncteur1
-{
-public:
-  typedef return_type (&Fun)(arg0);
-
-  foncteur0(Fun a_fun);
-  virtual return_type   operator()(arg0);
-
-private:
-  Fun                   m_fun;
-};
-*/
+#endif
