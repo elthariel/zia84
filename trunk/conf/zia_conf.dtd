@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!ELEMENT zia (network, server)>
+<!ELEMENT network (port, address+>
+  <!ELEMENT port (#CDATA)>
+  <!ELEMENT address (#CDATA)>
+<!ELEMENT server (name, root, cgi)>
+  <!ELEMENT name (#CDATA)>
+  <!ELEMENT root (#CDATA)>
+  <!ELEMENT cgi (#CDATA)>
