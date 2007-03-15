@@ -21,6 +21,12 @@ dnl    pthreads, libxml++ (or embbed it into src tree)
 AC_CHECK_HEADERS([pthread.h])
 AC_CHECK_HEADERS([iostream, vector, list])
 
+
+dnl libxml++ checks
+PKG_CHECK_MODULES(LIBXML, libxml++-2.6 >= 2.10.0)
+AC_SUBST(LIBXML_CFLAGS)
+AC_SUBST(LIBXML_LIBS)
+
 AC_OUTPUT([
 Makefile
 src/Makefile

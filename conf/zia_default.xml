@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE zia SYSTEM "zia_conf.dtd">
+<zia>
+  <network>
+    <port>8080</port>
+    <address>all</address>
+  </network>
+  <server>
+    <name>www.test.com</name>
+    <root>/var/www</root>
+    <cgi>/var/www/cgi-bin</cgi>
+  </server>
+</zia>

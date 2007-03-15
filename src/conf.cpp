@@ -5,10 +5,25 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Sat Feb 24 15:46:20 2007 Nahlwe
-// Last update Thu Mar  8 19:34:22 2007 Nahlwe
+// Last update Thu Mar 15 09:45:19 2007 Nahlwe
 //
 
+#include <libxml++/libxml++.h>
+#include <cstdlib>
 #include "conf.hpp"
+
+using namespace std;
+
+namespace __gnu_cxx
+{
+  size_t        hash<string>::operator()(const string& x) const
+  {
+    hash<char *> h;
+    return      h(x.c_str());
+  }
+};
+
+using namespace __gnu_cxx;
 
 HttpdConf       *HttpdConf::m_instance = 0;
 
@@ -51,4 +66,15 @@ void                    HttpdConf::read_conf()
 
 void                    HttpdConf::fill_with_defaults()
 {
+}
+
+const std::string       *HttpdConf::get_key(string a_key)
+{
+  //return (const_cast<const string>(m_conf[a_key]));
+  return &(m_conf[a_key]);
+}
+
+int                     HttpdConf::get_key_int(string a_key)
+{
+  return atoi(get_key(a_key)->c_str());
 }
