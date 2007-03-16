@@ -1,9 +1,9 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!ELEMENT zia (network, server)>
-<!ELEMENT network (port, address+>
-  <!ELEMENT port (#CDATA)>
-  <!ELEMENT address (#CDATA)>
+<!ELEMENT network (port, address+)>
+  <!ELEMENT port (#PCDATA)>
+  <!ELEMENT address (#PCDATA)>
 <!ELEMENT server (name, root, cgi)>
-  <!ELEMENT name (#CDATA)>
-  <!ELEMENT root (#CDATA)>
-  <!ELEMENT cgi (#CDATA)>
+  <!ELEMENT name (#PCDATA)>
+  <!ELEMENT root (#PCDATA)>
+  <!ELEMENT cgi (#PCDATA)>
