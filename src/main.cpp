@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 16:04:18 2007 Nahlwe
-// Last update Fri Mar 16 02:29:10 2007 Nahlwe
+// Last update Fri Mar 16 11:31:01 2007 Nahlwe
 //
 
 #include <pthread.h>
@@ -21,7 +21,8 @@ int main (int ac, char **av)
   if (ac > 1)
     HttpdConf::init(av[1]);
 
-  pool = new WorkerPool(10);
+  pool = new WorkerPool(HttpdConf::get()
+                        .get_key_int("/zia/intern/workers"));
   pool->main_loop();
   delete pool;
 }

@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Sat Feb 24 15:32:22 2007 Nahlwe
-// Last update Fri Mar 16 08:28:06 2007 Nahlwe
+// Last update Fri Mar 16 11:37:00 2007 Nahlwe
 //
 
 #include <pthread.h>
@@ -13,6 +13,7 @@
 #include <iostream>
 #include <dirent.h>
 
+#include "conf.hpp"
 #include "dired.hpp"
 
 using namespace std;
@@ -75,7 +76,8 @@ void                    Dired::output_header()
 
 void                    Dired::output_footer()
 {
-  cout << "<h3>FIXME insert server version and name here</h3>" << endl
+  cout << "<h3>Zia server on " << HttpdConf::get().get_key("/zia/server/name")
+       <<"</h3>" << endl
        << "</body>" << endl
        << "</html>" << endl << endl;
 }

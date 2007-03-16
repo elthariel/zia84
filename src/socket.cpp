@@ -5,8 +5,9 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Sun Mar 11 17:43:30 2007 Nahlwe
-// Last update Sun Mar 11 17:43:49 2007 Nahlwe
+// Last update Fri Mar 16 11:33:25 2007 Nahlwe
 //
+#include <pthread.h>
 #include <socket.hpp>
 
 using namespace	std;
@@ -73,9 +74,9 @@ void	Socket::SocketReadAll(int fd, std::string &str)
 Socket        &Socket::operator<<(FilePath &file)
 {
   int		fd;
-  struct	stat st;  
+  struct	stat st;
   void		*addr;
-  
+
 
   if ((fd = open(file.Path.c_str(), 0400)) == -1)
 	/*XXX 404 */ cout << "Can't	open file" << endl;
@@ -91,7 +92,7 @@ Socket        &Socket::operator<<(FilePath &file)
 Socket        &Socket::operator<<(std::string &str)
 {
   SocketWriteAll(m_fd, str.c_str(), str.length());
-  
+
   return (*this);
 }
 

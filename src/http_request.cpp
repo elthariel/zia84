@@ -5,28 +5,29 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Sat Feb 24 15:31:55 2007 Nahlwe
-// Last update Sat Feb 24 15:32:00 2007 Nahlwe
+// Last update Fri Mar 16 11:33:14 2007 Nahlwe
 //
 
+#include <pthread.h>
 #include "http_request.hpp"
 
 using namespace std;
 
 
-const char * HttpRequest::m_method [] =  { "OPTITONS" , "GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "METHOD" };  
+const char * HttpRequest::m_method [] =  { "OPTITONS" , "GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "METHOD" };
 
 HttpRequest::HttpRequest(Socket &sock)
 {
   std::string 	buff;
 /*  char bu[4096];
   int n;
- */ sock >> buff;	
+ */ sock >> buff;
  /* int fd  = open("test", O_RDONLY, 0444);
   n  = read(fd, bu, 4096);
   bu[n] = 0;
   buff += bu;
  */ m_chunk_type = TYPE_HEADER;
-  HttpFill(buff);  
+  HttpFill(buff);
 }
 
 HttpRequest::~HttpRequest()
@@ -41,7 +42,7 @@ int	HttpRequest::split(std::string str, std::string token, std::string chunk)
 	return (0);
   chunk = str.substr(0, str.find(token) + token.length());
   str = str.substr(str.find(token) + token.length(), str.length());
-  return (1);	
+  return (1);
 }
 
 int	HttpRequest::is_in_list(std::string str,const char **list)
@@ -51,13 +52,13 @@ int	HttpRequest::is_in_list(std::string str,const char **list)
   while (list[i])
    if (str.find(*list[i]))
    return (1);
-  
+
   return (0);
 }
 
 int	HttpRequest::HttpParseChunk(std::string buff)
 {
-  std::string	chunk;	
+  std::string	chunk;
 
   if (!buff.length())
        return (0);
@@ -74,7 +75,7 @@ int	HttpRequest::HttpParseChunk(std::string buff)
 int	HttpRequest::HttpSetHeader(std::string chunk)
 {
   std::string	header_method;
- 
+
   if (!split(chunk, " ", header_method))
 	return (0);
   if (!is_in_list(chunk, m_method))
@@ -82,7 +83,7 @@ int	HttpRequest::HttpSetHeader(std::string chunk)
   m_http_map["METHOD"] = chunk;
   //XXX check method (HTTP 1.1)
   m_http_map[chunk] = header_method;
-  m_chunk_type = TYPE_MAP; 
+  m_chunk_type = TYPE_MAP;
   return (1);
 }
 
@@ -116,14 +117,14 @@ int	HttpRequest::HttpSetChunk(std::string chunk)
   if (m_chunk_type == TYPE_MAP)
    return (HttpSetMap(chunk));
   if (m_chunk_type == TYPE_DATA)
-    return (HttpSetData(chunk));    
+    return (HttpSetData(chunk));
 
   return (0);
 }
 
 void	HttpRequest::HttpFill(std::string buff)
 {
-  while (HttpParseChunk(buff));	
+  while (HttpParseChunk(buff));
 }
 
 
