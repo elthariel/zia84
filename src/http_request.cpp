@@ -18,9 +18,14 @@ const char * HttpRequest::m_method [] =  { "OPTITONS" , "GET", "HEAD", "POST", "
 HttpRequest::HttpRequest(Socket &sock)
 {
   std::string 	buff;
-
-  sock >> buff;	
-  m_chunk_type = TYPE_HEADER;
+/*  char bu[4096];
+  int n;
+ */ sock >> buff;	
+ /* int fd  = open("test", O_RDONLY, 0444);
+  n  = read(fd, bu, 4096);
+  bu[n] = 0;
+  buff += bu;
+ */ m_chunk_type = TYPE_HEADER;
   HttpFill(buff);  
 }
 

@@ -8,9 +8,12 @@
 // Last update Fri Mar 16 02:41:54 2007 Nahlwe
 //
 
+#ifndef	__CONF_H__
+#define __CONF_H__
 #include <string>
 #include <ext/hash_map>
 #include <libxml++/libxml++.h>
+
 
 namespace __gnu_cxx
 {
@@ -79,3 +82,5 @@ private:
   // Internal data.
   xmlpp::DomParser      m_parser;
 };
+
+#endif

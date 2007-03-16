@@ -17,15 +17,7 @@
 #include <sys/socket.h>
 #include <sys/select.h>
 #include "thread.hpp"
-//#include "socket.hpp"
-
-class Socket
-{
-public :
-  Socket(int fd)
-  {
-  }
-};
+#include "socket.hpp"
 
 class TaskList
 {
