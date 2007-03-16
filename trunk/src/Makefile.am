@@ -5,11 +5,11 @@
 ## Login   <elthariel@lse.epita.fr>
 ##
 ## Started on  Fri Feb 16 04:43:47 2007 Nahlwe
-## Last update Thu Mar 15 21:58:12 2007 Nahlwe
+## Last update Fri Mar 16 07:38:23 2007 Nahlwe
 ##
 
 noinst_HEADERS = foncteurs.hpp help.hpp \
-	thread.hpp worker.hpp main.hpp conf.hpp
+	thread.hpp worker.hpp main.hpp conf.hpp dired.hpp
 
 #######################
 # Build an executable #
@@ -19,7 +19,7 @@ noinst_HEADERS = foncteurs.hpp help.hpp \
 
 bin_PROGRAMS = zia
 zia_SOURCES = foncteurs.cpp help.cpp thread.cpp \
-	worker.cpp main.cpp conf.cpp
+	worker.cpp main.cpp conf.cpp dired.cpp
 
 # Don't forget that the order of the libraries _does_ matter
 zia_CPPFLAGS = -g -Wall -pthread $(LIBXML_CFLAGS)

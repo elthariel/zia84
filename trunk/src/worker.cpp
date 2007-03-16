@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 12:18:15 2007 Nahlwe
-// Last update Tue Mar 13 07:04:47 2007 Nahlwe
+// Last update Fri Mar 16 07:40:12 2007 Nahlwe
 //
 
 #include <iostream>
@@ -26,35 +26,43 @@ using namespace std;
  * TaskList
  */
 
-void            TaskList::put(TaskList::Task &t)
+bool            TaskList::put(TaskList::Task &t)
 {
+  unsigned int  count;
+
   m_mutex.lock();
   m_tasks.push_back(t);
+  count = m_tasks.size();
   m_mutex.unlock();
   m_event.wake_one();
+  return (count > 5);
 }
 
-// FIXME wait could wait more than one thread ? so we could
-// get some bugs here.
-TaskList::Task  TaskList::get()
+bool            TaskList::get(TaskList::Task *out_task)
 {
   m_mutex.lock();
   if (m_tasks.empty())
     {
       m_mutex.unlock();
-      m_event.wait();
+      m_event.wait(25);
       m_mutex.lock();
-      TaskList::Task tmp = *(m_tasks.begin());
-      m_tasks.pop_front();
-      m_mutex.unlock();
-      return (tmp);
+
+      if (!m_tasks.empty())
+        {
+          *out_task = *(m_tasks.begin());
+          m_tasks.pop_front();
+          m_mutex.unlock();
+          return (true);
+        }
+      else
+        return false;
     }
   else
     {
-      TaskList::Task tmp = *m_tasks.begin();
+      *out_task = *m_tasks.begin();
       m_tasks.pop_front();
       m_mutex.unlock();
-      return (tmp);
+      return (true);
     }
 }
 
@@ -66,8 +74,9 @@ Worker::~Worker()
 {
 }
 
-Worker::Worker(TaskList &a_tasks)
+Worker::Worker(TaskList &a_tasks, bool a_highlander)
   : m_tasks(a_tasks),
+    m_highlander(a_highlander),
     m_thread(*this)
 {
 }
@@ -82,7 +91,13 @@ void                    Worker::main_loop()
 {
   while(42)
     {
-      TaskList::Task    t = m_tasks.get();
+      TaskList::Task    t;
+      while (!m_tasks.get(&t))
+        {
+          if (!m_highlander)
+            delete this;
+        }
+
       switch(t.type)
         {
         case TaskList::TaskRequest:
@@ -142,8 +157,7 @@ WorkerPool::WorkerPool(unsigned int a_worker_count)
    */
   for (i = 0; i < a_worker_count; i++)
     {
-      tmp = new Worker(m_tasks);
-      m_workers.push_back(tmp);
+      tmp = new Worker(m_tasks, true); // true = Highlanders.
     }
 }
 
@@ -161,7 +175,7 @@ void                    WorkerPool::main_loop()
       new_fd = accept(m_main_socket, &addr, &addr_len);
       cerr << "Received connection" << endl;
       if (new_fd < 0)
-        cerr << "Error on accepting the connection : "
+        cerr << "Error on accepting the connection : " << new_fd << " : "
              << strerror(errno) << endl;
       else
         {
@@ -169,7 +183,8 @@ void                    WorkerPool::main_loop()
           tmp = new Socket(new_fd);
           t.type = TaskList::TaskRequest;
           t.content.sock = tmp;
-          m_tasks.put(t);
+          if (m_tasks.put(t))
+            new Worker(m_tasks, false);
         }
     }
 }
