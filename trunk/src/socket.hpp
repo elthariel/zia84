@@ -13,22 +13,36 @@
  * nest pas propre du tout seule son existence est garantie
  * sa forme reste indefinie
  */
+#include <string>
+#include <iostream>
+#include <pthread.h>
+#include <sys/mman.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+
+struct FilePath
+{
+ std::string	&Path;
+};
+
+
 class Socket
 {
 public:
   Socket(int fd);
   ~Socket();
 
-  void          getline(char *&, unsigned int &size);
-  void          outline(char *, unsigned int size);
-
-  Socket        &operator>>(string &);
-
-  Socket        &operator<<(string &);
-  Socket        &operator<<(unsigned int);
-  Socket        &operator<<(int);
+  void		SocketWriteAll(int fd, const char *addr, int size);
+  void		SocketWriteAll(int fd, void *addr, int size);
+  void		SocketReadAll(int fd, char *addr, int size);
+  void		SocketReadAll(int fd, std::string &str);
+  Socket	&operator<<(FilePath &);	
+  Socket        &operator>>(std::string &);
+  Socket        &operator<<(std::string &);
+  int           m_fd;
 private:
   Socket();
 
-  int           m_fd;
 };

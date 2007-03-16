@@ -12,103 +12,113 @@
 
 using namespace std;
 
-/*
- * Uri class
- */
 
-//a_uri.npos
+const char * HttpRequest::m_method [] =  { "OPTITONS" , "GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "METHOD" };  
 
-Uri::Uri(std::string a_uri)
+HttpRequest::HttpRequest(Socket &sock)
 {
-  if (a_uri.find("http://", 0, 8) != a_uri.npos) //FIXME check https
-    {
-      m_type = UriAbs_Host;
-      // FIXME parse
-    }
-  else if (a_uri.c_str()[0] == /)
-    {
-      m_type = UriAbs;
-      // FIXME parse
-    }
-  else // FIXME check for ../[../]etc/passwd-like uri :p
-    {
-      m_type = UriRel;
+  std::string 	buff;
 
-    }
-
-}
-
-Uri::Uri()
-{
-}
-
-const std::string       &Uri::proto()
-{
-  return m_proto;
-}
-
-const std::string       &Uri::host()
-{
-  return m_host;
-}
-
-const std::string       &Uri::path()
-{
-  return m_path;
-}
-
-const UriType           &Uri::type()
-{
-  return m_type;
-}
-
-
-/*
- * HttpRequest class
- */
-
-HttpRequest::HttpRequest()
-  : m_rtype(HTTP_UNSET),
-    m_return_count(0)
-{
+  sock >> buff;	
+  m_chunk_type = TYPE_HEADER;
+  HttpFill(buff);  
 }
 
 HttpRequest::~HttpRequest()
 {
+
 }
 
-bool                    HttpRequest::feed(string line)
+
+int	HttpRequest::split(std::string str, std::string token, std::string chunk)
 {
-  if (line.size() <= 1)
-    {
-      m_return_count++;
-    }
-  else
-    {
-      if (m_return_count == 1)
-        {
-          // FIXME ? parse POST/PUT data
-        }
-      else if (m_return_count == 2)
-        {
-          process();
-        }
-      else
-        {
-          parse_line(line);
-        }
-      m_return_count = 0;
-    }
+  if (!str.find(token) || str.find(token) + token.length() >= str.length())
+	return (0);
+  chunk = str.substr(0, str.find(token) + token.length());
+  str = str.substr(str.find(token) + token.length(), str.length());
+  return (1);	
 }
 
-bool                    HttpRequest::parse_line(std::string &line)
+int	HttpRequest::is_in_list(std::string str,const char **list)
 {
-  string                name, value;
-  unsigned int          pos;
+  int	i = 0;
 
-  pos = line.find(":");
-  name = line.substr(0, pos);
-  value = line.substr(pos + 1, line.size());
-
-  if (name ==
+  while (list[i])
+   if (str.find(*list[i]))
+   return (1);
+  
+  return (0);
 }
+
+int	HttpRequest::HttpParseChunk(std::string buff)
+{
+  std::string	chunk;	
+
+  if (!buff.length())
+       return (0);
+  if (m_chunk_type != TYPE_DATA)
+  {
+    if (!split(buff, "\r\n", chunk))
+  	return (0);
+   return (HttpSetChunk(chunk));
+  }
+  return (HttpSetChunk(buff));
+}
+
+
+int	HttpRequest::HttpSetHeader(std::string chunk)
+{
+  std::string	header_method;
+ 
+  if (!split(chunk, " ", header_method))
+	return (0);
+  if (!is_in_list(chunk, m_method))
+	return (0);
+  m_http_map["METHOD"] = chunk;
+  //XXX check method (HTTP 1.1)
+  m_http_map[chunk] = header_method;
+  m_chunk_type = TYPE_MAP; 
+  return (1);
+}
+
+int	HttpRequest::HttpSetMap(std::string chunk)
+{
+  std::string	value;
+
+  if (chunk.compare("\r\n"))
+  {
+    m_chunk_type = TYPE_DATA;
+    return (1);
+  }
+  if (!split(chunk, ":", value))
+	return (0);
+  m_http_map[chunk] = value;
+
+  return (1);
+}
+
+int	HttpRequest::HttpSetData(std::string chunk)
+{
+  m_data = chunk;
+
+  return (1);
+}
+
+int	HttpRequest::HttpSetChunk(std::string chunk)
+{
+  if (m_chunk_type == TYPE_HEADER)
+    return (HttpSetHeader(chunk));
+  if (m_chunk_type == TYPE_MAP)
+   return (HttpSetMap(chunk));
+  if (m_chunk_type == TYPE_DATA)
+    return (HttpSetData(chunk));    
+
+  return (0);
+}
+
+void	HttpRequest::HttpFill(std::string buff)
+{
+  while (HttpParseChunk(buff));	
+}
+
+
