@@ -13,6 +13,8 @@
  * nest pas propre du tout seule son existence est garantie
  * sa forme reste indefinie
  */
+#ifndef	 __SOCKET_H__
+#define __SOCKET_H__
 #include <string>
 #include <iostream>
 #include <pthread.h>
@@ -46,3 +48,4 @@ private:
   Socket();
 
 };
+#endif

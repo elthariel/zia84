@@ -12,6 +12,7 @@
 #include "conf.hpp"
 #include "worker.hpp"
 #include "main.hpp"
+#include "http_request.hpp"
 
 int main (int ac, char **av)
 {

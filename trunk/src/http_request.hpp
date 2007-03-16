@@ -7,7 +7,8 @@
 // Started on  Sat Feb 24 15:32:05 2007 Nahlwe
 // Last update Sat Feb 24 15:32:08 2007 Nahlwe
 //
-
+#ifndef __HTTP_REQUEST__
+#define __HTTP_REQUEST__
 #include <string>
 #include "conf.hpp"
 #include "socket.hpp"
@@ -79,3 +80,5 @@ private:
   // Internals
   unsigned int          m_return_count;
 };
+
+#endif

@@ -19,7 +19,6 @@
 #include "worker.hpp"
 #include "help.hpp"
 
-
 using namespace std;
 
 /*
@@ -141,7 +140,7 @@ WorkerPool::WorkerPool(unsigned int a_worker_count)
     cerr << "Unable to create socket" << strerror(errno) << endl;
   addr.sin_family = AF_INET;
   addr.sin_port = htons(8080);
-  host = gethostbyname("192.168.0.42");
+  host = gethostbyname("117.0.0.1");
   addr.sin_addr.s_addr = INADDR_ANY;
   if (bind (m_main_socket, (sockaddr *)&addr,
             sizeof(addr)) != 0)

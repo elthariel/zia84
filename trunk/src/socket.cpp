@@ -11,6 +11,18 @@
 
 using namespace	std;
 
+Socket::Socket()
+{
+}
+
+Socket::Socket(int)
+{
+}
+
+Socket::~Socket()
+{
+}
+
 void	Socket::SocketWriteAll(int fd, const char *addr, int size)
 {
   int	n = 0;
