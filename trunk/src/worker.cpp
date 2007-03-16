@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 12:18:15 2007 Nahlwe
-// Last update Fri Mar 16 10:38:50 2007 Nahlwe
+// Last update Fri Mar 16 11:32:46 2007 Nahlwe
 //
 
 #include <iostream>
@@ -18,6 +18,7 @@
 #include <string.h>
 #include "worker.hpp"
 #include "help.hpp"
+#include "conf.hpp"
 
 using namespace std;
 
@@ -34,7 +35,8 @@ bool            TaskList::put(TaskList::Task &t)
   count = m_tasks.size();
   m_mutex.unlock();
   m_event.wake_one();
-  return (count > 5);
+  return (count > HttpdConf::get()
+          .get_key_int("/zia/intern/thresold"));
 }
 
 bool            TaskList::get(TaskList::Task *out_task)
@@ -43,7 +45,7 @@ bool            TaskList::get(TaskList::Task *out_task)
   if (m_tasks.empty())
     {
       m_mutex.unlock();
-      m_event.wait(25);
+      m_event.wait(HttpdConf::get().get_key_int("/zia/intern/wait"));
       m_mutex.lock();
 
       if (!m_tasks.empty())
@@ -139,7 +141,7 @@ WorkerPool::WorkerPool(unsigned int a_worker_count)
   if (m_main_socket == -1)
     cerr << "Unable to create socket" << strerror(errno) << endl;
   addr.sin_family = AF_INET;
-  addr.sin_port = htons(8080);
+  addr.sin_port = htons(HttpdConf::get().get_key_int("/zia/network/port"));
   host = gethostbyname("117.0.0.1");
   addr.sin_addr.s_addr = INADDR_ANY;
   if (bind (m_main_socket, (sockaddr *)&addr,
@@ -149,7 +151,6 @@ WorkerPool::WorkerPool(unsigned int a_worker_count)
   if (listen(m_main_socket, 30) == -1)
     cerr << "Unable to enter listening state : " << strerror(errno)
          << endl;
-
 
   /*
    * Creating workers
