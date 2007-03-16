@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 08:05:03 2007 Nahlwe
-// Last update Tue Mar 13 06:55:03 2007 Nahlwe
+// Last update Fri Mar 16 07:24:20 2007 Nahlwe
 //
 
 #include <iostream>
@@ -129,5 +129,17 @@ void                    Event::wait()
 {
   lock();
   pthread_cond_wait(&m_event, &m_mutex);
+  unlock();
+}
+
+void                    Event::wait(unsigned int a_sec)
+{
+  timespec              time;
+
+  time.tv_nsec = 0;
+  time.tv_sec = a_sec;
+
+  lock();
+  pthread_cond_timedwait(&m_event, &m_mutex, &time);
   unlock();
 }

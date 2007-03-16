@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 12:18:17 2007 Nahlwe
-// Last update Tue Mar 13 07:02:13 2007 Nahlwe
+// Last update Fri Mar 16 07:22:11 2007 Nahlwe
 //
 
 #ifndef WORKER_HPP_
@@ -47,16 +47,18 @@ public:
 
   /**
    * put() pushes back a taks on the task list. It wakes a worker
-   * if there is any waiting for a task
+   * if there is any waiting for a task. Return true if a new worker
+   * is needed.
    */
-  void                  put(Task &);
+  bool                  put(Task &);
 
   /**
    * Get a task. It blocks the calling process if there isn't any
    * task until the main process puts enought tasks to wake it
    * (depending on the number of inactive workers).
+   * Return true if a task was obtained.
    */
-  Task                  get();
+  bool                  get(Task *);
 
 private:
   std::list<Task>       m_tasks;
@@ -67,13 +69,14 @@ private:
 class Worker : public iFoncteur0<void>, public NonCopyable
 {
 public:
-  Worker(TaskList &a_tasks);
+  Worker(TaskList &a_tasks, bool a_highlander = false);
   ~Worker();
 
   void                  operator()();
 
 private:
   TaskList              &m_tasks;
+  bool                  m_highlander;
   Thread                m_thread;
 
   void                  main_loop();
@@ -91,7 +94,6 @@ private:
   WorkerPool();
 
   unsigned int          m_worker_count;
-  std::vector<Worker *> m_workers;
   TaskList              m_tasks;
   int                   m_main_socket;
 };

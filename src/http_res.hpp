@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Sat Feb 24 17:51:13 2007 Nahlwe
-// Last update Sat Feb 24 18:11:55 2007 Nahlwe
+// Last update Fri Mar 16 07:39:47 2007 Nahlwe
 //
 
 #include <iostream>
@@ -20,7 +20,7 @@ class iHttpRes
 public:
   iHttpRes();
 
-  virtual void          output(ofstream &stream) = 0;
+  virtual void          output(Socket &sock) = 0;
 
 private:
 

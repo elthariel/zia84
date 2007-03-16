@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 08:04:50 2007 Nahlwe
-// Last update Tue Mar 13 06:52:43 2007 Nahlwe
+// Last update Fri Mar 16 07:23:52 2007 Nahlwe
 //
 
 #ifndef THREAD_HPP_
@@ -68,6 +68,7 @@ public:
   int                   wake_all();
   int                   wake_one();
   void                  wait();
+  void                  wait(unsigned int a_sec);
 
 private:
   pthread_cond_t        m_event;
