@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 12:18:15 2007 Nahlwe
-// Last update Fri Mar 16 07:40:12 2007 Nahlwe
+// Last update Fri Mar 16 10:38:50 2007 Nahlwe
 //
 
 #include <iostream>
@@ -172,6 +172,8 @@ void                    WorkerPool::main_loop()
   cerr << "Zia server entering accept connection mode." << endl;
   while (42)
     {
+      memset(&addr, 0, sizeof(addr));
+      memset(&addr_len, 0, sizeof(int));
       new_fd = accept(m_main_socket, &addr, &addr_len);
       cerr << "Received connection" << endl;
       if (new_fd < 0)
