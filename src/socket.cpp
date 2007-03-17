@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Sun Mar 11 17:43:30 2007 Nahlwe
-// Last update Fri Mar 16 11:33:25 2007 Nahlwe
+// Last update Sat Mar 17 01:58:01 2007 Nahlwe
 //
 #include <pthread.h>
 #include <socket.hpp>
@@ -79,10 +79,10 @@ Socket        &Socket::operator<<(FilePath &file)
 
 
   if ((fd = open(file.Path.c_str(), 0400)) == -1)
-	/*XXX 404 */ cout << "Can't	open file" << endl;
+	/*XXX 404 */ cerr << "Can't	open file" << endl;
   fstat(fd, &st);
   if ((addr = mmap(0, st.st_size, PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS, fd, 0)) == (void *)-1)
-	cout << "Can't	mmap file" << endl;
+	cerr << "Can't	mmap file" << endl;
   SocketWriteAll(m_fd, addr, st.st_size);
 
   return (*this);
