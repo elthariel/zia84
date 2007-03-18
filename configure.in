@@ -3,13 +3,16 @@ dnl process with autoconf in order to get configure script
 dnl or use autogen.sh (recommended)
 
 AC_INIT(configure.in)
-AM_INIT_AUTOMAKE(Zia, 0.0.1)
+AM_INIT_AUTOMAKE(Zia, 0.1.5)
+AC_CONFIG_HEADERS(config.h)
+
 AM_MAINTAINER_MODE
 
 AC_ISC_POSIX
 AC_PROG_CC
 AC_PROG_CXXCPP
 AC_PROG_CXX
+AC_PROG_MAKE_SET
 
 AM_PROG_CC_STDC
 
@@ -26,6 +29,10 @@ dnl libxml++ checks
 PKG_CHECK_MODULES(LIBXML, libxml++-2.6 >= 2.10.0)
 AC_SUBST(LIBXML_CFLAGS)
 AC_SUBST(LIBXML_LIBS)
+
+
+dnl Autoheader things :p
+
 
 AC_OUTPUT([
 Makefile
