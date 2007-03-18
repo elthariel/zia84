@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 16 06:50:19 2007 Nahlwe
-// Last update Fri Feb 23 10:49:30 2007 Nahlwe
+// Last update Sun Mar 18 01:32:54 2007 Nahlwe
 //
 
 /* |---------------|
@@ -13,7 +13,7 @@
  * |---------------|
  *
  * This document just contains ideas and is subject to deep
- * modificaton depending on group's opinions.
+ * modificaton depending on team's opinions.
  *
  */
 
