@@ -88,7 +88,7 @@ int main (int ac, char **av)
 {
   WorkerPool    *pool;
   int           pid_fd;
-
+/*
   if (ac > 1)
     HttpdConf::init(av[1]);
 
@@ -99,4 +99,7 @@ int main (int ac, char **av)
   pool->main_loop();
   delete pool;
   kill_pid_file(pid_fd);
+  */
+  HttpRequest hr("test");
+  hr.HttpTest();
 }

@@ -48,16 +48,18 @@ class HttpRequest
 {
 public:
   HttpRequest(Socket &);
+  HttpRequest(char *filename);
   ~HttpRequest();
 
-int	split(std::string str, std::string token, std::string chunk);
-int	is_in_list(std::string str,const char **list);
-int	HttpParseChunk(std::string buff);
-int	HttpSetHeader(std::string chunk);
-int	HttpSetMap(std::string chunk);
-int	HttpSetData(std::string chunk);
-int	HttpSetChunk(std::string chunk);
-void	HttpFill(std::string buff);
+  int	split(std::string &str, std::string token, std::string &chunk);
+  int	is_in_list(std::string str,const char **list);
+  int	HttpParseChunk(std::string &buff);
+  int	HttpSetHeader(std::string chunk);
+  int	HttpSetMap(std::string chunk);
+  int	HttpSetData(std::string &chunk);
+  int	HttpSetChunk(std::string &chunk);
+  void	HttpFill(std::string buff);
+  void  HttpTest();
 
   static  const char *m_method[];
   typedef __gnu_cxx::hash_map<std::string,
