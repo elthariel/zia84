@@ -12,6 +12,7 @@
 #include <string>
 #include "conf.hpp"
 #include "socket.hpp"
+#include "parsing.hpp"
 
 /*
 class Uri
@@ -51,14 +52,12 @@ public:
   HttpRequest(char *filename);
   ~HttpRequest();
 
-  int	split(std::string &str, std::string token, std::string &chunk);
-  int	is_in_list(std::string str,const char **list);
-  int	HttpParseChunk(std::string &buff);
-  int	HttpSetHeader(std::string chunk);
-  int	HttpSetMap(std::string chunk);
-  int	HttpSetData(std::string &chunk);
-  int	HttpSetChunk(std::string &chunk);
-  void	HttpFill(std::string buff);
+  int	HttpParseChunk(string2 &buff);
+  int	HttpSetHeader(string2 chunk);
+  int	HttpSetMap(string2 chunk);
+  int	HttpSetData(string2 &chunk);
+  int	HttpSetChunk(string2 &chunk);
+  void	HttpFill(string2 buff);
   void  HttpTest();
 
   static  const char *m_method[];
@@ -71,11 +70,8 @@ public:
    * Return true if the line has been accepted. If false is returned
    * you must stop feeding the request, an error code will be sent back.
    */
-  bool                  feed(std::string line);
   int			m_chunk_type; 
 private:
-  void                  process();
-  bool                  parse_line(std::string &line);
   enum 			chunk_type { TYPE_HEADER, TYPE_MAP, TYPE_DATA };
   std::string		m_data;
   HttpMap		m_http_map;
