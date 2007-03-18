@@ -15,7 +15,7 @@ using namespace std;
 
 
 const char * HttpRequest::m_method [] =  { "OPTITONS" , "GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "METHOD" };
-
+/**/
 /*FOR TEST PURPOSE ONLY */
 void HttpRequest::HttpTest()
 {
