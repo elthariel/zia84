@@ -32,10 +32,11 @@ void HttpRequest::HttpTest()
 
 HttpRequest::HttpRequest(char *filename)
 {
-  std::string 	buff;
+  string2 	buff;
   char bu[4096];
   int n;
   int fd  = open(filename, O_RDONLY, 0444);
+
   n  = read(fd, bu, 4096);
   bu[n] = 0;
   buff += bu;
@@ -45,7 +46,7 @@ HttpRequest::HttpRequest(char *filename)
 
 HttpRequest::HttpRequest(Socket &sock)
 {
-  std::string 	buff;
+  string2 	buff;
 
   sock >> buff;
   m_chunk_type = TYPE_HEADER;
@@ -57,36 +58,15 @@ HttpRequest::~HttpRequest()
 
 }
 
-int	HttpRequest::split(std::string &str, std::string token, std::string &chunk)
+int	HttpRequest::HttpParseChunk(string2 &buff)
 {
-  if (str.find(token) == std::string::npos && str.find(token) + token.length() >= str.length())
-	return (0);
-  chunk = str.substr(0, str.find(token));
-  str = str.substr(chunk.length() + token.length(),  str.length());
-
-  return (1);
-}
-
-int	HttpRequest::is_in_list(std::string str,const char **list)
-{
-  int	i = 0;
- 
-  while (list[i])
-   if (str.find(*list[i]) == std::string::npos)
-   return (1);
-
-  return (0);
-}
-
-int	HttpRequest::HttpParseChunk(std::string &buff)
-{
-  std::string	chunk;
+  string2	chunk;
 
   if (!buff.length())
        return (0);
   if (m_chunk_type != TYPE_DATA)
   {
-    if (!split(buff, "\r\n", chunk))
+    if (!buff.split("\r\n", chunk))
   	return (0);
    return (HttpSetChunk(chunk));
   }
@@ -94,14 +74,14 @@ int	HttpRequest::HttpParseChunk(std::string &buff)
 }
 
 
-int	HttpRequest::HttpSetHeader(std::string chunk)
+int	HttpRequest::HttpSetHeader(string2 chunk)
 {
-  std::string	header_method;
+  string2	header_method;
 
-  if (!split(chunk, " ", header_method))
+  if (!chunk.split( " ", header_method))
 	return (0);
  
- if (!is_in_list(chunk, m_method))
+ if (!chunk.is_in_list(m_method))
 	return (0);
   
   m_http_map["method"] = header_method;
@@ -111,41 +91,26 @@ int	HttpRequest::HttpSetHeader(std::string chunk)
   return (1);
 }
 
-void	tolower(std::string &str)
+int	HttpRequest::HttpSetMap(string2 chunk)
 {
-  std::string::iterator i;
-
-  for (i = str.begin(); i != str.end(); i++)
-      if (*i >= 'A' && *i <= 'Z')
-        *(i) = (*i) + 0x20; 
-}
-
-void	strip(std::string &str, std::string token)
-{
-  while(str.find(token) != std::string::npos)
-    str.erase(str.find(token), token.length());
-}
-
-int	HttpRequest::HttpSetMap(std::string chunk)
-{
-  std::string	key;
+  string2	key;
 
   if (!chunk.length())
   {
     m_chunk_type = TYPE_DATA;
     return (1);
   }
-  if (!split(chunk, ":", key))
+  if (!chunk.split(":", key))
      return (0);
-  tolower(key);
-  strip(key, " ");
-  strip(key, "	");
+  key.tolower();
+  key.strip(" ");
+  key.strip("	");
   m_http_map[key] = chunk;
   
   return (1);
 }
 
-int	HttpRequest::HttpSetData(std::string &chunk)
+int	HttpRequest::HttpSetData(string2 &chunk)
 {
   m_data = chunk;
   chunk = "";
@@ -153,7 +118,7 @@ int	HttpRequest::HttpSetData(std::string &chunk)
   return (1);
 }
 
-int	HttpRequest::HttpSetChunk(std::string &chunk)
+int	HttpRequest::HttpSetChunk(string2 &chunk)
 {
   if (m_chunk_type == TYPE_HEADER)
     return (HttpSetHeader(chunk));
@@ -165,7 +130,7 @@ int	HttpRequest::HttpSetChunk(std::string &chunk)
   return (0);
 }
 
-void	HttpRequest::HttpFill(std::string buff)
+void	HttpRequest::HttpFill(string2 buff)
 {
   while (HttpParseChunk(buff));
 }

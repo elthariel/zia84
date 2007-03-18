@@ -9,7 +9,8 @@
 ##
 
 noinst_HEADERS = foncteurs.hpp help.hpp \
-	thread.hpp worker.hpp main.hpp conf.hpp http_request.hpp socket.hpp dired.hpp
+	thread.hpp worker.hpp main.hpp conf.hpp http_request.hpp socket.hpp dired.hpp \
+	parsing.hpp
 
 #######################
 # Build an executable #
@@ -19,7 +20,8 @@ noinst_HEADERS = foncteurs.hpp help.hpp \
 
 bin_PROGRAMS = zia
 zia_SOURCES = foncteurs.cpp help.cpp thread.cpp \
-	worker.cpp main.cpp conf.cpp http_request.cpp socket.cpp dired.cpp
+	worker.cpp main.cpp conf.cpp http_request.cpp socket.cpp dired.cpp \
+	parsing.cpp
 
 # Don't forget that the order of the libraries _does_ matter
 zia_CPPFLAGS = -g -Wall -pthread $(LIBXML_CFLAGS)
