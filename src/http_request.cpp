@@ -59,6 +59,27 @@ HttpRequest::~HttpRequest()
 
 }
 
+void	HttpRequest::HttpFile(FilePath &file)
+{
+  std::string chunk;
+  string2  chunk2;
+  struct   stat st;
+
+  file.Path = HttpdConf::get().get_key("/zia/server/root")->c_str();
+  chunk = m_http_map[m_http_map["method"]]; 
+  chunk2.append(chunk);
+  chunk2.split(" ", chunk);
+  if (!chunk.compare("/"))
+   file.Path += chunk + "index.html";
+  else
+   file.Path += chunk;
+  if (stat(file.Path.c_str(), &st)  == -1)
+  {
+  file.Path = HttpdConf::get().get_key("/zia/server/root")->c_str();
+  file.Path += "/error.html";
+  }
+}
+
 int	HttpRequest::HttpParseChunk(string2 &buff)
 {
   string2	chunk;
@@ -86,7 +107,6 @@ int	HttpRequest::HttpSetHeader(string2 chunk)
 	return (0);
   
   m_http_map["method"] = header_method;
-  //XXX check type get (et le reste apres si non renvoie 0)
   m_http_map[header_method] = chunk;
   m_chunk_type = TYPE_MAP;
   return (1);

@@ -88,23 +88,19 @@ int main (int ac, char **av)
 {
   WorkerPool    *pool;
   int           pid_fd;
-/*
+
   if (ac < 2)
   {
     cout <<  av[0]  << " : You must specify a config file" << endl;
-
     return (1);
   }
-  */
-  if (ac > 1)
   HttpdConf::init(av[1]);
 
-//  pid_fd = daemonize();
-
+  //pid_fd = daemonize();
   pool = new WorkerPool(HttpdConf::get()
                         .get_key_int("/zia/intern/workers"));
   pool->main_loop();
-  delete pool;
+//  delete pool;
   kill_pid_file(pid_fd);
   
 }
