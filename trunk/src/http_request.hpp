@@ -71,10 +71,10 @@ public:
    * you must stop feeding the request, an error code will be sent back.
    */
   int			m_chunk_type; 
+  HttpMap		m_http_map;
 private:
   enum 			chunk_type { TYPE_HEADER, TYPE_MAP, TYPE_DATA };
   std::string		m_data;
-  HttpMap		m_http_map;
   // Internals
   unsigned int          m_return_count;
 };

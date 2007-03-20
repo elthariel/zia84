@@ -116,8 +116,27 @@ void                    Worker::main_loop()
 
 void                    Worker::request_entry(Socket &a_socket)
 {
-  // FIXME process the request.
-  cout << "A worker received a request" << endl;
+ HttpRequest	httpreq(a_socket);
+
+ //g bien recus
+// httpreq.HttpTest();
+ 
+ if (!httpreq.m_http_map["method"].compare("GET"))
+ {
+/*   if parse_url(m_http_map[method]) == url
+   {
+    a_socket << file;
+    }  
+   else*/
+   cout << "file path:"  << httpreq.m_http_map[httpreq.m_http_map["method"]] << " ---endpath"  << endl;
+  /* FilePath sa prend un filepath struc  de std string &path*/
+    cout << "Sending file" << endl;
+    FilePath	file;
+
+    file.Path = "../www/index.html";
+    a_socket << file; 
+ }
+
 }
 
 
