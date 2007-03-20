@@ -7,8 +7,8 @@
   </network>
   <server>
     <name>localhost</name>
-    <root>/var/www</root>
-    <cgi>/var/www/cgi-bin</cgi>
+    <root>../www</root>
+    <cgi>../www/cgi-bin</cgi>
   </server>
   <intern>
     <workers>20</workers>

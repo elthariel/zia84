@@ -96,11 +96,11 @@ int main (int ac, char **av)
   }
   HttpdConf::init(av[1]);
 
-  //pid_fd = daemonize();
+  pid_fd = daemonize();
   pool = new WorkerPool(HttpdConf::get()
                         .get_key_int("/zia/intern/workers"));
   pool->main_loop();
-//  delete pool;
+  delete pool;
   kill_pid_file(pid_fd);
   
 }
