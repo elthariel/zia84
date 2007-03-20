@@ -88,13 +88,15 @@ int main (int ac, char **av)
 {
   WorkerPool    *pool;
   int           pid_fd;
-
+/*
   if (ac < 2)
   {
     cout <<  av[0]  << " : You must specify a config file" << endl;
 
     return (1);
   }
+  */
+  if (ac > 1)
   HttpdConf::init(av[1]);
 
 //  pid_fd = daemonize();
