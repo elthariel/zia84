@@ -20,13 +20,14 @@ const char * HttpRequest::m_method [] =  { "OPTITONS" , "GET", "HEAD", "POST", "
 void HttpRequest::HttpTest()
 {
  HttpMap::iterator	i;
- cout << "chunk type: " << m_chunk_type << endl; 
-  cout << "MAP:" << endl;
+
+  cerr << "chunk type: " << m_chunk_type << endl; 
+  cerr << "MAP:" << endl;
   for (i = m_http_map.begin(); i != m_http_map.end(); i++)
     {
-      cout << (*i).first << ":" << (*i).second <<  endl;
+      cerr << (*i).first << ":" << (*i).second <<  endl;
     }
-  cout << "DATA:" << endl << 	m_data << endl;
+  cerr << "DATA:" << endl << 	m_data << endl;
 }
 
 
@@ -46,7 +47,7 @@ HttpRequest::HttpRequest(char *filename)
 
 HttpRequest::HttpRequest(Socket &sock)
 {
-  string2 	buff;
+  string2	buff;
 
   sock >> buff;
   m_chunk_type = TYPE_HEADER;
@@ -85,7 +86,7 @@ int	HttpRequest::HttpSetHeader(string2 chunk)
 	return (0);
   
   m_http_map["method"] = header_method;
-  //XXX check method (HTTP 1.1)
+  //XXX check type get (et le reste apres si non renvoie 0)
   m_http_map[header_method] = chunk;
   m_chunk_type = TYPE_MAP;
   return (1);

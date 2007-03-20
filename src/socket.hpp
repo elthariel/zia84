@@ -26,7 +26,7 @@
 
 struct FilePath
 {
- std::string	&Path;
+ std::string	Path;
 };
 
 

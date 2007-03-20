@@ -18,6 +18,7 @@
 #include <sys/select.h>
 #include "thread.hpp"
 #include "socket.hpp"
+#include "http_request.hpp"
 
 class TaskList
 {

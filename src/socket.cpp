@@ -16,18 +16,20 @@ Socket::Socket()
 {
 }
 
-Socket::Socket(int)
+Socket::Socket(int fd)
 {
+  m_fd = fd;
 }
 
 Socket::~Socket()
 {
+  close(m_fd);
 }
 
 void	Socket::SocketWriteAll(int fd, const char *addr, int size)
 {
   int	n = 0;
-
+  
   do
   {
   n = write(m_fd, addr + n, size - n);
@@ -79,9 +81,9 @@ Socket        &Socket::operator<<(FilePath &file)
 
 
   if ((fd = open(file.Path.c_str(), 0400)) == -1)
-	/*XXX 404 */ cerr << "Can't	open file" << endl;
+	cerr << "Can't	open file" << endl;
   fstat(fd, &st);
-  if ((addr = mmap(0, st.st_size, PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS, fd, 0)) == (void *)-1)
+  if ((addr = mmap(0, st.st_size, PROT_READ, MAP_SHARED, fd, 0)) == (void *)-1)
 	cerr << "Can't	mmap file" << endl;
   SocketWriteAll(m_fd, addr, st.st_size);
 

@@ -28,7 +28,7 @@ int	string2::is_in(char c, string2 list)
 	  return (1);
   return (0);
 }
-
+/*
 int	string2::findtoken(string2 &str, std::string::iterator &istr,  string2 type, string2 delimitor, string2 space, tokenlist &ltl , size_t size)
 {
   int 	ntoken = 0;
@@ -73,7 +73,7 @@ int	string2::findtoken(string2 &str, std::string::iterator &istr,  string2 type,
 
 int string2::tokenize(string2 exp, ...)
 {
- /* form = *c*&t1.*&t1&d1 
+ * form = *c*&t1.*&t1&d1 
   * exp = *$1*$2@.$2@
   * ?
   * ** ds le cas d une etoile
@@ -82,7 +82,7 @@ int string2::tokenize(string2 exp, ...)
   * %space = ' '
   * @renvoie le token
   * mail : *$1@$@.??$1, "09 az AZ" delim "@"
-  */
+  *
   int	ntype = 0;
   int	ndelimitor = 0;
   int	nspace = 0;
@@ -198,7 +198,7 @@ int string2::tokenize(string2 exp, ...)
 	if (!space)
 	{
 	  space[0] = "";
-	}*/
+	}*
 	if (size)
 	{
           if (!findtoken(str, istr, type[ntype], delimitor[ndelimitor], space[nspace], ltl, size))
@@ -231,7 +231,7 @@ int string2::tokenize(string2 exp, ...)
   }
   return (tokenlist);
 }
-
+*/
 void	string2::tolower()
 {
   std::string::iterator i;
