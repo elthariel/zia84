@@ -80,11 +80,11 @@ Socket        &Socket::operator<<(FilePath &file)
   void		*addr;
 
 
-  if ((fd = open(file.Path.c_str(), 0400)) == -1)
-	cerr << "Can't	open file" << endl;
+  if  ((fd = open(file.Path.c_str(), 0400)) == -1)
+    cerr << "Can't open file" << endl;
   fstat(fd, &st);
-  if ((addr = mmap(0, st.st_size, PROT_READ, MAP_SHARED, fd, 0)) == (void *)-1)
-	cerr << "Can't	mmap file" << endl;
+  if ((addr = mmap(0, st.st_size, PROT_READ, MAP_SHARED, fd, 0)) == (void *) -1)
+    cerr << "Can't mmap file" << endl;
   SocketWriteAll(m_fd, addr, st.st_size);
 
   return (*this);

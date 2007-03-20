@@ -19,6 +19,7 @@
 #include "thread.hpp"
 #include "socket.hpp"
 #include "http_request.hpp"
+#include "parsing.hpp"
 
 class TaskList
 {

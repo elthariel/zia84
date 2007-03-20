@@ -30,24 +30,18 @@ bool            TaskList::put(TaskList::Task &t)
 {
   unsigned int  count;
 
-  m_mutex.lock();
   m_tasks.push_back(t);
   count = m_tasks.size();
-  m_mutex.unlock();
   m_event.wake_one();
-  return (count > HttpdConf::get()
-          .get_key_int("/zia/intern/thresold"));
+  return (1);
 }
 
 bool            TaskList::get(TaskList::Task *out_task)
 {
-  m_mutex.lock();
   if (m_tasks.empty())
     {
-      m_mutex.unlock();
       m_event.wait(HttpdConf::get().get_key_int("/zia/intern/wait"));
       m_mutex.lock();
-
       if (!m_tasks.empty())
         {
           *out_task = *(m_tasks.begin());
@@ -62,7 +56,6 @@ bool            TaskList::get(TaskList::Task *out_task)
     {
       *out_task = *m_tasks.begin();
       m_tasks.pop_front();
-      m_mutex.unlock();
       return (true);
     }
 }
@@ -84,7 +77,6 @@ Worker::Worker(TaskList &a_tasks, bool a_highlander)
 
 void                    Worker::operator()()
 {
-  cerr << "A worker was created" << endl;
   main_loop();
 }
 
@@ -98,7 +90,6 @@ void                    Worker::main_loop()
           if (!m_highlander)
             delete this;
         }
-
       switch(t.type)
         {
         case TaskList::TaskRequest:
@@ -118,22 +109,21 @@ void                    Worker::request_entry(Socket &a_socket)
 {
  HttpRequest	httpreq(a_socket);
 
- //g bien recus
-// httpreq.HttpTest();
- 
  if (!httpreq.m_http_map["method"].compare("GET"))
  {
-/*   if parse_url(m_http_map[method]) == url
-   {
-    a_socket << file;
-    }  
-   else*/
-   cout << "file path:"  << httpreq.m_http_map[httpreq.m_http_map["method"]] << " ---endpath"  << endl;
-  /* FilePath sa prend un filepath struc  de std string &path*/
-    cout << "Sending file" << endl;
-    FilePath	file;
-
+   FilePath	file;
+  
+   httpreq.HttpFile(file);
+/*   std::string chunk;
+   string2  chunk2;
+    chunk = httpreq.m_http_map[httpreq.m_http_map["method"]]; 
+  chunk2.append(chunk);
+  chunk2.split(" ", chunk);
+    file.Path += chunk;
+    //mettre le path parser xml au lieu de sa
+   if (!file.Path.compare("../www/"))
     file.Path = "../www/index.html";
+  */  
     a_socket << file; 
  }
 
@@ -147,8 +137,8 @@ void                    Worker::request_entry(Socket &a_socket)
 WorkerPool::WorkerPool(unsigned int a_worker_count)
   : m_worker_count(a_worker_count)
 {
-  unsigned int  i;
-  Worker        *tmp;
+  //unsigned int  i;
+  //Worker        *tmp;
 
   sockaddr_in           addr;
   hostent               *host;
@@ -161,7 +151,7 @@ WorkerPool::WorkerPool(unsigned int a_worker_count)
     cerr << "Unable to create socket" << strerror(errno) << endl;
   addr.sin_family = AF_INET;
   addr.sin_port = htons(HttpdConf::get().get_key_int("/zia/network/port"));
-  host = gethostbyname("117.0.0.1");
+  host = gethostbyname("127.0.0.1");
   addr.sin_addr.s_addr = INADDR_ANY;
   if (bind (m_main_socket, (sockaddr *)&addr,
             sizeof(addr)) != 0)
@@ -170,14 +160,14 @@ WorkerPool::WorkerPool(unsigned int a_worker_count)
   if (listen(m_main_socket, 30) == -1)
     cerr << "Unable to enter listening state : " << strerror(errno)
          << endl;
-
   /*
    * Creating workers
    */
+  /* 
   for (i = 0; i < a_worker_count; i++)
     {
       tmp = new Worker(m_tasks, true); // true = Highlanders.
-    }
+    }*/
 }
 
 void                    WorkerPool::main_loop()
@@ -205,7 +195,9 @@ void                    WorkerPool::main_loop()
           t.type = TaskList::TaskRequest;
           t.content.sock = tmp;
           if (m_tasks.put(t))
+	  {
             new Worker(m_tasks, false);
+	  }
         }
     }
 }

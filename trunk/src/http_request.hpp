@@ -52,6 +52,7 @@ public:
   HttpRequest(char *filename);
   ~HttpRequest();
 
+  void	HttpFile(FilePath &file);
   int	HttpParseChunk(string2 &buff);
   int	HttpSetHeader(string2 chunk);
   int	HttpSetMap(string2 chunk);
