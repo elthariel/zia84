@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 12:18:15 2007 Nahlwe
-// Last update Fri Mar 16 11:32:46 2007 Nahlwe
+// Last update Tue Apr 17 01:54:14 2007 Nahlwe
 //
 
 #include <iostream>
@@ -30,17 +30,22 @@ bool            TaskList::put(TaskList::Task &t)
 {
   unsigned int  count;
 
+  m_mutex.lock();
   m_tasks.push_back(t);
   count = m_tasks.size();
+  m_mutex.unlock();
   m_event.wake_one();
-  return (1);
+  return (count);
 }
 
 bool            TaskList::get(TaskList::Task *out_task)
 {
+  m_mutex.lock();
   if (m_tasks.empty())
     {
+      m_mutex.unlock();
       m_event.wait(HttpdConf::get().get_key_int("/zia/intern/wait"));
+      //m_event.wait();
       m_mutex.lock();
       if (!m_tasks.empty())
         {
@@ -50,12 +55,16 @@ bool            TaskList::get(TaskList::Task *out_task)
           return (true);
         }
       else
-        return false;
+        {
+          m_mutex.unlock();
+          return false;
+        }
     }
   else
     {
       *out_task = *m_tasks.begin();
       m_tasks.pop_front();
+      m_mutex.unlock();
       return (true);
     }
 }
@@ -88,7 +97,11 @@ void                    Worker::main_loop()
       while (!m_tasks.get(&t))
         {
           if (!m_highlander)
-            delete this;
+            {
+              cerr << "A worker commits suicide" << endl;
+              delete this;
+              return;
+            }
         }
       switch(t.type)
         {
@@ -112,19 +125,19 @@ void                    Worker::request_entry(Socket &a_socket)
  if (!httpreq.m_http_map["method"].compare("GET"))
  {
    FilePath	file;
-  
+
    httpreq.HttpFile(file);
 /*   std::string chunk;
    string2  chunk2;
-    chunk = httpreq.m_http_map[httpreq.m_http_map["method"]]; 
+    chunk = httpreq.m_http_map[httpreq.m_http_map["method"]];
   chunk2.append(chunk);
   chunk2.split(" ", chunk);
     file.Path += chunk;
     //mettre le path parser xml au lieu de sa
    if (!file.Path.compare("../www/"))
     file.Path = "../www/index.html";
-  */  
-    a_socket << file; 
+  */
+    a_socket << file;
  }
 
 }
@@ -137,8 +150,8 @@ void                    Worker::request_entry(Socket &a_socket)
 WorkerPool::WorkerPool(unsigned int a_worker_count)
   : m_worker_count(a_worker_count)
 {
-  //unsigned int  i;
-  //Worker        *tmp;
+  unsigned int  i;
+  Worker        *tmp;
 
   sockaddr_in           addr;
   hostent               *host;
@@ -163,11 +176,11 @@ WorkerPool::WorkerPool(unsigned int a_worker_count)
   /*
    * Creating workers
    */
-  /* 
+
   for (i = 0; i < a_worker_count; i++)
     {
       tmp = new Worker(m_tasks, true); // true = Highlanders.
-    }*/
+    }
 }
 
 void                    WorkerPool::main_loop()
@@ -194,10 +207,11 @@ void                    WorkerPool::main_loop()
           tmp = new Socket(new_fd);
           t.type = TaskList::TaskRequest;
           t.content.sock = tmp;
-          if (m_tasks.put(t))
-	  {
-            new Worker(m_tasks, false);
-	  }
+          if (m_tasks.put(t) >
+              HttpdConf::get().get_key_int("/zia/intern/thresold"))
+            {
+              new Worker(m_tasks, false);
+            }
         }
     }
 }

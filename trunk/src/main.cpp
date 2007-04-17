@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 16:04:18 2007 Nahlwe
-// Last update Fri Mar 16 22:09:43 2007 Nahlwe
+// Last update Tue Apr 17 00:45:12 2007 Nahlwe
 //
 
 #include <iostream>
@@ -96,11 +96,11 @@ int main (int ac, char **av)
   }
   HttpdConf::init(av[1]);
 
-  pid_fd = daemonize();
+  //pid_fd = daemonize();
   pool = new WorkerPool(HttpdConf::get()
                         .get_key_int("/zia/intern/workers"));
   pool->main_loop();
   delete pool;
-  kill_pid_file(pid_fd);
-  
+  kill_pid_file(0);
+
 }
