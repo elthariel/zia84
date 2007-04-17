@@ -5,7 +5,7 @@
 ## Login   <elthariel@lse.epita.fr>
 ##
 ## Started on  Fri Feb 16 04:43:47 2007 Nahlwe
-## Last update Fri Mar 16 07:38:23 2007 Nahlwe
+## Last update Tue Apr 17 02:03:40 2007 Nahlwe
 ##
 
 noinst_HEADERS = foncteurs.hpp help.hpp \
@@ -25,14 +25,15 @@ zia_SOURCES = foncteurs.cpp help.cpp thread.cpp \
 
 # Don't forget that the order of the libraries _does_ matter
 zia_CPPFLAGS = -g -Wall -pthread $(LIBXML_CFLAGS)
-zia_LDADD = -lpthread $(LIBXML_LIBS) #dir1/libdir1.a
+zia_LDADD = -lpthread $(LIBXML_LIBS) -lrt #dir1/libdir1.a
 
 ##########
 # Checks #
 ##########
 
 # --> make check
-#TESTS = test-1.sh test-2
+#TESTS = test-1.sh test-
+#TESTS = zia_test.sh
 #check_PROGRAMS = test-2
 #test_2_SOURCES = main_for_tests.cc
 

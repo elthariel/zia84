@@ -5,24 +5,23 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 08:04:50 2007 Nahlwe
-// Last update Fri Mar 16 07:23:52 2007 Nahlwe
+// Last update Tue Apr 17 00:49:02 2007 Nahlwe
 //
 
 #ifndef THREAD_HPP_
 # define THREAD_HPP_
 
 #include <pthread.h>
+#include <semaphore.h>
 #include <unistd.h>
 #include "foncteurs.hpp"
 #include "help.hpp"
 
-/*
- * Still lacks of a semaphore class
- * for productor_/consommatorS.
- */
-
 void            *run_thread(void *arg);
 
+/** Thread class, inherit to create your own thread
+ *
+ */
 class Thread : public NonCopyable
 {
 public:
@@ -72,6 +71,23 @@ public:
 
 private:
   pthread_cond_t        m_event;
+};
+
+class Semaphore
+{
+public:
+  Semaphore(unsigned int a_init_value = 0);
+  ~Semaphore();
+
+  Semaphore     &operator++(); //Non-blocking.
+  Semaphore     &operator--(); //Blocking.
+  Semaphore     &operator+=(unsigned int a_added); //Non-blocking.
+  Semaphore     &operator-=(unsigned int a_removed); //Blocking.
+  unsigned int  get_value();
+
+private:
+  sem_t         *m_sem;
+
 };
 
 #endif
