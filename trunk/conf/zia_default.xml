@@ -11,7 +11,7 @@
     <cgi>../www/cgi-bin</cgi>
   </server>
   <intern>
-    <workers>20</workers>
+    <workers>10</workers>
     <thresold>8</thresold>
     <wait>30</wait>
   </intern>
