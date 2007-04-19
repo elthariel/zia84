@@ -56,7 +56,7 @@ HttpRequest::HttpRequest(Socket &sock)
 
 HttpRequest::~HttpRequest()
 {
-
+  
 }
 
 void	HttpRequest::HttpFile(FilePath &file)
