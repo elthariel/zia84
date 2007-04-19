@@ -28,8 +28,8 @@ int	string2::is_in(char c, string2 list)
 	  return (1);
   return (0);
 }
-/*
-int	string2::findtoken(string2 &str, std::string::iterator &istr,  string2 type, string2 delimitor, string2 space, tokenlist &ltl , size_t size)
+
+int	string2::findtoken(string2 &str, std::string::iterator &istr,  string2 type, string2 delimitor, string2 space, listtokenlist ltl , unsigned int size)
 {
   int 	ntoken = 0;
   string2  ctoken;
@@ -69,11 +69,11 @@ int	string2::findtoken(string2 &str, std::string::iterator &istr,  string2 type,
     
   return (ntoken);
 }
-
-
-int string2::tokenize(string2 exp, ...)
+/*
+string2::listtokenlist	string2::tokenize(string2 exp, ...)
+//typedef   std::vector<tokenlist *> &listtokenlist; 
 {
- * form = *c*&t1.*&t1&d1 
+/* * form = *c*&t1.*&t1&d1 
   * exp = *$1*$2@.$2@
   * ?
   * ** ds le cas d une etoile
@@ -82,7 +82,7 @@ int string2::tokenize(string2 exp, ...)
   * %space = ' '
   * @renvoie le token
   * mail : *$1@$@.??$1, "09 az AZ" delim "@"
-  *
+  **
   int	ntype = 0;
   int	ndelimitor = 0;
   int	nspace = 0;
@@ -90,13 +90,14 @@ int string2::tokenize(string2 exp, ...)
   tokenlist delimitor;
   tokenlist space;
   va_list arg;
-  string2 str = this;
-  string2::iterator istr;
-  string2::iterator iexp;
+  string2 str = *this;
+  iterator istr;
+  iterator iexp;
+  listtokenlist *ltl;
   ltl = new listtokenlist; 
 
 
-  va_start(exp, arg);
+  va_start(arg, exp);
   for (iexp = exp.begin(); iexp != exp.end();)
   {
     if (*iexp == '*')
@@ -105,26 +106,29 @@ int string2::tokenize(string2 exp, ...)
       if (*iexp == '$')
       {
         iexp++;
-  	tmplist = new listtokenlist; 
+	listtokenlist tmplist;
+	
 	if (findtoken(exp, iexp, "0123456789", "", "", tmplist));
-          if (atoi(ltl[0][0]) > ntype)
-      	    ntype = atoi(ltl[0]0[]);
-	delete ltl;
+          if (atoi(tmplist[0][0][0][0].c_str()) > ntype)
+      	    ntype = atoi(tmplist[0][0][0]);
+	delete tmplist;
       }  
       else if (*iexp == '&') 
       {
+	listtokenlist tmplist;
   	tmplist = new listtokenlist; 
 	if (findtoken(exp, iexp, "0123456789", "", "", tmplist));
           if (atoi(ltl[0][0]) > ndelimitor)
-      	    ndelimitor = atoi(ltl[0][0]);
-	delete ltl;
+      	    ndelimitor = atoi(tmplist[0][0]);
+	delete tmplist;
       }
       else if (*iexp == '%')
       {
-        tmplist = new tmplist;
+	listtokenlist tmplist;
+  	tmplist = new listtokenlist; 
 	if (findtoken(exp, iexp, "0123456789", "", "", tmplist));
-          if (atoi(ltl[0][0]) > nspace)
-      	    nspace = atoi(ltl[0][0]);
+          if (atoi(tmplist[0][0]) > nspace)
+      	    nspace = atoi(tmplist[0][0]);
 	delete tmplist;    
       }
       else
@@ -157,17 +161,21 @@ int string2::tokenize(string2 exp, ...)
         }
         if (*(iexp + 1)  == '$')
         {
-	  tmplist = new tmplist;
+  	  tokenlist &tmplist;
+	 
+	  tmplist = new tokenlist;
 	  iexp++;
  	  if (findtoken(exp, iexp, "0123456789", "", "", tmplist));
-            ntype = atoi(token);
-	  iexp += token.length();
+            ntype = atoi(tmplist[0].c_str());
+	  iexp += tmplist[0].length();
 	  delete tmplist;
         }
         if (*(iexp + 1) == '&')
         {
+	  tokenlist tmplist; 
+
 	  tmplist = new tmplist;
-	  iexpp++;
+	  iexp++;
  	  if (findtoken(exp, iexp, "0123456789", "", "", tmplist));
             ndelimitor = atoi(token);
 	  iexp += token.length();  
@@ -175,8 +183,10 @@ int string2::tokenize(string2 exp, ...)
         }
         if (*(iexp + 1) == '%')
         {
+          tokenlist tmplist;
+
 	  tmplist = new tmplist;
-	  iexpp++;
+	  iexp++;
  	  if (findtoken(exp, iexp, "0123456789", "", "", tmplist));
             nspace = atoi(token);
 	  iexp += token.length();  
@@ -198,8 +208,8 @@ int string2::tokenize(string2 exp, ...)
 	if (!space)
 	{
 	  space[0] = "";
-	}*
-	if (size)
+	}*/
+/*	if (size)
 	{
           if (!findtoken(str, istr, type[ntype], delimitor[ndelimitor], space[nspace], ltl, size))
     	    return (0);
