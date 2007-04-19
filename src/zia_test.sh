@@ -23,5 +23,5 @@
 
 while (true)
  do
- netcat localhost 8080 < test ;
+ nc localhost 8080 < test ;
  done
