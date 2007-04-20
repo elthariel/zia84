@@ -35,6 +35,9 @@ dnl Check for perl && perl embedding capabilities
 AC_PROG_PERL
 AC_EMBED_PERL
 
+AC_SUBST(PERL_CCOPTS)
+AC_SUBST(PERL_LDOPTS)
+
 dnl AB_PERL_CHECK(5.8.8)
 dnl AB_PROG_PERL
 dnl AB_CHECK_EMBEDDED_PERL
@@ -47,4 +50,5 @@ AC_OUTPUT([
 Makefile
 src/Makefile
 conf/Makefile
+src/psp/Makefile
 ])
