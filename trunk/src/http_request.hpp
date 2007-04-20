@@ -10,6 +10,7 @@
 #ifndef __HTTP_REQUEST__
 #define __HTTP_REQUEST__
 #include <string>
+#include <iostream>
 #include "conf.hpp"
 #include "socket.hpp"
 #include "parsing.hpp"
@@ -60,6 +61,7 @@ public:
   int	HttpSetChunk(string2 &chunk);
   void	HttpFill(string2 buff);
   void  HttpTest();
+  int	HttpCheckRequest();
 
   static  const char *m_method[];
   typedef __gnu_cxx::hash_map<std::string,
