@@ -31,6 +31,15 @@ AC_SUBST(LIBXML_CFLAGS)
 AC_SUBST(LIBXML_LIBS)
 
 
+dnl Check for perl && perl embedding capabilities
+AC_PROG_PERL
+AC_EMBED_PERL
+
+dnl AB_PERL_CHECK(5.8.8)
+dnl AB_PROG_PERL
+dnl AB_CHECK_EMBEDDED_PERL
+
+
 dnl Autoheader things :p
 
 
