@@ -73,7 +73,6 @@ void	HttpRequest::HttpFile(FilePath &file)
    file.Path += chunk + "index.html";
   else
    file.Path += "/" + chunk;
-  cout << "file path after split" << file.Path << endl;
   if (stat(file.Path.c_str(), &st)  == -1)
   {
   file.Path = HttpdConf::get().get_key("/zia/server/root")->c_str();
