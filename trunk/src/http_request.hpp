@@ -11,6 +11,7 @@
 #define __HTTP_REQUEST__
 #include <string>
 #include <iostream>
+#include <ctime>
 #include "conf.hpp"
 #include "socket.hpp"
 #include "parsing.hpp"
@@ -62,6 +63,7 @@ public:
   void	HttpFill(string2 buff);
   void  HttpTest();
   int	HttpCheckRequest();
+  std::string  HttpCreateHeader();
 
   static  const char *m_method[];
   typedef __gnu_cxx::hash_map<std::string,
