@@ -1,14 +1,9 @@
 ##
-## Makefile.am for zia in /home/elthariel/code/httpd
+## Makefile.am for zia in /home/elthariel/code/httpd/src
 ##
 ## Made by Nahlwe
 ## Login   <elthariel@lse.epita.fr>
 ##
-## Started on  Fri Feb 16 04:43:47 2007 Nahlwe
-Last update Thu Apr 19 19:39:09 2007 eltha
-##
-
-SUBDIRS = psp
 
 noinst_HEADERS = foncteurs.hpp help.hpp \
 	thread.hpp worker.hpp main.hpp conf.hpp http_request.hpp socket.hpp dired.hpp \

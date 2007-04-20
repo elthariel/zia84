@@ -1,0 +1,37 @@
+##
+## Makefile.am for zia in /home/elthariel/code/httpd/src/psp
+##
+## Made by Nahlwe
+## Login   <elthariel@lse.epita.fr>
+##
+
+noinst_HEADERS =
+
+bin_PROGRAMS = mod_psp.so
+mod_psp_so_SOURCES = test.cpp
+
+mod_psp_so_CPPFLAGS = -g -Wall -pthread $(PERL_CCOPTS)
+mod_psp_so_LDADD = -lpthread $(PERL_LDOPTS)
+mod_psp_so_LDFLAGS = -shared
+
+
+##########
+# Checks #
+##########
+
+# --> make check
+#TESTS = test-1.sh test-
+#TESTS = zia_test.sh
+#check_PROGRAMS = test-2
+#test_2_SOURCES = main_for_tests.cc
+
+
+####################
+# Additional Rules #
+####################
+
+re : clean all
+
+c : clean
+
+a : clean
