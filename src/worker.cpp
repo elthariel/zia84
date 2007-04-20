@@ -123,6 +123,7 @@ void                    Worker::request_entry(Socket &a_socket)
  HttpRequest	httpreq(a_socket);
 
 
+
  if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("HEAD"))
  {
    //SI C UN HEAD ENVOYER QUE LE HEADER, peut etre pas mettre la mais avant car on envoie tjrs le header ds tous les type de post ? meme avant le cgi ? 
@@ -133,7 +134,6 @@ void                    Worker::request_entry(Socket &a_socket)
    {
      FilePath	file;
 
-   
      httpreq.HttpFile(file);
      a_socket << file;
    }
