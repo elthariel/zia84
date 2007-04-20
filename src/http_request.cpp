@@ -30,7 +30,6 @@ void HttpRequest::HttpTest()
   cerr << "DATA:" << endl << 	m_data << endl;
 }
 
-
 HttpRequest::HttpRequest(char *filename)
 {
   string2 	buff;
@@ -45,7 +44,6 @@ HttpRequest::HttpRequest(char *filename)
   HttpFill(buff);
 }
 
-
 HttpRequest::HttpRequest(Socket &sock)
 {
   string2	buff;
@@ -53,9 +51,26 @@ HttpRequest::HttpRequest(Socket &sock)
 /* ici verifier s il lis bien le buff ou sa coupe avant petre pour sa coupe avant le \ */
   sock >> buff;
   m_chunk_type = TYPE_HEADER;
+  m_http_map["Server"] = "zia";
+  m_http_map["Content-Type"] = "text/html"; 	//XXX cahnger le type au bon moment
+  m_http_map["Content-Length"] = "0";		//XXX changer la value au bon moment
+  m_http_map["Location"] = "http:/127.0.0.1/";	//XXX add le path au bon moment
   HttpFill(buff);
   // ici ou set l erreur avec le systeme d erreur si non set une variable d'env
   HttpCheckRequest();
+  
+  //XXX TEST ONLY PAS APPELLER LA MAIS A LA FIN POUR AVOIR LA SIZE 
+  HttpCreateHeader();
+
+   //http verifie file 
+   //http create header
+  
+  
+
+ // si httpcheckrequest est bon
+ // on peut vrefier le nom de fichier ? 
+ // on peut creer le header par default
+   
 
   /*peut etre si le get est bon creer directement le nom de file 
   et le type 
@@ -71,6 +86,36 @@ HttpRequest::~HttpRequest()
   
 }
 
+string	HttpRequest::HttpCreateHeader()
+{
+  //creer le buff et le renvoie il fo connaitre la taille de ce qui viens apres pour avoir l header
+  //il fo content-length donc creer apres avoir deja le buff
+  //
+  //HTTP/1.1 200 OK --> a generer avant
+  //
+  //Cache-Control: private
+  //Content-Type: text/html; charset=UTF-8
+  //Set-Cookie: PREF=ID=4a68c46e3e4d2f4f:TM=1177046482:LM=1177046482:S=ZBTX_bpZgu1FzPr6; expires=Sun, 17-Jan-2038 19:14:07 GMT; path=/; domain=.google.com
+  //Content-Encoding: gzip
+  //Server: GWS/2.1
+  //Content-Length: 1470 -----> la taille
+  //Date: Fri, 20 Apr 2007 05:21:22 GMT
+  //
+  string2	header;
+
+  header += "Location: " + m_http_map["Location"] + "\r\n";
+  header += "Server: " + m_http_map["Server"] + "\r\n";
+  header += "Content-type: " + m_http_map["Content-type"] + "\r\n";
+  header += "Content-length: " + m_http_map["Content-Length"] + "\r\n";
+  header += "Date: ";  
+  header.itime();
+  header += "\r\n";
+
+  cout << "HEADER\n" << header << endl;
+
+  return (header);
+}
+
 int	HttpRequest::HttpCheckRequest(void)
 {
   string::size_type	pos;
@@ -78,10 +123,9 @@ int	HttpRequest::HttpCheckRequest(void)
   string2	subchunk;
   string2	chunk2;
 /*
- *
  * Parse pour savoir si le httprequest est bien generer si non renvoie bad request
- *
- * */
+ * 
+ */
 
   chunk = m_http_map["method"];
   chunk2.append(chunk);

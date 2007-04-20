@@ -73,7 +73,7 @@ int	string2::findtoken(string2 &str, std::string::iterator &istr,  string2 type,
 string2::listtokenlist	string2::tokenize(string2 exp, ...)
 //typedef   std::vector<tokenlist *> &listtokenlist; 
 {
-/* * form = *c*&t1.*&t1&d1 
+* * form = *c*&t1.*&t1&d1 
   * exp = *$1*$2@.$2@
   * ?
   * ** ds le cas d une etoile
@@ -196,7 +196,7 @@ string2::listtokenlist	string2::tokenize(string2 exp, ...)
         {
 	  iexp++;
           addtolist = 1;
-        }/* par default a "" ??
+        }* par default a "" ??
         if (!ntype) 
         {
 	  type[0] = "";
@@ -271,6 +271,28 @@ int	string2::split(std::string token, std::string &chunk)
   *this  = substr(chunk.length() + token.length(),  length());
 
   return (1);
+}
+
+void	string2::itime(void)
+{
+  time_t	tdate;
+  string2	date;
+  string2	cday;
+  string2	month;
+  string2	day;
+  string2	hours;
+  string2	years;
+
+  tdate = time(0);
+  date.append(ctime(&tdate));
+  date.split(" ", cday);
+  date.split(" ", month);
+  date.split(" ", day);
+  date.split(" ", hours);
+  date.strip("\n");
+  date = cday + ", " + day + " " + month + " " + date + " " + hours + " " + "GMT";
+
+  *this += date;
 }
 
 void	string2::strip(std::string token)
