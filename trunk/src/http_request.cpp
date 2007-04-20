@@ -34,9 +34,9 @@ void HttpRequest::HttpTest()
 HttpRequest::HttpRequest(char *filename)
 {
   string2 	buff;
-  char bu[4096];
-  int n;
-  int fd  = open(filename, O_RDONLY, 0444);
+  char 	bu[4096];
+  int 	n;
+  int 	fd  = open(filename, O_RDONLY, 0444);
 
   n  = read(fd, bu, 4096);
   bu[n] = 0;
@@ -88,8 +88,8 @@ int	HttpRequest::HttpParseChunk(string2 &buff)
        return (0);
   if (m_chunk_type != TYPE_DATA)
   {
-    if (!buff.split("\r\n", chunk))
-  	return (0);
+    if (!buff.split("\n", chunk))
+  	return (HttpSetChunk(buff));
    return (HttpSetChunk(chunk));
   }
   return (HttpSetChunk(buff));
@@ -103,7 +103,7 @@ int	HttpRequest::HttpSetHeader(string2 chunk)
   if (!chunk.split( " ", header_method))
 	return (0);
  
- if (!chunk.is_in_list(m_method))
+  if (!chunk.is_in_list(m_method))
 	return (0);
   
   m_http_map["method"] = header_method;
