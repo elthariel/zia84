@@ -55,10 +55,7 @@ HttpRequest::HttpRequest(Socket &sock)
   m_chunk_type = TYPE_HEADER;
   HttpFill(buff);
   // ici ou set l erreur avec le systeme d erreur si non set une variable d'env
-  if (HttpCheckRequest())
-    cout << "request parsing ok" << endl;
-  else 
-    cout << "request parsing bad" << endl;
+  HttpCheckRequest();
 
   /*peut etre si le get est bon creer directement le nom de file 
   et le type 
@@ -119,8 +116,6 @@ void	HttpRequest::HttpFile(FilePath &file)
   /* ici on a deja checker que le get est bon normalllement
    * si le fichier est pas bon on peut renvoyer un bad file 
    */
-
-
   file.Path = HttpdConf::get().get_key("/zia/server/root")->c_str();
   chunk = m_http_map[m_http_map["method"]];
   chunk2.append(chunk);
@@ -131,6 +126,7 @@ void	HttpRequest::HttpFile(FilePath &file)
    file.Path += "/" + chunk;
   if (stat(file.Path.c_str(), &st)  == -1)
   {
+  //XXX pas renvoyer le fichier mais construire une reponse bad
   file.Path = HttpdConf::get().get_key("/zia/server/root")->c_str();
   file.Path += "/error.html";
   }
