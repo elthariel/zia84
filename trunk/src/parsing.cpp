@@ -265,7 +265,7 @@ int	string2::is_in_list(const char **list)
 int	string2::split(std::string token, std::string &chunk)
 {
 
-  if (find(token) == npos && find(token) + token.length() >= length())
+  if (find(token) == npos || find(token) + token.length() >= length())
 	return (0);
   chunk = substr(0, find(token));
   *this  = substr(chunk.length() + token.length(),  length());
