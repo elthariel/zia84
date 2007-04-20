@@ -147,7 +147,6 @@ int	HttpRequest::HttpSetChunk(string2 &chunk)
    return (HttpSetMap(chunk));
   if (m_chunk_type == TYPE_DATA)
     return (HttpSetData(chunk));
-
   return (0);
 }
 

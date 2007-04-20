@@ -122,23 +122,27 @@ void                    Worker::request_entry(Socket &a_socket)
 {
  HttpRequest	httpreq(a_socket);
 
- if (!httpreq.m_http_map["method"].compare("GET"))
- {
-   FilePath	file;
 
-   httpreq.HttpFile(file);
-/*   std::string chunk;
-   string2  chunk2;
-    chunk = httpreq.m_http_map[httpreq.m_http_map["method"]];
-  chunk2.append(chunk);
-  chunk2.split(" ", chunk);
-    file.Path += chunk;
-    //mettre le path parser xml au lieu de sa
-   if (!file.Path.compare("../www/"))
-    file.Path = "../www/index.html";
-  */
-    a_socket << file;
- }
+ if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("HEAD"))
+ {
+   //SI C UN HEAD ENVOYER QUE LE HEADER, peut etre pas mettre la mais avant car on envoie tjrs le header ds tous les type de post ? meme avant le cgi ? 
+   //httpreq.HttpHeader(buff);
+   //a_socket << buff;
+
+   if (!httpreq.m_http_map["method"].compare("GET"))
+   {
+     FilePath	file;
+
+   
+     httpreq.HttpFile(file);
+     a_socket << file;
+   }
+}
+ //if PUT | POST -> gerer par le cgi
+ 
+
+ //else for OPTIONS ... TRACE renvoye le truc au client - appache bad request / connect -proxy only / delete a file but not used ...
+ //send bad request 404
 
 }
 
