@@ -5,7 +5,7 @@
 //         <maling_c@lse.epita.fr>
 // 
 // started on    Fri Apr 20 04:37:44 2007   loic
-// last update   Fri Apr 20 05:42:39 2007   loic
+// last update   Fri Apr 20 10:11:45 2007   loic
 //
 
 #ifndef	__PSP_LAUNCHER_H__
@@ -22,21 +22,28 @@ using namespace std;
 class		Bloc
 {
 public:
-  int		pos_bloc_begin;
-  int		pos_bloc_end;
-  int		pos_orig;
-  string	page; // A recup plutot depuis l'heritage...
-  string	bloc_orig;
-  //string	bloc_to_insert  (from interpreter)
+  string	*s_page; // A recup plutot depuis l'heritage...
+  string	*s_out; // crade, modif dans la chaine originele
+  string	s_bloc_code;
+  string	s_bloc_to_insert; // from interpreter
+  int		blocs_count;
 
   Bloc(); //un autre prenant 1 parametre ; la position dans la page du prochain bloc
   ~Bloc();
-  int		case_sensitive_match(char c1, char c2);
   void		find_code_to_replace();
-  int		apply_code();
+  void		apply_code();
+  string	get_bloc_code();
+  bool		parsing_ended();
+protected:
+  int		case_sensitive_match(char c1, char c2);
+  void		shift_counters(int actual_pos, int bloc_found);
 private:
   static const char	*op_begin;
   static const char	*op_end;
+  int			pos_bloc_begin;
+  int			pos_bloc_end;
+  int			pos_orig;
+  bool			parse_ended; // number of bloc found * 2
 };
 
 #endif
