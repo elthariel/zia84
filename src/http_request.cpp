@@ -45,13 +45,25 @@ HttpRequest::HttpRequest(char *filename)
   HttpFill(buff);
 }
 
+
 HttpRequest::HttpRequest(Socket &sock)
 {
   string2	buff;
 
+/* ici verifier s il lis bien le buff ou sa coupe avant petre pour sa coupe avant le \ */
   sock >> buff;
   m_chunk_type = TYPE_HEADER;
   HttpFill(buff);
+  // ici ou set l erreur avec le systeme d erreur si non set une variable d'env
+  HttpCheckRequest();
+    
+  /*peut etre si le get est bon creer directement le nom de file 
+  et le type 
+  mettre des flags ou une fonction qui retourne ce ki fo
+  comme ca ds le worker on check ke les flags si creer le header verifie si pas d erruer si non envoie page error
+  apres check si get ou post ....
+  peut etre gerer l erreur 
+  */
 }
 
 HttpRequest::~HttpRequest()
@@ -59,11 +71,50 @@ HttpRequest::~HttpRequest()
   
 }
 
+int	HttpRequest::HttpCheckRequest(void)
+{
+  string::size_type	pos;
+  string	chunk;
+  string2	subchunk;
+  string2	chunk2;
+
+
+  chunk = m_http_map["method"];
+  chunk2.append(chunk);
+  if (!chunk2.is_in_list(m_method))
+    return (0);
+  chunk = m_http_map[m_http_map["method"]];
+  if ((pos = chunk.rfind("HTTP/")) == string::npos)
+    return (0);
+  chunk2 = chunk.substr(pos, chunk.length());
+  if (!chunk2.split("/", subchunk))
+    return (0);
+  if (subchunk.find("HTTP") == string::npos)
+    return (0);
+  /* plutot checker si c inferrieur a 1.1  suffira pour le moment*/
+  if (chunk2.find("1.1\n") == string::npos)
+    return (0);
+
+ /* check les maps qu'il envoie et gerer les maps a renvoyer
+ */
+
+/*
+  * checker si le fichier est bon ou pas mais aussi checker si y a le HTTP/1.1 avant a la fin de la requete si non elle est pas bonne
+  * si pas bonne envoyer bad request, check error
+  * check le nom de fichier avec HttpFile ou set file ou je c pas koi
+  * si bonne et mauvais nom de fichier envoyer bad file name
+*/
+
+
+  return (1);
+}
+
 void	HttpRequest::HttpFile(FilePath &file)
 {
   std::string chunk;
   string2  chunk2;
   struct   stat st;
+
 
   file.Path = HttpdConf::get().get_key("/zia/server/root")->c_str();
   chunk = m_http_map[m_http_map["method"]];
