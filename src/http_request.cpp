@@ -55,8 +55,11 @@ HttpRequest::HttpRequest(Socket &sock)
   m_chunk_type = TYPE_HEADER;
   HttpFill(buff);
   // ici ou set l erreur avec le systeme d erreur si non set une variable d'env
-  HttpCheckRequest();
-    
+  if (HttpCheckRequest())
+    cout << "request parsing ok" << endl;
+  else 
+    cout << "request parsing bad" << endl;
+
   /*peut etre si le get est bon creer directement le nom de file 
   et le type 
   mettre des flags ou une fonction qui retourne ce ki fo
@@ -77,7 +80,11 @@ int	HttpRequest::HttpCheckRequest(void)
   string	chunk;
   string2	subchunk;
   string2	chunk2;
-
+/*
+ *
+ * Parse pour savoir si le httprequest est bien generer si non renvoie bad request
+ *
+ * */
 
   chunk = m_http_map["method"];
   chunk2.append(chunk);
@@ -91,21 +98,15 @@ int	HttpRequest::HttpCheckRequest(void)
     return (0);
   if (subchunk.find("HTTP") == string::npos)
     return (0);
-  /* plutot checker si c inferrieur a 1.1  suffira pour le moment*/
-  if (chunk2.find("1.1\n") == string::npos)
+  if (chunk2.length() != 3)
+    return (0);
+  if ((pos = chunk2.find("1.1")) == string::npos)
     return (0);
 
- /* check les maps qu'il envoie et gerer les maps a renvoyer
- */
-
-/*
-  * checker si le fichier est bon ou pas mais aussi checker si y a le HTTP/1.1 avant a la fin de la requete si non elle est pas bonne
-  * si pas bonne envoyer bad request, check error
-  * check le nom de fichier avec HttpFile ou set file ou je c pas koi
-  * si bonne et mauvais nom de fichier envoyer bad file name
-*/
-
-
+  /*
+   * check les map du header
+   */
+  
   return (1);
 }
 
@@ -114,6 +115,10 @@ void	HttpRequest::HttpFile(FilePath &file)
   std::string chunk;
   string2  chunk2;
   struct   stat st;
+
+  /* ici on a deja checker que le get est bon normalllement
+   * si le fichier est pas bon on peut renvoyer un bad file 
+   */
 
 
   file.Path = HttpdConf::get().get_key("/zia/server/root")->c_str();
