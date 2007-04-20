@@ -5,8 +5,10 @@
 ## Login   <elthariel@lse.epita.fr>
 ##
 ## Started on  Fri Feb 16 04:43:47 2007 Nahlwe
-## Last update Tue Apr 17 02:03:40 2007 Nahlwe
+Last update Thu Apr 19 19:39:09 2007 eltha
 ##
+
+SUBDIRS = psp
 
 noinst_HEADERS = foncteurs.hpp help.hpp \
 	thread.hpp worker.hpp main.hpp conf.hpp http_request.hpp socket.hpp dired.hpp \
