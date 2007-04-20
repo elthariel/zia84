@@ -66,13 +66,14 @@ void	HttpRequest::HttpFile(FilePath &file)
   struct   stat st;
 
   file.Path = HttpdConf::get().get_key("/zia/server/root")->c_str();
-  chunk = m_http_map[m_http_map["method"]]; 
+  chunk = m_http_map[m_http_map["method"]];
   chunk2.append(chunk);
   chunk2.split(" ", chunk);
   if (!chunk.compare("/"))
    file.Path += chunk + "index.html";
   else
-   file.Path += chunk;
+   file.Path += "/" + chunk;
+  cout << "file path after split" << file.Path << endl;
   if (stat(file.Path.c_str(), &st)  == -1)
   {
   file.Path = HttpdConf::get().get_key("/zia/server/root")->c_str();
@@ -88,7 +89,7 @@ int	HttpRequest::HttpParseChunk(string2 &buff)
        return (0);
   if (m_chunk_type != TYPE_DATA)
   {
-    if (!buff.split("\n", chunk))
+    if (!buff.split("\r\n", chunk))
   	return (HttpSetChunk(buff));
    return (HttpSetChunk(chunk));
   }
@@ -100,7 +101,7 @@ int	HttpRequest::HttpSetHeader(string2 chunk)
 {
   string2	header_method;
 
-  if (!chunk.split( " ", header_method))
+  if (!chunk.split(" ", header_method))
 	return (0);
  
   if (!chunk.is_in_list(m_method))
