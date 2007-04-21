@@ -12,10 +12,15 @@
 #include <string>
 #include <iostream>
 #include <ctime>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <stdio.h>
+#include <unistd.h>
 #include "conf.hpp"
 #include "socket.hpp"
 #include "parsing.hpp"
 
+extern	char **environ;
 /*
 class Uri
 {
@@ -64,6 +69,7 @@ public:
   void  HttpTest();
   int	HttpCheckRequest();
   std::string  HttpCreateHeader();
+  std::string  HttpGetCGI();
 
   static  const char *m_method[];
   typedef __gnu_cxx::hash_map<std::string,

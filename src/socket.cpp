@@ -26,7 +26,7 @@ Socket::~Socket()
   close(m_fd);
 }
 
-void	Socket::SocketWriteAll(int fd, const char *addr, int size)
+void	Socket::SocketWriteAll(const char *addr, int size)
 {
   int	n = 0;
   
@@ -37,7 +37,7 @@ void	Socket::SocketWriteAll(int fd, const char *addr, int size)
 
 }
 
-void	Socket::SocketWriteAll(int fd, void *addr, int size)
+void	Socket::SocketWriteAll(void *addr, int size)
 {
   int	n = 0;
 
@@ -48,7 +48,7 @@ void	Socket::SocketWriteAll(int fd, void *addr, int size)
 
 }
 
-void	Socket::SocketReadAll(int fd, char *addr, int size)
+void	Socket::SocketReadAll(char *addr, int size)
 {
   int	n = 0;
 
@@ -59,7 +59,7 @@ void	Socket::SocketReadAll(int fd, char *addr, int size)
 
 }
 
-void	Socket::SocketReadAll(int fd, std::string &str)
+void	Socket::SocketReadAll(std::string &str)
 {
   int	n;
   char	buff[1024];
@@ -79,30 +79,29 @@ Socket        &Socket::operator<<(FilePath &file)
   struct	stat st;
   void		*addr;
 
-
   if ((fd = open(file.Path.c_str(), 0400)) == -1)
     cerr << "Can't open file" << endl;
   fstat(fd, &st);
   if ((addr = mmap(0, st.st_size, PROT_READ, MAP_SHARED, fd, 0)) == (void *) -1)
     cerr << "Can't mmap file" << endl;
-  SocketWriteAll(m_fd, addr, st.st_size);
+  SocketWriteAll(addr, st.st_size);
   munmap(addr, st.st_size);
   close(fd);
 
   return (*this);
 }
 
-
+/*
 Socket        &Socket::operator<<(std::string &str)
 {
-  SocketWriteAll(m_fd, str.c_str(), str.length());
+  SocketWriteAll(str.c_str(), str.length());
 
   return (*this);
 }
-
+*/
 Socket        &Socket::operator<<(std::string str)
 {
-  SocketWriteAll(m_fd, str.c_str(), str.length());
+  SocketWriteAll(str.c_str(), str.length());
 
   return (*this);
 }
@@ -110,7 +109,7 @@ Socket        &Socket::operator<<(std::string str)
 
 Socket        &Socket::operator>>(std::string &str)
 {
-  SocketReadAll(m_fd, str);
+  SocketReadAll(str);
 
   return (*this);
 }

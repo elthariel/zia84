@@ -14,7 +14,7 @@
 using namespace std;
 
 
-const char * HttpRequest::m_method [] =  { "OPTITONS" , "GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "METHOD" };
+const char * HttpRequest::m_method [] =  { "OPTIONS" , "GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "METHOD", 0 };
 /**/
 /*FOR TEST PURPOSE ONLY */
 void HttpRequest::HttpTest()
@@ -103,6 +103,48 @@ string	HttpRequest::HttpCreateHeader()
   return (header);
 }
 
+
+string	HttpRequest::HttpGetCGI()
+{
+  string	buff;
+  int		pfd[2];
+
+  cout << "GET CGI" << endl;
+  pipe(pfd);
+  setenv("GATEWAY_INTERFACE", "CGI/1.1", 1);
+  setenv("REQUEST_METHOD", m_http_map["Requestmethod"].c_str(), 1);
+  setenv("QUERY_STRING", m_http_map["query_string"].c_str(), 1);
+  if (!m_http_map["method"].compare("POST"))
+    setenv("CONTENT_LENGTH", m_http_map["iscontentlength"].c_str(), 1);
+
+  if (!fork())
+  {
+    if (!m_http_map["method"].compare("POST"))
+      dup2(pfd[0], 0);
+    else 
+      close(pfd[0]);
+    dup2(pfd[1], 1);
+
+    execve(m_http_map["cgi"].c_str(), 0, environ);
+    close(pfd[1]);
+    close(pfd[0]);
+    _exit(1);
+  }
+  else
+  {
+    if (!m_http_map["method"].compare("POST"))
+      write(pfd[1], m_http_map["postarg"].c_str(), m_http_map["postarg"].length());
+    close(pfd[1]);
+    wait(0);
+  
+    Socket cgi_socket(pfd[0]);
+    cgi_socket >> buff;
+    close(pfd[0]);
+  }
+  return (buff);
+}
+
+
 int	HttpRequest::HttpCheckRequest(void)
 {
   string::size_type	pos;
@@ -114,6 +156,7 @@ int	HttpRequest::HttpCheckRequest(void)
  * attention verifie pas test GET wewer / HTTP/1.1 car check juste http a la fin
  *  peut verifier sicuhnk et bien vide tout et manger 
  */
+  cout << "http check request" << endl;
   chunk = m_http_map["method"];
   chunk2.append(chunk);
   if (!chunk2.is_in_list(m_method))
@@ -131,7 +174,7 @@ int	HttpRequest::HttpCheckRequest(void)
    // return (0);
   if ((pos = chunk2.find("1.1")) == string::npos)
     return (0);
-
+ cout << "http check ok " << endl;
 /**
  IF GET OU POST OU TOUT ? -> setfile et check le return
 */
@@ -212,8 +255,9 @@ int	HttpRequest::HttpSetHeader(string2 chunk)
 
   if (!chunk.split(" ", header_method))
 	return (0);
- 
-  if (!chunk.is_in_list(m_method))
+
+  cout << "chunk" << header_method << endl;
+  if (!header_method.is_in_list(m_method))
 	return (0);
   
   m_http_map["method"] = header_method;
