@@ -7,12 +7,19 @@
 
 noinst_HEADERS =
 
-bin_PROGRAMS = mod_psp.so
-mod_psp_so_SOURCES = test.cpp
+bin_PROGRAMS = mod_psp.so perlembed
 
+
+### Final psp modules
+mod_psp_so_SOURCES = test.cpp
 mod_psp_so_CPPFLAGS = -g -Wall -pthread $(PERL_CCOPTS)
 mod_psp_so_LDADD = -lpthread $(PERL_LDOPTS)
 mod_psp_so_LDFLAGS = -shared
+
+perlembed_SOURCES = perlembed.cpp
+perlembed_CPPFLAGS = -g -Wall -pthread $(PERL_CCOPTS)
+perlembed_LDADD = -lpthread $(PERL_LDOPTS)
+
 
 
 ##########
