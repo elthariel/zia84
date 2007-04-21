@@ -120,23 +120,24 @@ void                    Worker::main_loop()
 
 void                    Worker::request_entry(Socket &a_socket)
 {
- HttpRequest	httpreq(a_socket);
- string2	header;
- FilePath	file;
+  HttpRequest	httpreq(a_socket);
+  string2	header;
+  FilePath	file;
 
 // plus propre mettre des flags ds httparse grace a check ou autre pour dire s il faut envoyer
 // juste body head ....
 
   a_socket << "HTTP/1.1 302 Found\r\n";
-  httpreq.m_http_map["Content-Length"] = "0";
-  if (!httpreq.m_http_map["method"].compare("GET")) 
-    httpreq.HttpFile(file);
+  if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("HEAD"))// || POST 
+  
+//si c un .pl -> cgi ? plutot si c un post ou get 
   a_socket << httpreq.HttpCreateHeader();
   if (!httpreq.m_http_map["method"].compare("GET"))
+  {
+    file.Path = httpreq.m_http_map["uri"];
     a_socket << file;
+  }
 }
-
-
 
 /*
  * WorkerPool class,
