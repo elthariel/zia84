@@ -128,26 +128,22 @@ void                    Worker::request_entry(Socket &a_socket)
   if (httpreq.HttpCheckRequest())
   {
     a_socket << "HTTP/1.1 302 Found\r\n";
-    if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
+/*    if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
       if (httpreq.m_http_map["cgi"].compare(""))
       {
         body = httpreq.HttpGetCGI();
       }
-//   if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("HEAD"))// || POST 
-     a_socket << httpreq.HttpCreateHeader();
+  if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("HEAD"))// || POST 
+  */   a_socket << httpreq.HttpCreateHeader();
    if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
    {
-     if (httpreq.m_http_map["uri"].compare(""))
+    /* if (httpreq.m_http_map["cgi"].compare(""))
+	a_socket << body;
+   */  if (httpreq.m_http_map["uri"].compare(""))
      {
       file.Path = httpreq.m_http_map["uri"];
       a_socket << file;
      }
-    if (httpreq.m_http_map["cgi"].compare(""))
-      if (httpreq.m_http_map["cgi"].compare(""))
-      {
-        body = httpreq.HttpGetCGI();
-	a_socket << body;
-      }
   }
  }
 }

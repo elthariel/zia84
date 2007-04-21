@@ -51,9 +51,9 @@ HttpRequest::HttpRequest(Socket &sock)
 /* ici verifier s il lis bien le buff ou sa coupe avant petre pour sa coupe avant le \ */
   sock >> buff;
   m_chunk_type = TYPE_HEADER;
-  m_http_map["Server"] = "zia";
-  m_http_map["Content-Type"] = "text/html"; 	//XXX cahnger le type au bon moment
-  m_http_map["Content-Length"] = "0"; 	//XXX cahnger le type au bon moment
+  m_http_map["server"] = "zia";
+  m_http_map["content-type"] = "text/html"; 	//XXX cahnger le type au bon moment
+  m_http_map["content-length"] = "0"; 	//XXX cahnger le type au bon moment
 //  m_http_map["Location"] = "index.html";	//XXX add le path au bon moment
   HttpFill(buff);
   // ici ou set l erreur avec le systeme d erreur si non set une variable d'env
@@ -92,10 +92,10 @@ string	HttpRequest::HttpCreateHeader()
   string2	header;
 
   //header += "Location: " + m_http_map["Location"] + "\r\n";
-  header += "Server: " + m_http_map["Server"] + "\r\n";
-  header += "Content-Type: " + m_http_map["Content-Type"] + "\r\n";
-  header += "Content-Length: " + m_http_map["Content-Length"] + "\r\n";
-  header += "Date: ";  
+  header += "server: " + m_http_map["server"] + "\r\n";
+  header += "content-type: " + m_http_map["content-type"] + "\r\n";
+  header += "content-length: " + m_http_map["content-length"] + "\r\n";
+  header += "date: ";  
   header.itime();
   header += "\r\n\r\n";
 
@@ -112,10 +112,10 @@ string	HttpRequest::HttpGetCGI()
   cout << "GET CGI" << endl;
   pipe(pfd);
   setenv("GATEWAY_INTERFACE", "CGI/1.1", 1);
-  setenv("REQUEST_METHOD", m_http_map["Requestmethod"].c_str(), 1);
-  setenv("QUERY_STRING", m_http_map["query_string"].c_str(), 1);
+  setenv("REQUEST_METHOD", m_http_map["method"].c_str(), 1);
+  setenv("QUERY_STRING", m_http_map["cgi_arg"].c_str(), 1);
   if (!m_http_map["method"].compare("POST"))
-    setenv("CONTENT_LENGTH", m_http_map["iscontentlength"].c_str(), 1);
+    setenv("CONTENT_LENGTH", m_http_map["content-length"].c_str(), 1);
 
   if (!fork())
   {
@@ -133,7 +133,7 @@ string	HttpRequest::HttpGetCGI()
   else
   {
     if (!m_http_map["method"].compare("POST"))
-      write(pfd[1], m_http_map["postarg"].c_str(), m_http_map["postarg"].length());
+      write(pfd[1], m_data.c_str(), m_data.length());
     close(pfd[1]);
     wait(0);
   
@@ -212,7 +212,7 @@ int	HttpRequest::HttpSetFile(void)
 // set_get_dirlisting
   else
     filepath += chunk;
-  if (!filepath.find(HttpdConf::get().get_key("/zia/server/cgi")->c_str()))
+/*  if (!filepath.find(HttpdConf::get().get_key("/zia/server/cgi")->c_str()))
   {
     string2 path = "";
     string2 arg;
@@ -223,23 +223,32 @@ int	HttpRequest::HttpSetFile(void)
     cout << "arg" << arg << endl;
     cout << "path" << path;   
 
+    m_http_map["cgi"] = path;
+    m_http_map["cgi_arg"] = arg;
     filepath = path;
     }
+    else
+    {
+    cout << "postarg " << m_data << endl;
+    cout << "post size" << m_http_map["content-length"] << endl;
+    m_http_map["cgi"] = filepath;
+    }
   }
-  if (stat(filepath.c_str(), &st)  == -1)
+*/  if (stat(filepath.c_str(), &st)  == -1)
   {
     //XXX pas renvoyer le fichier error mais construire une reponse bad
     filepath = HttpdConf::get().get_key("/zia/server/root")->c_str();
     filepath += "/error.html";
     m_http_map["uri"] = filepath;
-    m_http_map["cgi"] = "";
+  //  m_http_map["cgi"] = "";
   }
+//  else if (!m_http_map["cgi"].compare(""))
   else
   {
       m_http_map["uri"] = filepath;
       chunk2 = "";
       chunk2.itoa(st.st_size);
-      m_http_map["Content-Length"] = chunk2;
+      m_http_map["content-length"] = chunk2;
   } 
   return (0);
 }
