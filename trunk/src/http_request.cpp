@@ -53,7 +53,7 @@ HttpRequest::HttpRequest(Socket &sock)
   m_chunk_type = TYPE_HEADER;
   m_http_map["Server"] = "zia";
   m_http_map["Content-Type"] = "text/html"; 	//XXX cahnger le type au bon moment
-  m_http_map["Content-Length"] = "0";		//XXX changer la value au bon moment
+  m_http_map["Content-Length"] = "0"; 	//XXX cahnger le type au bon moment
 //  m_http_map["Location"] = "index.html";	//XXX add le path au bon moment
   HttpFill(buff);
   // ici ou set l erreur avec le systeme d erreur si non set une variable d'env
@@ -88,25 +88,12 @@ HttpRequest::~HttpRequest()
 
 string	HttpRequest::HttpCreateHeader()
 {
-  //creer le buff et le renvoie il fo connaitre la taille de ce qui viens apres pour avoir l header
-  //il fo content-length donc creer apres avoir deja le buff
-  //
-  //HTTP/1.1 200 OK --> a generer avant
-  //
-  //Cache-Control: private
-  //Content-Type: text/html; charset=UTF-8
-  //Set-Cookie: PREF=ID=4a68c46e3e4d2f4f:TM=1177046482:LM=1177046482:S=ZBTX_bpZgu1FzPr6; expires=Sun, 17-Jan-2038 19:14:07 GMT; path=/; domain=.google.com
-  //Content-Encoding: gzip
-  //Server: GWS/2.1
-  //Content-Length: 1470 -----> la taille
-  //Date: Fri, 20 Apr 2007 05:21:22 GMT
-  //
   string2	header;
 
   header += "Location: " + m_http_map["Location"] + "\r\n";
   header += "Server: " + m_http_map["Server"] + "\r\n";
-  header += "Content-type: " + m_http_map["Content-type"] + "\r\n";
-  header += "Content-length: " + m_http_map["Content-Length"] + "\r\n";
+  header += "Content-Type: " + m_http_map["Content-Type"] + "\r\n";
+  header += "Content-Length: " + m_http_map["Content-Length"] + "\r\n";
   header += "Date: ";  
   header.itime();
   header += "\r\n\r\n";
@@ -123,9 +110,9 @@ int	HttpRequest::HttpCheckRequest(void)
   string2	chunk2;
 /*
  * Parse pour savoir si le httprequest est bien generer si non renvoie bad request
- * 
+ * attention verifie pas test GET wewer / HTTP/1.1 car check juste http a la fin
+ *  peut verifier sicuhnk et bien vide tout et manger 
  */
-
   chunk = m_http_map["method"];
   chunk2.append(chunk);
   if (!chunk2.is_in_list(m_method))
@@ -138,10 +125,16 @@ int	HttpRequest::HttpCheckRequest(void)
     return (0);
   if (subchunk.find("HTTP") == string::npos)
     return (0);
-  if (chunk2.length() != 3)
-    return (0);
+//XXX
+ // if (chunk2.length() != 3)
+   // return (0);
   if ((pos = chunk2.find("1.1")) == string::npos)
     return (0);
+
+/**
+ IF GET OU POST OU TOUT ? -> setfile et check le return
+*/
+  HttpSetFile();
 
   /*
    * check les map du header
@@ -150,37 +143,40 @@ int	HttpRequest::HttpCheckRequest(void)
   return (1);
 }
 
-void	HttpRequest::HttpFile(FilePath &file)
+int	HttpRequest::HttpSetFile(void)
 {
   std::string chunk;
   string2  chunk2;
+  string   filepath;
   struct   stat st;
 
-  /* ici on a deja checker que le get est bon normalllement
-   * si le fichier est pas bon on peut renvoyer un bad file 
+  /* ici le get ou head est bon on attend un nom de fichier
+		sa doit etre check ds check ....
+     ici on regarde si c un fichier executable ? 
+     si c le cas on lexecute 
    */
-  file.Path = HttpdConf::get().get_key("/zia/server/root")->c_str();
+  filepath = HttpdConf::get().get_key("/zia/server/root")->c_str();
   chunk = m_http_map[m_http_map["method"]];
   chunk2.append(chunk);
   chunk2.split(" ", chunk);
   if (!chunk.compare("/"))
-    file.Path += chunk + "index.html";
+    filepath += chunk + "index.html";
   else
-    file.Path += "/" + chunk;
-  if (stat(file.Path.c_str(), &st)  == -1)
+    filepath += "/" + chunk;
+  if (stat(filepath.c_str(), &st)  == -1)
   {
-    //XXX pas renvoyer le fichier mais construire une reponse bad
-    file.Path = HttpdConf::get().get_key("/zia/server/root")->c_str();
-    file.Path += "/error.html";
+    //XXX pas renvoyer le fichier error mais construire une reponse bad
+    filepath = HttpdConf::get().get_key("/zia/server/root")->c_str();
+    filepath += "/error.html";
   }
   else
   {
-//    sprintf(chunk, "%d", st.st_size);
-    
     chunk2 = "";
     chunk2.itoa(st.st_size);
     m_http_map["Content-Length"] = chunk2;
   } 
+  m_http_map["uri"] = filepath;
+  return (0);
 }
 
 int	HttpRequest::HttpParseChunk(string2 &buff)
