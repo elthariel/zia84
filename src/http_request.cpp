@@ -57,8 +57,9 @@ HttpRequest::HttpRequest(Socket &sock)
 //  m_http_map["Location"] = "index.html";	//XXX add le path au bon moment
   HttpFill(buff);
   // ici ou set l erreur avec le systeme d erreur si non set une variable d'env
-  HttpCheckRequest();
-  
+  //HttpCheckRequest() chaint ds le constructeur car si non on fait rient
+     
+
   //XXX TEST ONLY PAS APPELLER LA MAIS A LA FIN POUR AVOIR LA SIZE 
   
 
@@ -90,7 +91,7 @@ string	HttpRequest::HttpCreateHeader()
 {
   string2	header;
 
-  header += "Location: " + m_http_map["Location"] + "\r\n";
+  //header += "Location: " + m_http_map["Location"] + "\r\n";
   header += "Server: " + m_http_map["Server"] + "\r\n";
   header += "Content-Type: " + m_http_map["Content-Type"] + "\r\n";
   header += "Content-Length: " + m_http_map["Content-Length"] + "\r\n";
@@ -152,8 +153,10 @@ int	HttpRequest::HttpSetFile(void)
 
   /* ici le get ou head est bon on attend un nom de fichier
 		sa doit etre check ds check ....
-     ici on regarde si c un fichier executable ? 
-     si c le cas on lexecute 
+     ici  on check si c ds /cgi-bin
+			si c un rep 
+			si c juste / je donne index.html
+			!sa couille sur les fichier vide
    */
   filepath = HttpdConf::get().get_key("/zia/server/root")->c_str();
   chunk = m_http_map[m_http_map["method"]];
@@ -161,21 +164,29 @@ int	HttpRequest::HttpSetFile(void)
   chunk2.split(" ", chunk);
   if (!chunk.compare("/"))
     filepath += chunk + "index.html";
+//  else if (!chunk.(rfind) "/") si le dernier char est un /
+//    set_get_dirlisting
   else
-    filepath += "/" + chunk;
+    filepath += chunk;
   if (stat(filepath.c_str(), &st)  == -1)
   {
     //XXX pas renvoyer le fichier error mais construire une reponse bad
     filepath = HttpdConf::get().get_key("/zia/server/root")->c_str();
     filepath += "/error.html";
+    m_http_map["uri"] = filepath;
   }
   else
   {
-    chunk2 = "";
-    chunk2.itoa(st.st_size);
-    m_http_map["Content-Length"] = chunk2;
+    if (!filepath.find(HttpdConf::get().get_key("/zia/server/cgi")->c_str()))
+      m_http_map["cgi"] = filepath;
+    else
+    {
+      m_http_map["uri"] = filepath;
+      chunk2 = "";
+      chunk2.itoa(st.st_size);
+      m_http_map["Content-Length"] = chunk2;
+    }
   } 
-  m_http_map["uri"] = filepath;
   return (0);
 }
 
