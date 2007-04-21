@@ -54,13 +54,13 @@ HttpRequest::HttpRequest(Socket &sock)
   m_http_map["Server"] = "zia";
   m_http_map["Content-Type"] = "text/html"; 	//XXX cahnger le type au bon moment
   m_http_map["Content-Length"] = "0";		//XXX changer la value au bon moment
-  m_http_map["Location"] = "http:/127.0.0.1/";	//XXX add le path au bon moment
+//  m_http_map["Location"] = "index.html";	//XXX add le path au bon moment
   HttpFill(buff);
   // ici ou set l erreur avec le systeme d erreur si non set une variable d'env
   HttpCheckRequest();
   
   //XXX TEST ONLY PAS APPELLER LA MAIS A LA FIN POUR AVOIR LA SIZE 
-  HttpCreateHeader();
+  
 
    //http verifie file 
    //http create header
@@ -109,9 +109,8 @@ string	HttpRequest::HttpCreateHeader()
   header += "Content-length: " + m_http_map["Content-Length"] + "\r\n";
   header += "Date: ";  
   header.itime();
-  header += "\r\n";
+  header += "\r\n\r\n";
 
-  cout << "HEADER\n" << header << endl;
 
   return (header);
 }
@@ -165,15 +164,23 @@ void	HttpRequest::HttpFile(FilePath &file)
   chunk2.append(chunk);
   chunk2.split(" ", chunk);
   if (!chunk.compare("/"))
-   file.Path += chunk + "index.html";
+    file.Path += chunk + "index.html";
   else
-   file.Path += "/" + chunk;
+    file.Path += "/" + chunk;
   if (stat(file.Path.c_str(), &st)  == -1)
   {
-  //XXX pas renvoyer le fichier mais construire une reponse bad
-  file.Path = HttpdConf::get().get_key("/zia/server/root")->c_str();
-  file.Path += "/error.html";
+    //XXX pas renvoyer le fichier mais construire une reponse bad
+    file.Path = HttpdConf::get().get_key("/zia/server/root")->c_str();
+    file.Path += "/error.html";
   }
+  else
+  {
+//    sprintf(chunk, "%d", st.st_size);
+    
+    chunk2 = "";
+    chunk2.itoa(st.st_size);
+    m_http_map["Content-Length"] = chunk2;
+  } 
 }
 
 int	HttpRequest::HttpParseChunk(string2 &buff)
