@@ -100,6 +100,14 @@ Socket        &Socket::operator<<(std::string &str)
   return (*this);
 }
 
+Socket        &Socket::operator<<(std::string str)
+{
+  SocketWriteAll(m_fd, str.c_str(), str.length());
+
+  return (*this);
+}
+
+
 Socket        &Socket::operator>>(std::string &str)
 {
   SocketReadAll(m_fd, str);

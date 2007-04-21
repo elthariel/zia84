@@ -121,30 +121,19 @@ void                    Worker::main_loop()
 void                    Worker::request_entry(Socket &a_socket)
 {
  HttpRequest	httpreq(a_socket);
+ string2	header;
+ FilePath	file;
 
- // SI httpreq HTTpREQuest::CHeckRequest marche 
+// plus propre mettre des flags ds httparse grace a check ou autre pour dire s il faut envoyer
+// juste body head ....
 
- if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("HEAD"))
- {
-   //SI C UN HEAD ENVOYER QUE LE HEADER, peut etre pas mettre la mais avant car on envoie tjrs le header ds tous les type de post ? meme avant le cgi ? 
-   
-   //buff = httpreq.HttpHeader();
-   //a_socket << buff;
-
-   if (!httpreq.m_http_map["method"].compare("GET"))
-   {
-     FilePath	file;
-
-     httpreq.HttpFile(file);
-     a_socket << file;
-   }
-}
- //if PUT | POST -> gerer par le cgi
- 
-
- //else for OPTIONS ... TRACE renvoye le truc au client - appache bad request / connect -proxy only / delete a file but not used ...
- //send bad request 404
-
+  a_socket << "HTTP/1.1 302 Found\r\n";
+  httpreq.m_http_map["Content-Length"] = "0";
+  if (!httpreq.m_http_map["method"].compare("GET")) 
+    httpreq.HttpFile(file);
+  a_socket << httpreq.HttpCreateHeader();
+  if (!httpreq.m_http_map["method"].compare("GET"))
+    a_socket << file;
 }
 
 

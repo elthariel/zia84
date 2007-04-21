@@ -43,6 +43,7 @@ public:
   Socket	&operator<<(FilePath &);	
   Socket        &operator>>(std::string &);
   Socket        &operator<<(std::string &);
+  Socket        &operator<<(std::string);
   int           m_fd;
 private:
   Socket();

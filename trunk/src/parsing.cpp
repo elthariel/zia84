@@ -295,6 +295,29 @@ void	string2::itime(void)
   *this += date;
 }
 
+void	string2::itoa(unsigned int n)
+{
+  static int first = 1;
+  
+
+  if (!first && !n)
+  {
+    *this += '\0';
+    first = 1;
+    return ;
+  }
+  if (first)
+  {
+    *this += (!n ? '0' :( n < 0) ? '-' : '\0');
+    first = 0;
+    if (n < 0)
+      n = n * - 1;
+  }
+  itoa(n / 10);
+  *this += '0' + n % 10;
+}
+
+
 void	string2::strip(std::string token)
 {
   while(find(token) != npos)

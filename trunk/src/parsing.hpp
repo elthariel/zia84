@@ -24,6 +24,7 @@ int		findtoken(string2 &str, std::string::iterator &istr, string2 type, string2 
 int		findtoken(string2 &str, std::string::iterator &istr, string2 type, string2 delimitor, string2 space, size_t size);
 int		findtoken(string2 &str, std::string::iterator &istr, string2 type, string2 delimitor, string2 space, listtokenlist tl, unsigned int size);
 void		itime(void);
+void		itoa(unsigned int);
 listtokenlist	tokenize(string2 exp, ...);
 #define ALPH_NUM "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"	
 };
