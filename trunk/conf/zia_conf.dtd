@@ -3,10 +3,13 @@
 <!ELEMENT network (port, address+)>
   <!ELEMENT port (#PCDATA)>
   <!ELEMENT address (#PCDATA)>
-<!ELEMENT server (name, root, cgi)>
+<!ELEMENT server (name, root, cgi, mod)>
   <!ELEMENT name (#PCDATA)>
   <!ELEMENT root (#PCDATA)>
   <!ELEMENT cgi (#PCDATA)>
+<!ELEMENT mod (folder, load_mod*)>
+  <!ELEMENT folder (#PCDATA)>
+  <!ELEMENT load_mod (#PCDATA)>
 <!ELEMENT intern (workers, thresold, wait)>
   <!ELEMENT workers (#PCDATA)>
   <!ELEMENT thresold (#PCDATA)>

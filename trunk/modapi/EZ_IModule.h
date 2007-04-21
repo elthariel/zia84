@@ -34,10 +34,8 @@ class   EZ_IModule
         virtual std::string             getModuleDescription() const = 0;          // returns the module's description (ex: "this module writes 'ok' on STDOUT then turns on the coffee machine")
         virtual EZ_IModule::ModuleLevel getModuleLevel() const = 0;                // returns the module's level (or layer...)
 
-        // Set one element of the server configuration. 1st value: key. 2nd value: value. (e.g.: setFullServerConfiguration("RootDirectory", "/var/www")
-        virtual void                    setServerConfiguration(const std::string&, const std::string&) = 0; 
+        virtual void                    setServerConfiguration(const std::string&, const std::string&) = 0;
 
-        // Re-initialize all local variable to their default value expected the server configuration or some usefully variable.
         virtual void                    clean(void) = 0;
 };
 

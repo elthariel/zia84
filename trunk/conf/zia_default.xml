@@ -9,6 +9,10 @@
     <name>localhost</name>
     <root>../www</root>
     <cgi>../www/cgi-bin</cgi>
+    <mod>
+      <folder>./</folder>
+      <load_mod>test_mod.so</load_mod>
+    </mod>
   </server>
   <intern>
     <workers>10</workers>
