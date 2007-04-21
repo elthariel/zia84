@@ -36,13 +36,13 @@ public:
   Socket(int fd);
   ~Socket();
 
-  void		SocketWriteAll(int fd, const char *addr, int size);
-  void		SocketWriteAll(int fd, void *addr, int size);
-  void		SocketReadAll(int fd, char *addr, int size);
-  void		SocketReadAll(int fd, std::string &str);
+  void		SocketWriteAll(const char *addr, int size);
+  void		SocketWriteAll(void *addr, int size);
+  void		SocketReadAll(char *addr, int size);
+  void		SocketReadAll(std::string &str);
   Socket	&operator<<(FilePath &);	
   Socket        &operator>>(std::string &);
-  Socket        &operator<<(std::string &);
+  //Socket        &operator<<(std::string &);
   Socket        &operator<<(std::string);
   int           m_fd;
 private:

@@ -19,13 +19,8 @@ void		strip(std::string token);
 int		is_in_list(const char **list);
 int		split(std::string token, std::string &chunk);
 int		is_in(char c, string2 list);
-int		findtoken(string2 &str, std::string::iterator &istr, string2 type, string2 delimitor, string2 space);
-int		findtoken(string2 &str, std::string::iterator &istr, string2 type, string2 delimitor, string2 space, listtokenlist tl);
-int		findtoken(string2 &str, std::string::iterator &istr, string2 type, string2 delimitor, string2 space, size_t size);
-int		findtoken(string2 &str, std::string::iterator &istr, string2 type, string2 delimitor, string2 space, listtokenlist tl, unsigned int size);
 void		itime(void);
 void		itoa(unsigned int);
-listtokenlist	tokenize(string2 exp, ...);
 #define ALPH_NUM "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"	
 };
 #endif

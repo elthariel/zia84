@@ -122,36 +122,32 @@ void                    Worker::request_entry(Socket &a_socket)
 {
   HttpRequest	httpreq(a_socket);
   string2	header;
-  string2	body;
+  string	body;
   FilePath	file;
 
-// plus propre mettre des flags ds httparse grace a check ou autre pour dire s il faut envoyer
-// juste body head ....
   if (httpreq.HttpCheckRequest())
   {
     a_socket << "HTTP/1.1 302 Found\r\n";
-/*  if (!httpreq.m_http_map["method"].compare("GET"))
-    if (httpreq.m_http_map["cgi"])
-    {
-      //http_get_cgi
-    }
-  if (!httpreq.m_http_map["method"].compare("POST"))
-    if (httpreq.m_http_map["cgi"])
-    {
-      //http_post_cgi
-    }
-  */  
-   if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("HEAD"))// || POST 
+    if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
+      if (httpreq.m_http_map["cgi"].compare(""))
+      {
+        body = httpreq.HttpGetCGI();
+      }
+//   if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("HEAD"))// || POST 
      a_socket << httpreq.HttpCreateHeader();
-   if (!httpreq.m_http_map["method"].compare("GET"))
+   if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
    {
      if (httpreq.m_http_map["uri"].compare(""))
      {
       file.Path = httpreq.m_http_map["uri"];
       a_socket << file;
      }
-   // if (httpreq.m_http_map["cgi"])
-    //  sa_socket << cgi;
+    if (httpreq.m_http_map["cgi"].compare(""))
+      if (httpreq.m_http_map["cgi"].compare(""))
+      {
+        body = httpreq.HttpGetCGI();
+	a_socket << body;
+      }
   }
  }
 }
