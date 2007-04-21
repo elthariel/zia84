@@ -5,8 +5,11 @@
 #ifndef PERLEMBED_HPP_
 # define PERLEMBED_HPP_
 
+extern "C"
+{
 #include <EXTERN.h>
 #include <perl.h>
+}
 #include <string>
 
 class PerlEmbed
@@ -35,7 +38,7 @@ public:
   void                  create_pipe();
   void                  inject_fd();
 
-  PerlInterpreter       *m_perl;
+  PerlInterpreter       *my_perl;
   bool                  m_perl_initialized;
   int                   m_read_fd, m_write_fd;
 };
