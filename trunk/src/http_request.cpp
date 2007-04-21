@@ -208,27 +208,38 @@ int	HttpRequest::HttpSetFile(void)
   if (!chunk.compare("/"))
     filepath += chunk + "index.html";
 //  else if (!chunk.(rfind) "/") si le dernier char est un /
-//    set_get_dirlisting
+// 
+// set_get_dirlisting
   else
     filepath += chunk;
+  if (!filepath.find(HttpdConf::get().get_key("/zia/server/cgi")->c_str()))
+  {
+    string2 path = "";
+    string2 arg;
+
+    arg.append(filepath);
+    if (arg.split("?", path))
+    {
+    cout << "arg" << arg << endl;
+    cout << "path" << path;   
+
+    filepath = path;
+    }
+  }
   if (stat(filepath.c_str(), &st)  == -1)
   {
     //XXX pas renvoyer le fichier error mais construire une reponse bad
     filepath = HttpdConf::get().get_key("/zia/server/root")->c_str();
     filepath += "/error.html";
     m_http_map["uri"] = filepath;
+    m_http_map["cgi"] = "";
   }
   else
   {
-    if (!filepath.find(HttpdConf::get().get_key("/zia/server/cgi")->c_str()))
-      m_http_map["cgi"] = filepath;
-    else
-    {
       m_http_map["uri"] = filepath;
       chunk2 = "";
       chunk2.itoa(st.st_size);
       m_http_map["Content-Length"] = chunk2;
-    }
   } 
   return (0);
 }
@@ -256,7 +267,6 @@ int	HttpRequest::HttpSetHeader(string2 chunk)
   if (!chunk.split(" ", header_method))
 	return (0);
 
-  cout << "chunk" << header_method << endl;
   if (!header_method.is_in_list(m_method))
 	return (0);
   
