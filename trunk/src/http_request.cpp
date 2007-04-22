@@ -51,8 +51,6 @@ HttpRequest::HttpRequest(Socket &sock)
 /* ici verifier s il lis bien le buff ou sa coupe avant petre pour sa coupe avant le \ */
   sock >> buff;
   m_chunk_type = TYPE_HEADER;
-  m_http_map["server"] = "zia";
-  m_http_map["content-type"] = "text/html"; 	//XXX cahnger le type au bon moment
   m_http_map["content-length"] = "0"; 	//XXX cahnger le type au bon moment
   HttpFill(buff);
 }
@@ -66,6 +64,8 @@ string	HttpRequest::HttpCreateHeader()
 {
   string2	header;
 
+  m_http_map["server"] = "zia";
+  m_http_map["content-type"] = "text/html"; 	//XXX cahnger le type au bon moment
   header += "server: " + m_http_map["server"] + "\r\n";
   header += "content-type: " + m_http_map["content-type"] + "\r\n";
   header += "content-length: " + m_http_map["content-length"] + "\r\n";
@@ -80,7 +80,8 @@ string	HttpRequest::HttpCreateHeader()
 
 string	HttpRequest::HttpGetCGI()
 {
-  string	buff;
+  string2	buff;
+  string2	buffsize;
   int		pfd[2];
 
   cout << "GET CGI" << endl;
@@ -115,7 +116,11 @@ string	HttpRequest::HttpGetCGI()
     cgi_socket >> buff;
     close(pfd[0]);
   }
-  m_http_map["content-length"] = buff.length();
+  //XXX si c pas set fait pas planter les test qui check
+  //pas content lentgh mais le browser le met a 0
+  //fait planter le zia
+  buffsize.itoa(buff.length());
+  m_http_map["content-length"] = buffsize;
   return (buff);
 }
 
