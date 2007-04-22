@@ -239,7 +239,13 @@ int	HttpRequest::HttpSetFile(void)
     //XXX pas renvoyer le fichier error mais construire une reponse bad
     filepath = HttpdConf::get().get_key("/zia/server/root")->c_str();
     filepath += "/error.html";
+    stat(filepath.c_str(), &st);
     m_http_map["uri"] = filepath;
+    chunk2 = "";
+    chunk2.itoa(st.st_size);
+    m_http_map["content-length"] = chunk2;
+  
+  
   //  m_http_map["cgi"] = "";
   }
 //  else if (!m_http_map["cgi"].compare(""))
