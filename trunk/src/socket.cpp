@@ -101,10 +101,9 @@ Socket        &Socket::operator<<(FilePath &file)
 
   return (*this);
 }
-
 Socket        &Socket::operator<<(std::string str)
 {
-  SocketDoWriteAll((char *)str.c_str(), str.length());
+  SocketDoWriteAll((char*)str.c_str(), str.length());
 
   return (*this);
 }
