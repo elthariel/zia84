@@ -22,7 +22,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-
+#include <errno.h>
 
 struct FilePath
 {
@@ -36,8 +36,8 @@ public:
   Socket(int fd);
   ~Socket();
 
-  void		SocketWriteAll(const char *addr, int size);
-  void		SocketWriteAll(void *addr, int size);
+  void  	SocketDoWriteAll(char *buf, unsigned int len);
+  int		SocketWriteAll(void  *buf, unsigned int len);
   void		SocketReadAll(char *addr, int size);
   void		SocketReadAll(std::string &str);
   Socket	&operator<<(FilePath &);	

@@ -12,6 +12,7 @@
 
 using namespace	std;
 
+
 Socket::Socket()
 {
 }
@@ -25,32 +26,29 @@ Socket::~Socket()
 {
   close(m_fd);
 }
-
-void	Socket::SocketWriteAll(const char *addr, int size)
+int	Socket::SocketWriteAll(void *buf, unsigned int len)
 {
-  int	n = 0;
-  int	nsz = 0;
-
-  do
-  {
-    n = write(m_fd, addr + nsz, size - nsz); 
-    nsz += n;
-  }
-  while(n > 0 && (size - nsz) > 0);
+  int r;
+  
+  do r = write(m_fd, (char *)buf, len);
+  while ((r == -1 && (errno == EINTR)));
+  return r ;
 }
 
-void	Socket::SocketWriteAll(void *addr, int size)
+
+void  Socket::SocketDoWriteAll(char *buf, unsigned int len)
 {
-  int	n = 0;
-  int	nsz = 0;
-
-  do
+  unsigned int written = 0 ;
+  while (len)
   {
-    n = write(m_fd, ((char *)addr) + nsz, size - nsz);
-    nsz += n;
+    int w = SocketWriteAll(buf, len) ;
+    if (!w) errno = EPIPE ;
+    if (w <= 0) break ;
+    written += w ;
+    buf += w ;
+    len -= w ;
   }
-  while (n > 0 && (size - nsz) > 0);
-
+//  return written ;
 }
 
 void	Socket::SocketReadAll(char *addr, int size)
@@ -84,7 +82,7 @@ Socket        &Socket::operator<<(FilePath &file)
 {
   int		fd;
   struct	stat st;
-  void		*addr;
+  char		*addr;
 
   if ((fd = open(file.Path.c_str(), 0400)) == -1)
   {
@@ -92,29 +90,21 @@ Socket        &Socket::operator<<(FilePath &file)
     return (*this);
   }
   fstat(fd, &st);
-  if ((addr = mmap(0, st.st_size, PROT_READ, MAP_SHARED, fd, 0)) == (void *) -1)
+  if ((addr = (char *) mmap(0, st.st_size, PROT_READ, MAP_SHARED, fd, 0)) == (void *) -1)
   {
     cerr << "Can't mmap file" << endl;
     return (*this);
   }
-  SocketWriteAll(addr, st.st_size);
+  SocketDoWriteAll(addr, st.st_size);
   munmap(addr, st.st_size);
   close(fd);
 
   return (*this);
 }
 
-/*
-Socket        &Socket::operator<<(std::string &str)
-{
-  SocketWriteAll(str.c_str(), str.length());
-
-  return (*this);
-}
-*/
 Socket        &Socket::operator<<(std::string str)
 {
-  SocketWriteAll(str.c_str(), str.length());
+  SocketDoWriteAll((char *)str.c_str(), str.length());
 
   return (*this);
 }
