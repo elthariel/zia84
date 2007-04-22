@@ -14,7 +14,7 @@
 using namespace std;
 
 
-const char * HttpRequest::m_method [] =  { "OPTIONS" , "GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "METHOD", 0 };
+const char * HttpRequest::m_method [] =  { "OPTIONS" , "GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "CONNECT",  0 };
 /**/
 /*FOR TEST PURPOSE ONLY */
 void HttpRequest::HttpTest()

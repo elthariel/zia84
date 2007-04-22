@@ -130,7 +130,8 @@ void                    Worker::request_entry(Socket &a_socket)
     a_socket << "HTTP/1.1 302 Found\r\n";
     if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
       if (httpreq.reqcgi)
-        body = httpreq.HttpGetCGI();
+       body = httpreq.HttpGetCGI();
+       try {
       a_socket << httpreq.HttpCreateHeader();
     if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
     {
@@ -141,6 +142,11 @@ void                    Worker::request_entry(Socket &a_socket)
         file.Path = httpreq.m_http_map["uri"];
         a_socket << file;
       }
+    }
+    }
+    catch (SocketError*)
+    {
+   	cout << "error socket" << endl; 
     }
   }
 }

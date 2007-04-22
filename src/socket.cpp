@@ -36,7 +36,7 @@ int	Socket::SocketWriteAll(void *buf, unsigned int len)
 }
 
 
-void  Socket::SocketDoWriteAll(char *buf, unsigned int len)
+int  Socket::SocketDoWriteAll(char *buf, unsigned int len)
 {
   unsigned int written = 0 ;
   while (len)
@@ -48,7 +48,7 @@ void  Socket::SocketDoWriteAll(char *buf, unsigned int len)
     buf += w ;
     len -= w ;
   }
-//  return written ;
+  return written;
 }
 
 void	Socket::SocketReadAll(char *addr, int size)
@@ -103,7 +103,11 @@ Socket        &Socket::operator<<(FilePath &file)
 }
 Socket        &Socket::operator<<(std::string str)
 {
-  SocketDoWriteAll((char*)str.c_str(), str.length());
+  if(SocketDoWriteAll((char*)str.c_str(), str.length()) != str.length())
+  {
+    throw new SocketError;
+  }
+  
 
   return (*this);
 }
