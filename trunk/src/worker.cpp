@@ -130,12 +130,12 @@ void                    Worker::request_entry(Socket &a_socket)
     a_socket << "HTTP/1.1 302 Found\r\n";
     if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
       if (httpreq.reqcgi)
-        body = httpreq.HttpGetCGI();
+        body = httpreq.HttpGetCGI().c_str();
       a_socket << httpreq.HttpCreateHeader();
     if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
     {
       if (httpreq.reqcgi)
-	a_socket << body;
+	a_socket << body.c_str();
       if (httpreq.reqfile)
       {
         file.Path = httpreq.m_http_map["uri"];
