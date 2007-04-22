@@ -29,6 +29,9 @@ struct FilePath
  std::string	Path;
 };
 
+class SocketError
+{
+};
 
 class Socket
 {
@@ -36,7 +39,7 @@ public:
   Socket(int fd);
   ~Socket();
 
-  void  	SocketDoWriteAll(char *buf, unsigned int len);
+  int	  	SocketDoWriteAll(char *buf, unsigned int len);
   int		SocketWriteAll(void  *buf, unsigned int len);
   void		SocketReadAll(char *addr, int size);
   void		SocketReadAll(std::string &str);

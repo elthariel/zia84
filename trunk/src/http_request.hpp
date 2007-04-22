@@ -22,39 +22,12 @@
 
 
 extern	char **environ;
-/*
-class Uri
-{
-public:
-  Uri(std::string a_uri);
-
-  const std::string     &proto() const;
-  const std::string     &host() const;
-  const std::string     &path() const;
-  const UriType         &type() const;
-
-  enum UriType
-    {
-      UriAbs_Host,
-      UriAbs,
-      UriRel,
-      UriTypeCount
-    };
-
-private:
-  Uri();
-
-  UriType               m_type;
-  std::string           m_proto;
-  std::string           m_host;
-  std::string           m_path;
-};
-*/
-
 
 
 class HttpRequest
 {
+friend class RequestAdapter;
+
 public:
   HttpRequest(Socket &);
   HttpRequest(char *filename);
@@ -77,11 +50,6 @@ public:
                             std::string,
                             __gnu_cxx::hash<std::string> > HttpMap;
 
-  /**
-   * Feed a line of the request to the parser.
-   * Return true if the line has been accepted. If false is returned
-   * you must stop feeding the request, an error code will be sent back.
-   */
   int			reqcgi;
   int			reqfile;
   int			m_chunk_type; 
