@@ -35,12 +35,13 @@ public:
   std::string           &get_out();
 
   protected:
-  void                  create_pipe();
-  void                  inject_fd();
+  void                  get_perl_api();
+  void                  inject_api();
 
   PerlInterpreter       *my_perl;
   bool                  m_perl_initialized;
-  int                   m_read_fd, m_write_fd;
+  static const char     *m_perl_api;
+  static int            m_perl_api_fd;
 };
 
 #endif
