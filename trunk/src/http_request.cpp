@@ -111,7 +111,6 @@ string	HttpRequest::HttpGetCGI()
       write(pfd[1], m_data.c_str(), m_data.length());
     close(pfd[1]);
     wait(0);
-  
     Socket cgi_socket(pfd[0]);
     cgi_socket >> buff;
     close(pfd[0]);
