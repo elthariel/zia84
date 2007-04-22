@@ -29,34 +29,41 @@ Socket::~Socket()
 void	Socket::SocketWriteAll(const char *addr, int size)
 {
   int	n = 0;
-  
+  int	nsz = 0;
+
   do
   {
-  n = write(m_fd, addr + n, size - n);
-  } while(n > 0);
-
+    n = write(m_fd, addr + nsz, size - nsz); 
+    nsz += n;
+  }
+  while(n > 0 && (size - nsz) > 0);
 }
 
 void	Socket::SocketWriteAll(void *addr, int size)
 {
   int	n = 0;
+  int	nsz = 0;
 
   do
   {
-  n = write(m_fd, ((char *)addr) + n, size - n);
-  } while(n > 0);
+    n = write(m_fd, ((char *)addr) + nsz, size - nsz);
+    nsz += n;
+  }
+  while (n > 0 && (size - nsz) > 0);
 
 }
 
 void	Socket::SocketReadAll(char *addr, int size)
 {
   int	n = 0;
+  int	nsz = 0;
 
   do
   {
-  n = read(m_fd, addr + n, size - n);
-  } while(n > 0);
-
+    n += read(m_fd, addr + n, size - n);
+    nsz += n;
+  }
+  while (n > 0 && (size - nsz) > 0);
 }
 
 void	Socket::SocketReadAll(std::string &str)
@@ -80,10 +87,16 @@ Socket        &Socket::operator<<(FilePath &file)
   void		*addr;
 
   if ((fd = open(file.Path.c_str(), 0400)) == -1)
+  {
     cerr << "Can't open file" << endl;
+    return (*this);
+  }
   fstat(fd, &st);
   if ((addr = mmap(0, st.st_size, PROT_READ, MAP_SHARED, fd, 0)) == (void *) -1)
+  {
     cerr << "Can't mmap file" << endl;
+    return (*this);
+  }
   SocketWriteAll(addr, st.st_size);
   munmap(addr, st.st_size);
   close(fd);
