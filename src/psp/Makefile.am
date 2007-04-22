@@ -7,6 +7,8 @@
 
 noinst_HEADERS =
 
+EXTRA_DIST = zia_psp_api.pl
+
 bin_PROGRAMS = mod_psp.so perlembed
 
 
