@@ -81,6 +81,8 @@ public:
    * Return true if the line has been accepted. If false is returned
    * you must stop feeding the request, an error code will be sent back.
    */
+  int			reqcgi;
+  int			reqfile;
   int			m_chunk_type; 
   HttpMap		m_http_map;
 private:
