@@ -21,8 +21,8 @@ void HttpRequest::HttpTest()
 {
  HttpMap::iterator	i;
 
-  cerr << "chunk type: " << m_chunk_type << endl; 
-  cerr << "MAP:" << endl;
+  //cerr << "chunk type: " << m_chunk_type << endl; 
+  //cerr << "MAP:" << endl;
   for (i = m_http_map.begin(); i != m_http_map.end(); i++)
     {
       cerr << (*i).first << ":" << (*i).second <<  endl;
@@ -49,10 +49,17 @@ HttpRequest::HttpRequest(Socket &sock)
   string2	buff;
 
 /* ici verifier s il lis bien le buff ou sa coupe avant petre pour sa coupe avant le \ */
-  sock >> buff;
-  m_chunk_type = TYPE_HEADER;
-  m_http_map["content-length"] = "0"; 	//XXX cahnger le type au bon moment
-  HttpFill(buff);
+  try
+  {
+    sock >> buff;
+    m_chunk_type = TYPE_HEADER;
+    m_http_map["content-length"] = "0"; 	//XXX cahnger le type au bon moment
+    HttpFill(buff);
+  }
+  catch (SocketError*)
+  {
+  
+  }
 }
 
 HttpRequest::~HttpRequest()
@@ -148,8 +155,11 @@ int	HttpRequest::HttpCheckRequest(void)
    // return (0);
   if ((pos = chunk2.find("1.1")) == string::npos)
     return (0);
- HttpSetFile();
-  
+//  if (!HttpCheckHttpMap())
+  //  return (0);
+  HttpSetFile();
+ 
+
   return (1);
 }
 

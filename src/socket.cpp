@@ -26,17 +26,17 @@ Socket::~Socket()
 {
   close(m_fd);
 }
-int	Socket::SocketWriteAll(void *buf, unsigned int len)
+unsigned int	Socket::SocketWriteAll(void *buf, unsigned int len)
 {
   int r;
   
   do r = write(m_fd, (char *)buf, len);
   while ((r == -1 && (errno == EINTR)));
-  return r ;
+
+  return (r);
 }
 
-
-int  Socket::SocketDoWriteAll(char *buf, unsigned int len)
+unsigned int  Socket::SocketDoWriteAll(char *buf, unsigned int len)
 {
   unsigned int written = 0 ;
   while (len)
@@ -48,34 +48,39 @@ int  Socket::SocketDoWriteAll(char *buf, unsigned int len)
     buf += w ;
     len -= w ;
   }
-  return written;
+  
+  return (written);
 }
 
-void	Socket::SocketReadAll(char *addr, int size)
+unsigned int	Socket::SocketReadAll(void *buf, unsigned int len)
 {
-  int	n = 0;
-  int	nsz = 0;
+  int r;
+  
+  do r = read(m_fd, (char *)buf, len);
+  while ((r == -1 && (errno == EINTR)));
+  
+  return (r);
+}
 
+unsigned int  Socket::SocketDoReadAll(std::string &str)
+{
+  unsigned int readden = 0 ;
+  unsigned int len = 4096;
+  char	buff[4096];
+  int w; 
+  
   do
   {
-    n += read(m_fd, addr + n, size - n);
-    nsz += n;
+    w = SocketReadAll(buff, len) ;
+    if (!w) errno = EPIPE ;
+    if (w <= 0) break ;
+    buff[w] = 0;
+    readden += w;
+    str += buff;
   }
-  while (n > 0 && (size - nsz) > 0);
-}
-
-void	Socket::SocketReadAll(std::string &str)
-{
-  int	n;
-  char	buff[1024];
-
-  do
-  {
-  n = read(m_fd, buff, 1024);
-  buff[n] = 0;
-  str += buff;
-  } while (n == 1024);
-
+  while (w == 4096);
+  
+  return (readden);
 }
 
 Socket        &Socket::operator<<(FilePath &file)
@@ -101,9 +106,10 @@ Socket        &Socket::operator<<(FilePath &file)
 
   return (*this);
 }
+
 Socket        &Socket::operator<<(std::string str)
 {
-  if(SocketDoWriteAll((char*)str.c_str(), str.length()) != str.length())
+  if(SocketDoWriteAll((char*)str.c_str(), str.length()) !=  str.length())
   {
     throw new SocketError;
   }
@@ -115,7 +121,10 @@ Socket        &Socket::operator<<(std::string str)
 
 Socket        &Socket::operator>>(std::string &str)
 {
-  SocketReadAll(str);
+  if (!SocketDoReadAll(str))
+  {
+    throw new SocketError;
+  }
 
   return (*this);
 }
