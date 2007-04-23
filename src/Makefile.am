@@ -21,13 +21,13 @@ zia_SOURCES = foncteurs.cpp help.cpp thread.cpp \
 	parsing.cpp modrequestadapter.cpp modresponseadapter.cpp modrawadapter.cpp
 
 # Don't forget that the order of the libraries _does_ matter
-zia_CPPFLAGS = -g -Wall -pthread $(LIBXML_CFLAGS)
-zia_LDADD = -lpthread $(LIBXML_LIBS) -lrt -ldl #dir1/libdir1.a
+zia_CPPFLAGS = -g -Wall $(LIBXML_CFLAGS) -I../modapi
+zia_LDADD = -lpthread $(LIBXML_LIBS) $(XNIX-LDFLAGS) -lws2_32 -lstdc++ #dir1/libdir1.a
 
 modapitest_SOURCES = mod_manager.cpp mod_q_out.cpp \
 	module_loader.cpp modapitest.cpp
-modapitest_CPPFLAGS = -g -Wall -pthread $(LIBXML_CFLAGS) -I../modapi
-modapitest_LDADD = -lpthread $(LIBXML_LIBS) -lrt -ldl #dir1/libdir1.a
+modapitest_CPPFLAGS = -g -Wall $(LIBXML_CFLAGS) -I../modapi
+modapitest_LDADD = -lpthread $(LIBXML_LIBS) $(XNIX-LDFLAGS) #dir1/libdir1.a
 
 
 ##########

@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 12:18:15 2007 Nahlwe
-// Last update Mon Apr 23 07:14:59 2007 
+// Last update Mon Apr 23 12:32:13 2007 
 //
 
 #ifdef XNIX
@@ -129,10 +129,10 @@ void                    Worker::request_entry(Socket &a_socket)
 
   if (httpreq.HttpCheckRequest())
   {
+    a_socket << "HTTP/1.1 302 Found\r\n";
     if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
       if (httpreq.reqcgi)
        body = httpreq.HttpGetCGI();
-    a_socket << httpreq.HttpGetStatus();
        try {
       a_socket << httpreq.HttpCreateHeader();
     if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
@@ -191,8 +191,8 @@ WorkerPool::WorkerPool(unsigned int a_worker_count)
   version = MAKEWORD( 2, 0 );
   error = WSAStartup(version, &wsaData);
   if (error != 0)
-    cerr << "Unable to initialize full socket" << endl;
-  socket(AF_INET, SOCK_STREAM, 0);
+    cerr << "Unable to initialize Winsock subsystem" << endl;
+  m_main_socket = socket(AF_INET, SOCK_STREAM, 0);
   memset(&sin, 0, sizeof(sin));
   sin.sin_family = AF_INET;
   sin.sin_addr.s_addr = INADDR_ANY;
@@ -242,6 +242,11 @@ void                    WorkerPool::main_loop()
 
           length = sizeof sin;
           new_fd = accept(m_main_socket, &sin, &length);
+          if (new_fd == INVALID_SOCKET)
+            cerr << "Unable to accept client : " << WSAGetLastError() << endl;
+          else
+            {
+              cerr << "Received a connection" << endl;
 #endif
           TaskList::Task t;
           tmp = new Socket(new_fd);
@@ -252,8 +257,6 @@ void                    WorkerPool::main_loop()
             {
               new Worker(m_tasks, false);
             }
-#ifdef XNIX
         }
-#endif
     }
 }

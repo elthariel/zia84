@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 08:05:03 2007 Nahlwe
-// Last update Mon Apr 23 06:39:46 2007 
+// Last update Mon Apr 23 12:18:02 2007 
 //
 
 #include <iostream>
@@ -163,57 +163,4 @@ void                    Event::wait(unsigned int a_sec)
   pthread_cond_timedwait(&m_event, &m_mutex, &timeout);
   unlock();
 #endif
-}
-
-Semaphore::Semaphore(unsigned int a_init_value)
-{
-  m_sem = new sem_t;
-  if (sem_init(m_sem, 0, a_init_value) == -1)
-    cerr << "Unable to create Semaphore" << endl;
-}
-
-Semaphore::~Semaphore()
-{
-  //fixme check that nobody is waiting on ?
-  sem_destroy(m_sem);
-  delete m_sem;
-}
-
-Semaphore       &Semaphore::operator++()
-{
-  sem_post(m_sem);
-  return *this;
-}
-
-Semaphore       &Semaphore::operator--()
-{
-  sem_wait(m_sem);
-  return *this;
-}
-
-Semaphore       &Semaphore::operator+=(unsigned int a_added)
-{
-  unsigned int  i;
-
-  for (i = 0; i < a_added; i++)
-    sem_post(m_sem);
-  return *this;
-}
-
-Semaphore       &Semaphore::operator-=(unsigned int a_removed)
-{
-  unsigned int  i;
-
-  for (i = 0; i < a_removed; i++)
-    sem_wait(m_sem);
-  return *this;
-}
-
-unsigned int    Semaphore::get_value()
-{
-  int  res;
-
-  if (sem_getvalue(m_sem, &res) < 0)
-    cerr << "Unable to get Semaphore value" << endl;
-  return ((unsigned int)res);
 }

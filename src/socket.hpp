@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Sun Mar 11 17:43:22 2007 Nahlwe
-// Last update Mon Apr 23 07:19:09 2007 
+// Last update Mon Apr 23 10:30:38 2007 
 //
 
 /*
@@ -20,10 +20,10 @@
 #include <pthread.h>
 #ifdef XNIX
 # include <sys/mman.h>
-# include <sys/types.h>
-# include <sys/stat.h>
-# include <fcntl.h>
 #endif
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #ifdef WIN_32
 # include <windows.h>
 # include <winsock2.h>

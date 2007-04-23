@@ -5,18 +5,19 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Sat Feb 24 15:31:55 2007 Nahlwe
-// Last update Fri Mar 16 11:33:14 2007 Nahlwe
+// Last update Mon Apr 23 12:46:59 2007 
 //
 
 #include <pthread.h>
+#include <sys/stat.h>
 #include "http_request.hpp"
 
 using namespace std;
 
 
 
-const status_s HttpRequest::m_reason[] = 
-{ 
+const status_s HttpRequest::m_reason[] =
+{
 {100,"Continue"},
 {101,"SwitchingProtocols"},
 {200,"OK"},
@@ -65,8 +66,9 @@ void HttpRequest::HttpTest()
 {
  HttpMap::iterator	i;
 
-  cerr << "chunk type: " << m_chunk_type << endl; 
+  cerr << "chunk type: " << m_chunk_type << endl;
   cerr << "MAP:" << endl;
+
   for (i = m_http_map.begin(); i != m_http_map.end(); i++)
     {
       cerr << (*i).first << ":" << (*i).second <<  endl;
@@ -96,19 +98,19 @@ HttpRequest::HttpRequest(Socket &sock)
   {
     sock >> buff;
     m_chunk_type = TYPE_HEADER;
-    m_http_map["content-length"] = "0"; 	//XXX cahnger le type 
+    m_http_map["content-length"] = "0"; 	//XXX cahnger le type
     m_http_map["version"] = "HTTP/1.1";
     HttpFill(buff);
   }
   catch (SocketError*)
   {
-  
+
   }
 }
 
 HttpRequest::~HttpRequest()
 {
-  
+
 }
 
 string	HttpRequest::HttpCreateHeader()
@@ -120,7 +122,7 @@ string	HttpRequest::HttpCreateHeader()
   header += "server: " + m_http_map["server"] + "\r\n";
   header += "content-type: " + m_http_map["content-type"] + "\r\n";
   header += "content-length: " + m_http_map["content-length"] + "\r\n";
-  header += "date: ";  
+  header += "date: ";
   header.itime();
   header += "\r\n\r\n";
 
@@ -133,6 +135,7 @@ string	HttpRequest::HttpGetCGI()
 {
   string2	buff;
   string2	buffsize;
+#ifdef XNIX
   int		pfd[2];
 
   pipe(pfd);
@@ -146,7 +149,7 @@ string	HttpRequest::HttpGetCGI()
   {
     if (!m_http_map["method"].compare("POST"))
       dup2(pfd[0], 0);
-    else 
+    else
       close(pfd[0]);
     dup2(pfd[1], 1);
 
@@ -168,6 +171,7 @@ string	HttpRequest::HttpGetCGI()
   //XX try catch sur l envoie
   buffsize.itoa(buff.length());
   m_http_map["content-length"] = buffsize;
+#endif
   return (buff);
 }
 
@@ -178,7 +182,7 @@ int	HttpRequest::HttpCheckRequest(void)
   string	chunk;
   string2	subchunk;
   string2	chunk2;
-  
+
   m_status = 400;
   chunk = m_http_map["method"];
   chunk2.append(chunk);
@@ -188,7 +192,7 @@ int	HttpRequest::HttpCheckRequest(void)
   if ((pos = chunk.rfind("HTTP/")) == string::npos)
     return (1);
   chunk2 = chunk.substr(pos, chunk.length());
-  chunk2.strip("\r\n"); 
+  chunk2.strip("\r\n");
   if (!chunk2.split("/", subchunk))
     return (1);
   if (subchunk.find("HTTP") == string::npos)
@@ -197,7 +201,7 @@ int	HttpRequest::HttpCheckRequest(void)
     return (1); //renvoyer si bad version
   if (!HttpCheckHttpMap())
     return (1);
-  m_status = 200; 
+  m_status = 200;
   if (!HttpSetFile()) //! 403 forbiden
    m_status = 404;
   else
@@ -209,6 +213,8 @@ int	HttpRequest::HttpCheckHttpMap(void)
 {
   if (!(m_http_map["host"].compare("")))
     return (0);
+
+
   return (1);
 }
 
@@ -218,10 +224,10 @@ int	HttpRequest::HttpSetFile(void)
   string2  chunk2;
   string   filepath;
   struct   stat st;
-  
+
   reqcgi = 0;
   reqfile = 0;
-  
+
   filepath = HttpdConf::get().get_key("/zia/server/root")->c_str();
   chunk = m_http_map[m_http_map["method"]];
   chunk2.append(chunk);
@@ -231,7 +237,7 @@ int	HttpRequest::HttpSetFile(void)
   if (!chunk.compare("/"))
     filepath += chunk + "index.html";
 //  else if (!chunk.(rfind) "/") si le dernier char est un /
-// 
+//
 // set_get_dirlisting
   else
     filepath += chunk;
@@ -254,7 +260,7 @@ int	HttpRequest::HttpSetFile(void)
     }
     reqcgi = 1;
   }
-    
+
 //faire un stat / si c un rep on fait un get dirlist ou on renvoie erreur
   if (stat(filepath.c_str(), &st)  == -1)
   {
@@ -265,21 +271,21 @@ int	HttpRequest::HttpSetFile(void)
     chunk2 = "";
     chunk2.itoa(st.st_size);
     m_http_map["content-length"] = chunk2;
-    reqfile = 1; 
+    reqfile = 1;
     reqcgi = 0;
     return (0);
   }
   else
   {
    if (!reqcgi)
-   { 
+   {
     m_http_map["uri"] = filepath;
     chunk2 = "";
     chunk2.itoa(st.st_size);
     m_http_map["content-length"] = chunk2;
     reqfile = 1;
     }
-  } 
+  }
   return (1);
 }
 
@@ -312,6 +318,10 @@ int	HttpRequest::HttpSetHeader(string2 chunk)
 	return (0);
   if (!header_method.is_in_list(m_method))
 	return (0);
+<<<<<<< .mine
+
+=======
+>>>>>>> .r83
   m_http_map["method"] = header_method;
   m_http_map[header_method] = chunk;
   m_chunk_type = TYPE_MAP;
@@ -333,7 +343,7 @@ int	HttpRequest::HttpSetMap(string2 chunk)
   key.strip(" ");
   key.strip("	");
   m_http_map[key] = chunk;
-  
+
   return (1);
 }
 
@@ -365,10 +375,10 @@ void	HttpRequest::HttpFill(string2 buff)
 std::string HttpRequest::HttpGetReason(void)
 {
   int i;
- 
+
   for (i = 0; m_reason[i].code != m_status ; i++);
   if (m_reason[i].reason)
-    return (m_reason[i].reason); 
+    return (m_reason[i].reason);
   return ("");
 }
 
@@ -379,9 +389,9 @@ std::string HttpRequest::HttpGetStatus(void)
 
   status = m_http_map["version"];
   code.itoa(m_status);
-  status += " "; 
+  status += " ";
   status += code;
-  status += " "; 
+  status += " ";
   status += HttpGetReason();
   status += "\r\n";
   return (status);

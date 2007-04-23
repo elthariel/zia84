@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Sat Feb 24 15:32:05 2007 Nahlwe
-// Last update Sat Feb 24 15:32:08 2007 Nahlwe
+// Last update Mon Apr 23 10:25:45 2007 
 //
 #ifndef __HTTP_REQUEST__
 #define __HTTP_REQUEST__
@@ -13,7 +13,12 @@
 #include <iostream>
 #include <ctime>
 #include <sys/types.h>
-#include <sys/wait.h>
+#ifdef XNIX
+# include <sys/wait.h>
+#endif
+#ifdef WIN_32
+#endif
+#include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
 #include "conf.hpp"
@@ -61,7 +66,7 @@ public:
   int			m_status;
   int			reqcgi;
   int			reqfile;
-  int			m_chunk_type; 
+  int			m_chunk_type;
   HttpMap		m_http_map;
   std::string		m_data;
 private:
