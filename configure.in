@@ -4,7 +4,7 @@ dnl or use autogen.sh (recommended)
 
 AC_INIT(configure.in)
 AM_INIT_AUTOMAKE(Zia, 0.1.5)
-AC_CONFIG_HEADERS(config.h)
+#AC_CONFIG_HEADERS(config.h)
 
 AM_MAINTAINER_MODE
 
@@ -42,9 +42,14 @@ dnl AB_PERL_CHECK(5.8.8)
 dnl AB_PROG_PERL
 dnl AB_CHECK_EMBEDDED_PERL
 
-set
-
-export
+case $MACHTYPE in
+  *-*-msdos* | *-*-go32* | *-*-mingw32* | *-*-msys* | *-*-windows*)
+    AC_DEFINE(WIN_32)
+    ;;
+  *)
+    AC_DEFINE(XNIX)
+    ;;
+esac
 
 dnl Autoheader things :p
 
