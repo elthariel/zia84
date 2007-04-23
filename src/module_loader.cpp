@@ -5,6 +5,8 @@
 
 using namespace std;
 
+ModLoader       *ModLoader::m_instance = 0;
+
 ModLoader::ModLoader()
 {
 }
@@ -24,7 +26,7 @@ EZ_IModule      *ModLoader::load(std::string path)
 {
   void          *dll;
   void          *entry_point;
-  char          *err_test_bak, err_test;
+  char          *err_test_bak, *err_test;
 
 
   dll = dlopen(path.c_str(), RTLD_LAZY);

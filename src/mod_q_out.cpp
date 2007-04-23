@@ -2,7 +2,9 @@
 #include <iostream>
 #include "mod_q_out.hpp"
 
-~ModQOut::ModQOut(){}
+ModQOut::~ModQOut()
+{
+}
 
 bool                    ModQOut::needProceed()
 {
@@ -16,7 +18,7 @@ bool                    ModQOut::proceed()
 
 const EZ_IModule&       ModQOut::getNext() const
 {
-  return *this
+  return (*this);
 }
 
 bool                    ModQOut::setNext(EZ_IModule &)
@@ -55,7 +57,7 @@ std::string             ModQOut::getModuleDescription() const
 
 EZ_IModule::ModuleLevel ModQOut::getModuleLevel() const
 {
-  return (1);
+  return (EZ_IModule::EZ_IN);
 }
 
 void                    ModQOut::setServerConfiguration(const std::string&, const std::string&)
@@ -64,7 +66,7 @@ void                    ModQOut::setServerConfiguration(const std::string&, cons
 
 void                    ModQOut::clean(void)
 {
-  for (std::list<EZ_IBuffer *>::iterator i = m_bufs.begin;
+  for (std::list<EZ_IBuffer *>::iterator i = m_bufs.begin();
        i != m_bufs.end(); i++)
     delete *i;
   m_bufs.clear();

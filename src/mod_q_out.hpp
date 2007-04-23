@@ -2,15 +2,16 @@
  * ModQOut, end of each level module list
  */
 
-#ifnde MODQOUT_HPP_
+#ifndef MODQOUT_HPP_
 # define MODQOUT_HPP_
 
+#include <list>
 #include <EZ_IModule.h>
 
 class ModQOut : public EZ_IModule
 {
 public:
-  virtual                         ~ModQOut(){}
+  virtual                         ~ModQOut();
 
   virtual bool                    needProceed();
   virtual bool                    proceed();
