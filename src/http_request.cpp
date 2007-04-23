@@ -60,14 +60,13 @@ const status_s HttpRequest::m_reason[] =
 {0, 0},
 };
 const char * HttpRequest::m_method [] =  { "OPTIONS" , "GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "CONNECT",  0 };
-/**/
-/*FOR TEST PURPOSE ONLY */
+
 void HttpRequest::HttpTest()
 {
  HttpMap::iterator	i;
 
-  //cerr << "chunk type: " << m_chunk_type << endl; 
-  //cerr << "MAP:" << endl;
+  cerr << "chunk type: " << m_chunk_type << endl; 
+  cerr << "MAP:" << endl;
   for (i = m_http_map.begin(); i != m_http_map.end(); i++)
     {
       cerr << (*i).first << ":" << (*i).second <<  endl;
@@ -93,12 +92,12 @@ HttpRequest::HttpRequest(Socket &sock)
 {
   string2	buff;
 
-/* ici verifier s il lis bien le buff ou sa coupe avant petre pour sa coupe avant le \ */
   try
   {
     sock >> buff;
     m_chunk_type = TYPE_HEADER;
-    m_http_map["content-length"] = "0"; 	//XXX cahnger le type au bon moment
+    m_http_map["content-length"] = "0"; 	//XXX cahnger le type 
+    m_http_map["version"] = "HTTP/1.1";
     HttpFill(buff);
   }
   catch (SocketError*)
@@ -136,7 +135,6 @@ string	HttpRequest::HttpGetCGI()
   string2	buffsize;
   int		pfd[2];
 
-  cout << "GET CGI" << endl;
   pipe(pfd);
   setenv("GATEWAY_INTERFACE", "CGI/1.1", 1);
   setenv("REQUEST_METHOD", m_http_map["method"].c_str(), 1);
@@ -167,9 +165,7 @@ string	HttpRequest::HttpGetCGI()
     cgi_socket >> buff;
     close(pfd[0]);
   }
-  //XXX si c pas set fait pas planter les test qui check
-  //pas content lentgh mais le browser le met a 0
-  //fait planter le zia
+  //XX try catch sur l envoie
   buffsize.itoa(buff.length());
   m_http_map["content-length"] = buffsize;
   return (buff);
@@ -183,16 +179,15 @@ int	HttpRequest::HttpCheckRequest(void)
   string2	subchunk;
   string2	chunk2;
   
+  m_status = 400;
   chunk = m_http_map["method"];
   chunk2.append(chunk);
   if (!chunk2.is_in_list(m_method))
-    return (0);
-  m_status = 400;
+    return (1);
   chunk = m_http_map[m_http_map["method"]];
   if ((pos = chunk.rfind("HTTP/")) == string::npos)
     return (1);
   chunk2 = chunk.substr(pos, chunk.length());
-  m_http_map["version"] = chunk2;
   chunk2.strip("\r\n"); 
   if (!chunk2.split("/", subchunk))
     return (1);
@@ -200,12 +195,13 @@ int	HttpRequest::HttpCheckRequest(void)
     return (1);
   if ((pos = chunk2.find("1.1")) == string::npos)
     return (1); //renvoyer si bad version
-  if (!HttpCheckHttpMap())
-    return (1);
+//  if (!HttpCheckHttpMap())
+  //  return (1);
   m_status = 200; 
   if (!HttpSetFile()) //! 403 forbiden
    m_status = 404;
-  m_status = 302;
+  else
+   m_status = 302;
   return (1);
 }
 
@@ -225,17 +221,13 @@ int	HttpRequest::HttpSetFile(void)
   
   reqcgi = 0;
   reqfile = 0;
-  /* ici le get ou head est bon on attend un nom de fichier
-		sa doit etre check ds check ....
-     ici  on check si c ds /cgi-bin
-			si c un rep 
-			si c juste / je donne index.html
-			!sa couille sur les fichier vide
-   */
+  
   filepath = HttpdConf::get().get_key("/zia/server/root")->c_str();
   chunk = m_http_map[m_http_map["method"]];
   chunk2.append(chunk);
-  chunk2.split(" ", chunk);
+  chunk2.strip("HTTP/1.1");
+  chunk2.strip(" ");
+  chunk = chunk2;
   if (!chunk.compare("/"))
     filepath += chunk + "index.html";
 //  else if (!chunk.(rfind) "/") si le dernier char est un /
@@ -262,9 +254,10 @@ int	HttpRequest::HttpSetFile(void)
     }
     reqcgi = 1;
   }
+    
+//faire un stat / si c un rep on fait un get dirlist ou on renvoie erreur
   if (stat(filepath.c_str(), &st)  == -1)
   {
-    //XXX pas renvoyer le fichier error mais construire une reponse bad
     filepath = HttpdConf::get().get_key("/zia/server/root")->c_str();
     filepath += "/error.html";
     stat(filepath.c_str(), &st);
@@ -310,12 +303,15 @@ int	HttpRequest::HttpSetHeader(string2 chunk)
 {
   string2	header_method;
 
+  chunk.strip("\n");
+  chunk.strip("\r");
+  chunk.strip("\t");
+  chunk.striponce(' ');
+
   if (!chunk.split(" ", header_method))
 	return (0);
-
   if (!header_method.is_in_list(m_method))
 	return (0);
-  
   m_http_map["method"] = header_method;
   m_http_map[header_method] = chunk;
   m_chunk_type = TYPE_MAP;

@@ -16,6 +16,7 @@ typedef   std::vector<tokenlist > *listtokenlist;
 		string2(const char *str);
 void		tolower();
 void		strip(std::string token);
+void		striponce(char s);
 int		is_in_list(const char **list);
 int		split(std::string token, std::string &chunk);
 int		is_in(char c, string2 list);
