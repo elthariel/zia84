@@ -1,0 +1,111 @@
+1 SimpleHead01
+[request 17] HEAD / HTTP/1.1
+[request 19] Host: 10.10.8.102
+[replying 1> HTTP/1.1 200 OK
+
+2 InvalidHead01
+[request 17] HEAD / HTTP/3.0
+[request 19] Host: 10.10.8.102
+[replying 2> HTTP/1.1 400 Bad Request
+
+3 ErrorHead01
+[request 33] HEAD /nonexistant.html HTTP/1.1
+[request 19] Host: 10.10.8.102
+[replying 3] HTTP/1.1 200 OK
+
+4 ErrorHead02
+[request 17] HEAD / HTTP/1.1
+[request 8]       
+[replying 4] HTTP/1.1 400 Bad Request
+
+5 SimpleGet01
+[request 16] GET / HTTP/1.1
+[request 19] Host: 10.10.8.102
+[replying 5] HTTP/1.1 200 OK
+
+6 ErrorGet01
+[request 16] GET / HTTP/1.1
+[replying 6] HTTP/1.1 400 Bad Request
+
+7 SimpleGet02
+[request 117]                   GET                 /                           
+        HTTP/1.1                                 
+[request 19] Host: 10.10.8.102
+[request 2] 
+[replying 7] HTTP/1.1 200 OK
+
+8 ErrorGet02
+[request 16] GET * HTTP/1.1
+[request 19] Host: 10.10.8.102
+[request 2] 
+[replying 8] HTTP/1.1 400 Bad Request
+
+9 SimpleGet03
+[request 18] GET   /    HTTP/1.1
+[request 19] HoSt: 10.10.8.102
+[request 19] CoNnEcTiOn: cLoSe
+[request 2] 
+[replying 9] HTTP/1.1 200 OK
+
+10 ErrorGet03
+[request 16] gET / HttP/1.1
+[request 20] Host : 10.10.8.102
+[request 2] 
+[replying 10] HTTP/1.1 400 Bad Request
+
+11 Options01
+[request 20] OPTIONS * HTTP/1.1
+[request 20] Host : 10.10.8.102
+[request 2] 
+[replying 11] HTTP/1.1 200 OK
+
+12 Trace01
+[request 18] TRACE / HTTP/1.1
+[request 20] Host : 10.10.8.102
+[request 2] 
+[replying 12] HTTP/1.1 200 OK
+
+13 SimpleGet05
+[request 16] GET / HTTP/1.1
+[request 37] HoSt       :        10.10.8.102    
+[request 2] 
+[replying 13] HTTP/1.1 200 OK
+
+14 ErrorGet04
+[request 26] GET file01.html HTTP/1.1
+[request 19] Host: 10.10.8.102
+[request 2] 
+[replying 14] HTTP/1.1 400 Bad Request
+
+15 ErrorGet05
+[request 15] GET  HTTP/1.1
+[request 19] Host: 10.10.8.102
+[request 2] 
+[replying 15] HTTP/1.1 400 Bad Request
+
+16 ErrorGet06
+[request 16] GET / HTTP/1.1
+[request 16] GET / HTTP/1.1
+[request 19] Host: 10.10.8.102
+[request 2] 
+[replying 16] HTTP/1.1 400 Bad Request
+
+17 ErrorPost01
+[request 17] POST / HTTP/1.1
+[request 19] Host: 10.10.8.102
+[request 2] 
+[REPLYING 17] HTTP/1.1 411 Length Required
+
+18 ErrorGet07
+[request 22] GET /../../ HTTP/1.1
+[request 19] Host: 10.10.8.102
+[request 2] 
+[REPLYING 18] HTTP/1.1 403 Forbidden
+
+19 EncodeHead01
+[request 39] HEAD /~!@%23$%25%5E&()_+.txt HTTP/1.1
+[request 19] Host: 10.10.8.102
+reply actually not found, checkbot.pl:l236 to see test made 
+
+20 SimpleGet06
+request actually unknow

@@ -1,0 +1,154 @@
+Test 2 :
+[request] HEAD / HTTP/3.0
+[request] Host: 10.10.8.102
+attendu -=> HTTP/1.1 400 Bad Request
+XX plutot 505 HTTP Version Not Supported
+200 OK sur apache 1.3 ?
+
+Test 10 :
+[request] gET / HttP/1.1
+[request] Host : 10.10.8.102
+attendu -=> HTTP/1.1 400 Bad Request
+
+gET / HttP/1.1
+Host: sdfsd
+sur Apache : HTTP/1.1 501 Method Not Implemented
+404 KO
+-=> 400 Bad Request
+
+Samples utiles :
+
+HEAD * HTTP/1.1
+Host: dfgsd 
+=>
+HTTP/1.1 404 Not Found
+Date: Mon, 23 Apr 2007 05:13:15 GMT
+Server: Apache/1.3.34 (Debian)
+Content-Type: text/html; charset=iso-8859-1
+
+
+HEAD / HTTP/1.1
+Host: dfsdf
+=>
+HTTP/1.1 200 OK
+Date: Mon, 23 Apr 2007 05:13:46 GMT
+Server: Apache/1.3.34 (Debian)
+Last-Modified: Mon, 23 Apr 2007 00:04:40 GMT
+ETag: "14427-0-462bf818"
+Accept-Ranges: bytes
+Content-Length: 0
+Content-Type: text/html; charset=iso-8859-1
+
+
+GET * HTTP/1.1
+Host: dsdfg
+=>
+HTTP/1.1 404 Not Found
+Date: Mon, 23 Apr 2007 05:14:21 GMT
+Server: Apache/1.3.34 (Debian)
+Transfer-Encoding: chunked
+Content-Type: text/html; charset=iso-8859-1
+
+
+HEAD / HTTP/3.0
+Host: sdgfsd
+=>
+HTTP/1.1 200 OK
+Date: Mon, 23 Apr 2007 05:15:48 GMT
+Server: Apache/1.3.34 (Debian)
+Last-Modified: Mon, 23 Apr 2007 00:04:40 GMT
+ETag: "14427-0-462bf818"
+Accept-Ranges: bytes
+Content-Length: 0
+Content-Type: text/html; charset=iso-8859-1
+
+
+OPTION * HTTP/1.1
+=>
+HTTP/1.1 400 Bad Request
+Date: Mon, 23 Apr 2007 05:11:37 GMT
+Server: Apache/1.3.34 (Debian)
+Connection: close
+Transfer-Encoding: chunked
+Content-Type: text/html; charset=iso-8859-1
+
+
+OPTION * HTTP/1.1
+Host: sdsd
+=>
+HTTP/1.1 501 Method Not Implemented
+Date: Mon, 23 Apr 2007 05:11:47 GMT
+Server: Apache/1.3.34 (Debian)
+Allow: GET, HEAD, OPTIONS, TRACE
+Connection: close
+Transfer-Encoding: chunked
+Content-Type: text/html; charset=iso-8859-1
+
+
+OPTIONS * HTTP/1.1
+Host: 23523
+=>
+HTTP/1.1 200 OK
+Date: Mon, 23 Apr 2007 05:12:26 GMT
+Server: Apache/1.3.34 (Debian)
+Content-Length: 0
+Allow: GET, HEAD, OPTIONS, TRACE
+
+
+TRACE / HTTP/1.1
+Host : dsfsdf
+=>
+HTTP/1.1 400 Bad Request
+Date: Mon, 23 Apr 2007 05:22:15 GMT
+Server: Apache/1.3.34 (Debian)
+Connection: close
+Transfer-Encoding: chunked
+Content-Type: text/html; charset=iso-8859-1
+
+
+TRACE / HTTP/1.1
+Host: sdfsdf
+=>
+HTTP/1.1 200 OK
+Date: Mon, 23 Apr 2007 05:34:07 GMT
+Server: Apache/1.3.34 (Debian)
+Transfer-Encoding: chunked
+Content-Type: message/http
+
+22 
+TRACE / HTTP/1.1
+Host: sdfsdf
+
+
+0
+
+
+POST / HTTP/1.1
+Host: fsdfsdf
+=>
+HTTP/1.1 405 Method Not Allowed
+Date: Mon, 23 Apr 2007 05:39:09 GMT
+Server: Apache/1.3.34 (Debian)
+Allow: GET, HEAD, OPTIONS, TRACE
+Transfer-Encoding: chunked
+Content-Type: text/html; charset=iso-8859-1
+
+
+POST / HTTP/1.1
+Host: sdgfsdf
+=>
+HTTP/1.1 411 Length Required
+Date: Mon, 23 Apr 2007 08:30:54 GMT
+Content-Type: text/html
+Server: GFE/1.3
+Content-Length: 1357
+
+
+GET /../../ HTTP/1.1 
+Host: sdfsdf
+=>
+HTTP/1.1 404 Not Found
+Content-Type: text/html
+Server: GWS/2.1
+Content-Length: 1354
+Date: Mon, 23 Apr 2007 08:32:21 GMT
