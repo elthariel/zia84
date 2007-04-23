@@ -187,25 +187,32 @@ int	HttpRequest::HttpCheckRequest(void)
   chunk2.append(chunk);
   if (!chunk2.is_in_list(m_method))
     return (0);
+  m_status = 400;
   chunk = m_http_map[m_http_map["method"]];
   if ((pos = chunk.rfind("HTTP/")) == string::npos)
-    return (0);
+    return (1);
   chunk2 = chunk.substr(pos, chunk.length());
+  m_http_map["version"] = chunk2;
+  chunk2.strip("\r\n"); 
   if (!chunk2.split("/", subchunk))
-    return (0);
+    return (1);
   if (subchunk.find("HTTP") == string::npos)
-    return (0);
-//XXX
- // if (chunk2.length() != 3)
-   // return (0);
+    return (1);
   if ((pos = chunk2.find("1.1")) == string::npos)
-    return (0);
-//  if (!HttpCheckHttpMap())
-  //  return (0);
-  //  chercher si y a host est s il est valide
-  HttpSetFile();
- 
+    return (1); //renvoyer si bad version
+  if (!HttpCheckHttpMap())
+    return (1);
+  m_status = 200; 
+  if (!HttpSetFile()) //! 403 forbiden
+   m_status = 404;
+  m_status = 302;
+  return (1);
+}
 
+int	HttpRequest::HttpCheckHttpMap(void)
+{
+  if (!(m_http_map["host"].compare("")))
+    return (0);
   return (1);
 }
 
@@ -267,6 +274,7 @@ int	HttpRequest::HttpSetFile(void)
     m_http_map["content-length"] = chunk2;
     reqfile = 1; 
     reqcgi = 0;
+    return (0);
   }
   else
   {
@@ -279,7 +287,7 @@ int	HttpRequest::HttpSetFile(void)
     reqfile = 1;
     }
   } 
-  return (0);
+  return (1);
 }
 
 int	HttpRequest::HttpParseChunk(string2 &buff)
@@ -370,15 +378,16 @@ std::string HttpRequest::HttpGetReason(void)
 
 std::string HttpRequest::HttpGetStatus(void)
 {
+  string2  code;
   string  status;
 
-//  status = "HTTP/1.1" //XXX get version
-//  status = error[]
-  // avec un status code ce ki reviens
-  // plus utilsier la map plus simple juste modifier
-  // ds les adapter voila
-  //prend la status string ds la map et la convertie
-  status = "HTTP/1.1 302 Found\r\n";
+  status = m_http_map["version"];
+  code.itoa(m_status);
+  status += " "; 
+  status += code;
+  status += " "; 
+  status += HttpGetReason();
+  status += "\r\n";
   return (status);
 }
 
