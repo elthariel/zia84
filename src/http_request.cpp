@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Sat Feb 24 15:31:55 2007 Nahlwe
-// Last update Mon Apr 23 12:46:59 2007 
+// Last update Mon Apr 23 12:51:57 2007 
 //
 
 #include <pthread.h>
@@ -318,10 +318,6 @@ int	HttpRequest::HttpSetHeader(string2 chunk)
 	return (0);
   if (!header_method.is_in_list(m_method))
 	return (0);
-<<<<<<< .mine
-
-=======
->>>>>>> .r83
   m_http_map["method"] = header_method;
   m_http_map[header_method] = chunk;
   m_chunk_type = TYPE_MAP;

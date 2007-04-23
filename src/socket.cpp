@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Sun Mar 11 17:43:30 2007 Nahlwe
-// Last update Mon Apr 23 12:44:17 2007 
+// Last update Mon Apr 23 12:55:01 2007 
 //
 #include <pthread.h>
 #include <socket.hpp>
@@ -44,7 +44,7 @@ unsigned int	Socket::SocketWriteAll(void *buf, unsigned int len)
   while ((r == -1 && (errno == EINTR)));
 #endif
 #ifdef WIN_32
-  cerr << "Sending : " << (char *)buf << endl;
+  //  cerr << "Sending : " << (char *)buf << endl;
   r = send(m_fd, (char *)buf, len, 0);
   if (r == SOCKET_ERROR)
     {
@@ -117,13 +117,17 @@ Socket        &Socket::operator<<(FilePath &file)
   struct	stat st;
   char		*addr;
 
-#ifdef XNIX
+
   if ((fd = open(file.Path.c_str(), 0400)) == -1)
-  {
-    cerr << "Can't open file" << endl;
-    return (*this);
-  }
+    {
+      cerr << "Can't open file" << endl;
+      return (*this);
+    }
   fstat(fd, &st);
+#ifdef WIN_32
+  close(fd);
+#endif
+#ifdef XNIX
   if ((addr = (char *) mmap(0, st.st_size, PROT_READ, MAP_SHARED, fd, 0)) == (void *) -1)
   {
     cerr << "Can't mmap file" << endl;
@@ -169,6 +173,7 @@ Socket        &Socket::operator<<(FilePath &file)
             }
         }
     }
+
 #endif
   SocketDoWriteAll(addr, st.st_size);
 #ifdef XNIX
