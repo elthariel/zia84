@@ -1,11 +1,11 @@
 //
-// psp_launcher.cpp for psp in /home/loic/taf/zia/zia84/src/psp
+// psp_launcher.cpp for psp in /home/lessyv/taf/zia/zia84/src/psp
 // 
 // made by Christophe Malinge
 //         <maling_c@lse.epita.fr>
 // 
-// started on    Fri Apr 20 04:51:02 2007   loic
-// last update   Mon Apr 23 13:49:18 2007   loic
+// started on    Fri Apr 20 04:51:02 2007   lessyv
+// last update   Mon Apr 23 15:30:16 2007   lesyyv
 //
 
 #include <iostream>
@@ -49,7 +49,7 @@ Bloc::Bloc()
 
 Bloc::~Bloc()
 {
-  delete	s_out;
+  // XX delete	s_out;
 }
 
 int	Bloc::case_sensitive_match(char c1, char c2)
@@ -60,13 +60,13 @@ int	Bloc::case_sensitive_match(char c1, char c2)
     return (0);
 }
 
-void		Bloc::shift_counters()
+void		Bloc::shift_counters(string &to_insert)
 {
   if (pos_bloc_begin == -1 || pos_bloc_end == -1)
     parse_ended = 1;//TODO cerr en consequence car pas de bloc trouve ?
   if (pos_bloc_begin != -1 && pos_bloc_end != -1)
     {
-      pos_orig = pos_bloc_begin + s_bloc_to_insert->length();
+      pos_orig = pos_bloc_begin + to_insert.length();
       //pos de prochain start trop grande, servira a rien de relooper
       if (pos_orig >= s_out->length() - (strlen(op_begin) + strlen(op_end)))
 	pos_orig = s_out->length();
@@ -132,7 +132,7 @@ void		Bloc::find_code_to_replace()
     parse_ended = 1;
 }
 
-string		Bloc::get_bloc_code()
+string		&Bloc::get_bloc_code()
 {
   unsigned int	size;
 
@@ -149,7 +149,7 @@ bool		Bloc::parsing_ended()
   return (parse_ended);
 }
 
-void		Bloc::apply_code()
+void		Bloc::apply_code(string &to_insert)
 {
   char		tmp_str[128];
   int		new_size;
@@ -160,11 +160,11 @@ void		Bloc::apply_code()
       new_size = sprintf(tmp_str, "[%i] replaced [%i]",
 			 blocs_count, blocs_count);
       tmp_str[new_size] = 0;
-      s_bloc_to_insert = new string(tmp_str);
+      // s_bloc_to_insert = new string(tmp_str);
       old_size = pos_bloc_end - pos_bloc_begin + strlen(op_begin);
-      s_out->replace(pos_bloc_begin, old_size, *s_bloc_to_insert);
-      shift_counters(); // TODO error catching here ...
-      delete s_bloc_to_insert;
+      s_out->replace(pos_bloc_begin, old_size, to_insert);
+      shift_counters(to_insert); // TODO error catching here ...
+      // delete s_bloc_to_insert;
     }
 }
 

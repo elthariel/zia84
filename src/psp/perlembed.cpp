@@ -6,12 +6,16 @@
 #include <unistd.h>
 #include "string.h"
 #include "perlembed.hpp"
+#include "psp_launcher.hpp"
+#include <fstream>
 
 using namespace std;
 
 /*
  * PerlEmbed class
  */
+
+//TODO envs, for cooking ...
 
 const char              *PerlEmbed::m_perl_api = 0;
 int                     PerlEmbed::m_perl_api_fd = 0;
@@ -96,13 +100,41 @@ std::string             &PerlEmbed::get_out()
  * Main
  */
 
-int main(int ac, char **av)
+int		main(int ac, char **av)
 {
-  PerlEmbed p;
-  string test("echo \"hello world !\\n\";");
-  p.init_perl();
-  cerr << "Perl init" << endl;
-  p.eval_perl(test);
-  cerr << "Command evaluated : " << endl << test << endl;
-  cout << p.get_out() << endl;
+  PerlEmbed	PerlInterpreter;
+  string	*proceed;
+  Bloc		*BlocParser = new Bloc();
+  fstream	f_page;
+  char		buff[98765];
+
+  f_page.open("test_page.html", ios::in);
+  if (f_page == false)
+    cerr << "Unable to open src/psp/test_page.html" << endl;
+  f_page.read(buff, 98765);
+
+  proceed = new string(buff);
+  BlocParser->s_out = proceed;
+
+  PerlInterpreter.init_perl();
+  //cerr << "Perl init" << endl;
+
+  //cerr << "Parser init" << endl;
+  //cout << "page: " << *(BlocParser->s_out) << endl;
+  while (!BlocParser->parsing_ended())
+    {
+      // FIXME loop trop de fois ... mais protected dans apply_code
+      BlocParser->find_code_to_replace();
+      cout << BlocParser->get_bloc_code() << endl;
+      PerlInterpreter.eval_perl(BlocParser->get_bloc_code());
+      //cerr << "Command evaluated : " << endl << BlocParser->get_bloc_code() << endl;
+      BlocParser->apply_code(PerlInterpreter.get_out());
+    }
+
+  cout << "[PSP]page modif:\n" << *(BlocParser->s_out) << endl;
+  printf("[PSP] %i blocs found and maybe properly replaced ...\n", BlocParser->blocs_count);
+  f_page.close();
+  delete BlocParser->s_out; // FIXME a faire dans le moteur
+  delete BlocParser;
+  //XX delete PerlInterpreter.get_out() *out
 }
