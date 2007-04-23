@@ -61,9 +61,7 @@ bool RequestAdapter::setRequestURI(const std::string &str)
 
 bool RequestAdapter::setHTTPVersion(const std::string &version)
 {
-//XXX http versionm
-//mettre la version appart
-//  m_httpreq.m_http_map["version"];
+  m_httpreq.m_http_map["version"] = version;
   
   return (1);
 }
@@ -110,4 +108,9 @@ const std::string&  RequestAdapter::getHTTPVersion(void) const
 const MHEADERS&     RequestAdapter::getHeaders(void) const
 {
   return (m_headers);
+}
+
+const std::string&  RequestAdapter::getHeader(const std::string&key) const
+{
+  return (m_httpreq.m_http_map[key]);
 }
