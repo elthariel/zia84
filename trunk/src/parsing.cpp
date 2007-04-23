@@ -112,3 +112,9 @@ void	string2::strip(std::string token)
   while(find(token) != npos)
     erase(find(token), token.length());
 }
+
+void	string2::striponce(char s)
+{
+  while(c_str()[0] == s)
+    erase(0, 1);
+}
