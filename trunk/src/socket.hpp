@@ -39,13 +39,12 @@ public:
   Socket(int fd);
   ~Socket();
 
-  int	  	SocketDoWriteAll(char *buf, unsigned int len);
-  int		SocketWriteAll(void  *buf, unsigned int len);
-  void		SocketReadAll(char *addr, int size);
-  void		SocketReadAll(std::string &str);
+  unsigned int	  	SocketDoWriteAll(char *buf, unsigned int len);
+  unsigned int	  	SocketDoReadAll(std::string &str);
+  unsigned int		SocketWriteAll(void  *buf, unsigned int len);
+  unsigned int		SocketReadAll(void *addr, unsigned int size);
   Socket	&operator<<(FilePath &);	
   Socket        &operator>>(std::string &);
-  //Socket        &operator<<(std::string &);
   Socket        &operator<<(std::string str);
   int           m_fd;
 private:
