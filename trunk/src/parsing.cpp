@@ -45,7 +45,7 @@ int	string2::is_in_list(const char **list)
   while (list[i])
   {
     if (!compare(list[i]))
-     return (1);
+     return (++i);
     i++;
   }
   return (0);
