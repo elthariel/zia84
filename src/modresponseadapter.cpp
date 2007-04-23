@@ -3,7 +3,7 @@
 ResponseAdapter::ResponseAdapter(HttpRequest &httpreq)
 : m_httpreq(httpreq)
 {
-  m_code = atoi(m_httpreq.m_http_map["status"].c_str());
+ m_code = m_httpreq.m_status;
 }
 
 bool	ResponseAdapter::setHTTPVersion(const std::string &version)
@@ -15,7 +15,7 @@ bool	ResponseAdapter::setHTTPVersion(const std::string &version)
 
 bool 	ResponseAdapter::setStatusCode(const CODE &code)
 {
-  m_code = code;
+  m_httpreq.m_status = code;
   return (1);
 }
 
@@ -56,7 +56,7 @@ const std::string&  ResponseAdapter::getHTTPVersion(void) const
 
 const CODE&         ResponseAdapter::getStatusCode(void) const
 {
-   return (m_code);
+   return (m_httpreq.m_status);
 }
 
 const std::string&  ResponseAdapter::getReasonPhrase(void) const

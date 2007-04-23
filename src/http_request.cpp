@@ -135,6 +135,13 @@ string HttpRequest::HttpGetStatus(void)
 {
   string  status;
 
+
+//  status = "HTTP/1.1" //XXX get version
+//  status = error[]
+  // avec un status code ce ki reviens
+  // plus utilsier la map plus simple juste modifier
+  // ds les adapter voila
+  //prend la status string ds la map et la convertie
   status = "HTTP/1.1 302 Found\r\n";
   return (status);
 }
