@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 16:04:18 2007 Nahlwe
-// Last update Tue Apr 17 00:45:12 2007 Nahlwe
+// Last update Mon Apr 23 10:22:17 2007 
 //
 
 #include <iostream>
@@ -21,6 +21,7 @@
 
 using namespace std;
 
+#ifdef XNIX
 static int      pid_file()
 {
   int           pid_fd;
@@ -83,13 +84,13 @@ static int      daemonize()
 
   return pid_fd;
 }
+#endif
 
 int main (int ac, char **av)
 {
   WorkerPool    *pool;
   int           pid_fd;
 
-  signal(SIGPIPE, SIG_IGN);
   if (ac < 2)
   {
     cout <<  av[0]  << " : You must specify a config file" << endl;
@@ -97,11 +98,17 @@ int main (int ac, char **av)
   }
   HttpdConf::init(av[1]);
 
+#ifdef XNIX
+  signal(SIGPIPE, SIG_IGN);
   //pid_fd = daemonize();
+#endif
+
   pool = new WorkerPool(HttpdConf::get()
                         .get_key_int("/zia/intern/workers"));
   pool->main_loop();
   delete pool;
-  kill_pid_file(0);
 
+#ifdef XNIX
+  kill_pid_file(0);
+#endif
 }

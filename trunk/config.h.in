@@ -3,8 +3,8 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
-/* Define to 1 if you have the <iostream,> header file. */
-#undef HAVE_IOSTREAM_
+/* Define to 1 if you have the <iostream */
+#undef HAVE_IOSTREAM
 
 /* Define to 1 if you have the <list> header file. */
 #undef HAVE_LIST
@@ -36,8 +36,8 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Define to 1 if you have the <vector,> header file. */
-#undef HAVE_VECTOR_
+/* Define to 1 if you have the <vector */
+#undef HAVE_VECTOR
 
 /* Name of package */
 #undef PACKAGE

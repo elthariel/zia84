@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 12:18:17 2007 Nahlwe
-// Last update Mon Apr 23 07:04:44 2007 
+// Last update Mon Apr 23 12:20:28 2007 
 //
 
 #ifndef WORKER_HPP_
@@ -66,7 +66,7 @@ private:
   Event                 m_event;
 };
 
-class Worker : public iFoncteur0<void>, public NonCopyable
+class Worker : public iFoncteur0<void>
 {
 public:
   Worker(TaskList &a_tasks, bool a_highlander = false);
@@ -83,7 +83,7 @@ private:
   void                  request_entry(Socket &a_socket);
 };
 
-class WorkerPool : public NonCopyable
+class WorkerPool
 {
 public:
   WorkerPool(unsigned int a_worker_count);
