@@ -195,8 +195,8 @@ int	HttpRequest::HttpCheckRequest(void)
     return (1);
   if ((pos = chunk2.find("1.1")) == string::npos)
     return (1); //renvoyer si bad version
-//  if (!HttpCheckHttpMap())
-  //  return (1);
+  if (!HttpCheckHttpMap())
+    return (1);
   m_status = 200; 
   if (!HttpSetFile()) //! 403 forbiden
    m_status = 404;
