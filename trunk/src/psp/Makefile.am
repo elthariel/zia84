@@ -13,7 +13,7 @@ bin_PROGRAMS = mod_psp.so perlembed
 
 
 ### Final psp modules
-mod_psp_so_SOURCES = test.cpp
+mod_psp_so_SOURCES =
 mod_psp_so_CPPFLAGS = -g -Wall -pthread $(PERL_CCOPTS)
 mod_psp_so_LDADD = -lpthread $(PERL_LDOPTS)
 mod_psp_so_LDFLAGS = -shared

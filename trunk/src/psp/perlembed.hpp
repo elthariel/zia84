@@ -21,7 +21,7 @@ public:
   /*
    * Init perl and clean perl env, call it before each psp file
    */
-  void                  init_perl();
+  void                  init_perl(char **a_env = NULL);
 
   /*
    * Cause the perl code in the string to be evaluated by the current perl

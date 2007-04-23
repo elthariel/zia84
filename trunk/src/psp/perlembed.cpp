@@ -30,56 +30,20 @@ PerlEmbed::~PerlEmbed()
   perl_free(my_perl);
 }
 
-void                    PerlEmbed::init_perl()
+void                    PerlEmbed::init_perl(char **a_env)
 {
-  char          *perl_opts[] = { "", "-e", "0" };
+  char          *perl_opts[] = { "", "-e", "0", "-mCGI" };
 
   if (m_perl_initialized)
     perl_destruct(my_perl);
 
   perl_construct(my_perl);
   // Use the last null pointer if you want the perl script to exec in a different env.
-  perl_parse(my_perl, NULL, 3, perl_opts, NULL);
+  perl_parse(my_perl, NULL, 4, perl_opts, a_env);
   perl_run(my_perl);
   m_perl_initialized = true;
   inject_api();
 }
-/*
-void                    PerlEmbed::create_pipe()
-{
-  int                   fd[2];
-
-  //  if (pipe((int *)&fd) == -1)
-  if (socketpair(PF_UNIX, SOCK_STREAM, 0,((int *)&fd)) == -1)
-    {
-      cerr << "Unable to create pipe, error ("
-           << strerror(errno) << ")" << endl;
-      //FIXME Generate an error
-    }
-  else
-    {
-      m_read_fd = fd[0];
-      m_write_fd = fd[1];
-    }
-}
-
-void                    PerlEmbed::inject_fd()
-{
-  string                cmd;
-  char                  buf[64];
-
-  snprintf((char *)&buf, 64, "%d", m_write_fd);
-  cmd += "$stdout_fd_magic42 = ";
-  cmd += (char *)&buf;
-  cmd += "; open (TEST, \">&=$stdout_fd_magic42\"); select TEST;";
-  //  cmd += "; TEST->autoflush(1); ";
-  //  cmd += "; open (STDOUT, \">&=$stdout_fd_magic42\"); ";
-  //  cmd += ";open (STDERR, \">&=$stdout_fd_magic42\");";
-  cerr << "Fd injection command :" << endl << cmd << endl;
-  perl_eval_pv(cmd.c_str(), TRUE);
-  cerr << "Injected" << endl;
-}
-*/
 
 void                    PerlEmbed::get_perl_api()
 {
@@ -123,6 +87,7 @@ std::string             &PerlEmbed::get_out()
     {
       real_perl_string = SvPV(perl_string, real_perl_string_len);
       out->append(real_perl_string, real_perl_string_len);
+      perl_eval_pv("&__psp_clean_out_buffer", TRUE);
     }
   return *out;
 }

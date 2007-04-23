@@ -2,12 +2,15 @@
  * Module manager
  */
 
+#include <iostream>
 #include "mod_manager.hpp"
 
+using namespace std;
+
 ModManager::ModManager()
- : m_in(m_in_out),
-   m_proceed(m_proceed_out),
-   m_out(m_out_out)
+ : m_in(&m_in_out),
+   m_proceed(&m_proceed_out),
+   m_out(&m_out_out)
 {
 }
 
@@ -47,7 +50,7 @@ void          ModManager::push_buffer(EZ_IBuffer &a_buf,
       modq = m_proceed;
       break;
     case EZ_IModule::EZ_OUT :
-      modq = m_out
+      modq = m_out;
         break;
     default:
       return;
@@ -71,7 +74,7 @@ unsigned int  ModManager::get_buffer_count(EZ_IModule::ModuleLevel a_buf_lvl)
       qout = &m_out_out;
         break;
     default:
-      return;
+      return (0);
     }
   return (qout->get_buffer_count());
 }
@@ -92,7 +95,7 @@ EZ_IBuffer    *ModManager::pop_buffer(EZ_IModule::ModuleLevel a_buf_lvl)
       qout = &m_out_out;
         break;
     default:
-      return;
+      return (0);
     }
   return qout->popBuffer();
 }
@@ -110,16 +113,16 @@ bool          ModManager::process_stack(EZ_IModule::ModuleLevel a_buf_lvl)
       modq = m_proceed;
       break;
     case EZ_IModule::EZ_OUT :
-      modq = m_out
+      modq = m_out;
         break;
     default:
-      return;
+      return (false);
     }
   _process_stack(modq);
   return (get_buffer_count(a_buf_lvl) > 0);
 }
 
-bool          ModManager::_process_stack(EZ_IModule *a_stack)
+void          ModManager::_process_stack(EZ_IModule *a_stack)
 {
   EZ_IModule *mod = a_stack;
 
@@ -127,6 +130,6 @@ bool          ModManager::_process_stack(EZ_IModule *a_stack)
     {
       if (mod->needProceed())
         mod->proceed();
-      mod = &(mod->getNext());
+      mod = &(const_cast<EZ_IModule &>(mod->getNext()));
     }
 }

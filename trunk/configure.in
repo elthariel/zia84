@@ -42,6 +42,9 @@ dnl AB_PERL_CHECK(5.8.8)
 dnl AB_PROG_PERL
 dnl AB_CHECK_EMBEDDED_PERL
 
+set
+
+export
 
 dnl Autoheader things :p
 
@@ -51,4 +54,5 @@ Makefile
 src/Makefile
 conf/Makefile
 src/psp/Makefile
+src/modtest/Makefile
 ])

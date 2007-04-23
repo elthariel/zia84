@@ -6,6 +6,7 @@
 # define MOD_MANAGER_HPP_
 
 #include <EZ_IModule.h>
+#include "mod_q_out.hpp"
 
 class ModManager
 {
@@ -18,7 +19,7 @@ public:
   EZ_IBuffer    *pop_buffer(EZ_IModule::ModuleLevel a_buf_lvl);
   bool          process_stack(EZ_IModule::ModuleLevel a_buf_lvl);
 protected:
-  bool          _process_stack(EZ_IModule *a_stack);
+  void          _process_stack(EZ_IModule *a_stack);
 
   ModQOut       m_in_out, m_proceed_out, m_out_out;
   EZ_IModule    *m_in, *m_proceed, *m_out;
