@@ -1,6 +1,11 @@
 
 #include <iostream>
-#include "dlfcn.h"
+#ifdef XNIX
+# include "dlfcn.h"
+#endif
+#ifdef WIN_32
+# include <windows.h>
+#endif
 #include "module_loader.hpp"
 
 using namespace std;
@@ -24,6 +29,7 @@ ModLoader       &ModLoader::get()
 
 EZ_IModule      *ModLoader::load(std::string path)
 {
+#ifdef XNIX
   void          *dll;
   void          *entry_point;
   char          *err_test_bak, *err_test;
@@ -44,6 +50,25 @@ EZ_IModule      *ModLoader::load(std::string path)
       cerr << err_test << endl;
       return (0);
     }
+#endif
+#ifdef WIN_32
+  HMODULE       dll;
+  FARPROC       entry_point;
+
+  dll = LoadLibrary(path.c_str());
+  if (dll == NULL)
+    {
+      cerr << "Unable to open " << path.c_str() << " : " << GetLastError() << endl;
+      return (0);
+    }
+  entry_point = GetProcAddress(dll, "getInstance");
+  if (entry_point == NULL)
+    {
+      cerr << "Unable to get module_entry_point address, is this a regular EvilZia module ? " << GetLastError() << endl;
+      return (0);
+    }
+#endif
+
   return (((ModEntry)entry_point)());
 }
 
