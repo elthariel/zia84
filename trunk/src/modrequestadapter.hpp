@@ -25,6 +25,7 @@ class RequestAdapter : public EZ_IBasicRequestBuffer
         virtual const std::string&  getHTTPVersion(void) const;                             // returns a const reference on the HTTP version
         virtual const MHEADERS&     getHeaders(void) const;                                 // returns a const reference on the headers map
 //   private:
+       virtual const std::string&   getHeader(const std::string&) const;
     protected:
       HttpRequest 	&m_httpreq;
       METHODE		m_httpmethod;
