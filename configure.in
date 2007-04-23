@@ -45,9 +45,17 @@ dnl AB_CHECK_EMBEDDED_PERL
 case $MACHTYPE in
   *-*-msdos* | *-*-go32* | *-*-mingw32* | *-*-msys* | *-*-windows*)
     AC_DEFINE(WIN_32)
+    ARCH_CFLAGS=""
+    ARCH_LDADD=" -lws2_32 "
+    AC_SUBST(ARCH_CFLAGS)
+    AC_SUBST(ARCH_LDADD)
     ;;
   *)
     AC_DEFINE(XNIX)
+    ARCH_CFLAGS=""
+    ARCH_LDADD=" -ldl "
+    AC_SUBST(ARCH_CFLAGS)
+    AC_SUBST(ARCH_LDADD)
     ;;
 esac
 
