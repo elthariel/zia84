@@ -50,7 +50,7 @@ public:
   typedef __gnu_cxx::hash_map<std::string,
                             std::string,
                             __gnu_cxx::hash<std::string> > HttpMap;
-
+  int			m_status;
   int			reqcgi;
   int			reqfile;
   int			m_chunk_type; 
