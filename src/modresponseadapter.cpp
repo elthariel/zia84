@@ -46,7 +46,6 @@ bool 	ResponseAdapter::delHeader(const std::string&key)
   m_headers[key] = "";
 
   return (1);
-
 }
 
 const std::string&  ResponseAdapter::getHTTPVersion(void) const

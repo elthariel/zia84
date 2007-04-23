@@ -14,6 +14,51 @@
 using namespace std;
 
 
+
+const status_s HttpRequest::m_reason[] = 
+{ 
+{100,"Continue"},
+{101,"SwitchingProtocols"},
+{200,"OK"},
+{201,"Created"},
+{202,"Accepted"},
+{203,"Non-AuthoritativeInformation"},
+{204,"NoContent"},
+{205,"ResetContent"},
+{206,"PartialContent"},
+{300,"MultipleChoices"},
+{301,"MovedPermanently"},
+{302,"Found"},
+{303,"SeeOther"},
+{304,"NotModified"},
+{305,"UseProxy"},
+{307,"TemporaryRedirect"},
+{400,"BadRequest"},
+{401,"Unauthorized"},
+{402,"PaymentRequired"},
+{403,"Forbidden"},
+{404,"NotFound"},
+{405,"MethodNotAllowed"},
+{406,"NotAcceptable"},
+{407,"ProxyAuthenticationRequired"},
+{408,"RequestTimeout"},
+{409,"Conflict"},
+{410,"Gone"},
+{411,"LengthRequired"},
+{412,"PreconditionFailed"},
+{413,"RequestEntityTooLarge"},
+{414,"Request-URITooLong"},
+{415,"UnsupportedMediaType"},
+{416,"RequestedRangeNotSatisfiable"},
+{417,"ExpectationFailed"},
+{500,"InternalServerError"},
+{501,"NotImplemented"},
+{502,"BadGateway"},
+{503,"ServiceUnavailable"},
+{504,"GatewayTimeout"},
+{505,"HTTPVersionNotSupported"},
+{0, 0},
+};
 const char * HttpRequest::m_method [] =  { "OPTIONS" , "GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "CONNECT",  0 };
 /**/
 /*FOR TEST PURPOSE ONLY */
@@ -128,22 +173,6 @@ string	HttpRequest::HttpGetCGI()
   buffsize.itoa(buff.length());
   m_http_map["content-length"] = buffsize;
   return (buff);
-}
-
-
-string HttpRequest::HttpGetStatus(void)
-{
-  string  status;
-
-
-//  status = "HTTP/1.1" //XXX get version
-//  status = error[]
-  // avec un status code ce ki reviens
-  // plus utilsier la map plus simple juste modifier
-  // ds les adapter voila
-  //prend la status string ds la map et la convertie
-  status = "HTTP/1.1 302 Found\r\n";
-  return (status);
 }
 
 
@@ -328,4 +357,28 @@ void	HttpRequest::HttpFill(string2 buff)
   while (HttpParseChunk(buff));
 }
 
+
+std::string HttpRequest::HttpGetReason(void)
+{
+  int i;
+ 
+  for (i = 0; m_reason[i].code != m_status ; i++);
+  if (m_reason[i].reason)
+    return (m_reason[i].reason); 
+  return ("");
+}
+
+std::string HttpRequest::HttpGetStatus(void)
+{
+  string  status;
+
+//  status = "HTTP/1.1" //XXX get version
+//  status = error[]
+  // avec un status code ce ki reviens
+  // plus utilsier la map plus simple juste modifier
+  // ds les adapter voila
+  //prend la status string ds la map et la convertie
+  status = "HTTP/1.1 302 Found\r\n";
+  return (status);
+}
 
