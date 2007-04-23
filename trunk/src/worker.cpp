@@ -5,15 +5,17 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 12:18:15 2007 Nahlwe
-// Last update Tue Apr 17 01:54:14 2007 Nahlwe
+// Last update Mon Apr 23 07:14:59 2007 
 //
 
+#ifdef XNIX
+# include <netinet/ip.h>
+# include <netdb.h>
+# include <sys/types.h>
+# include <sys/socket.h>
+#endif
 #include <iostream>
 #include <pthread.h>
-#include <netinet/ip.h>
-#include <netdb.h>
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <errno.h>
 #include <string.h>
 #include "worker.hpp"
@@ -146,7 +148,7 @@ void                    Worker::request_entry(Socket &a_socket)
     }
     catch (SocketError*)
     {
-   	cout << "error socket" << endl; 
+   	cout << "error socket" << endl;
     }
   }
 }
@@ -160,11 +162,9 @@ WorkerPool::WorkerPool(unsigned int a_worker_count)
   unsigned int  i;
   Worker        *tmp;
 
+#ifdef XNIX
   sockaddr_in           addr;
   hostent               *host;
-
-  //FIXME Should use HttpConf singleton to get
-  // ip, port, etc
 
   m_main_socket = socket(PF_INET, SOCK_STREAM, 0);
   if (m_main_socket == -1)
@@ -180,6 +180,29 @@ WorkerPool::WorkerPool(unsigned int a_worker_count)
   if (listen(m_main_socket, 30) == -1)
     cerr << "Unable to enter listening state : " << strerror(errno)
          << endl;
+#endif
+
+#ifdef WIN_32
+  int error;
+  WSADATA wsaData;
+  WORD version;
+  sockaddr_in sin;
+
+  version = MAKEWORD( 2, 0 );
+  error = WSAStartup(version, &wsaData);
+  if (error != 0)
+    cerr << "Unable to initialize full socket" << endl;
+  socket(AF_INET, SOCK_STREAM, 0);
+  memset(&sin, 0, sizeof(sin));
+  sin.sin_family = AF_INET;
+  sin.sin_addr.s_addr = INADDR_ANY;
+  sin.sin_port = htons(HttpdConf::get().get_key_int("/zia/network/port"));
+  if (bind(m_main_socket, (sockaddr *)&sin, sizeof(sin)) == SOCKET_ERROR)
+    cerr << "Unable to bind socket" << endl;
+  if (listen(m_main_socket, 30) == SOCKET_ERROR)
+    cerr << "Unable to enter listening state for main socket" << endl;
+#endif
+
   /*
    * Creating workers
    */
@@ -192,15 +215,16 @@ WorkerPool::WorkerPool(unsigned int a_worker_count)
 
 void                    WorkerPool::main_loop()
 {
-  sockaddr              addr;
-  socklen_t             addr_len;
-  int                   new_fd;
-
   Socket                *tmp;
 
   cerr << "Zia server entering accept connection mode." << endl;
   while (42)
     {
+#ifdef XNIX
+      sockaddr              addr;
+      socklen_t             addr_len;
+      int                   new_fd;
+
       memset(&addr, 0, sizeof(addr));
       memset(&addr_len, 0, sizeof(int));
       new_fd = accept(m_main_socket, &addr, &addr_len);
@@ -210,6 +234,15 @@ void                    WorkerPool::main_loop()
              << strerror(errno) << endl;
       else
         {
+#endif
+#ifdef WIN_32
+          struct sockaddr sin;
+          SOCKET new_fd;
+          int length;
+
+          length = sizeof sin;
+          new_fd = accept(m_main_socket, &sin, &length);
+#endif
           TaskList::Task t;
           tmp = new Socket(new_fd);
           t.type = TaskList::TaskRequest;
@@ -219,6 +252,8 @@ void                    WorkerPool::main_loop()
             {
               new Worker(m_tasks, false);
             }
+#ifdef XNIX
         }
+#endif
     }
 }

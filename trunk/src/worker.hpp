@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 12:18:17 2007 Nahlwe
-// Last update Fri Mar 16 07:22:11 2007 Nahlwe
+// Last update Mon Apr 23 07:04:44 2007 
 //
 
 #ifndef WORKER_HPP_
@@ -13,9 +13,15 @@
 
 #include <list>
 #include <vector>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/select.h>
+#ifdef WIN_32
+# include <windows.h>
+# include <winsock2.h>
+#endif
+#ifdef XNIX
+# include <sys/types.h>
+# include <sys/socket.h>
+# include <sys/select.h>
+#endif
 #include "thread.hpp"
 #include "socket.hpp"
 #include "http_request.hpp"
@@ -89,7 +95,12 @@ private:
 
   unsigned int          m_worker_count;
   TaskList              m_tasks;
+#ifdef XNIX
   int                   m_main_socket;
+#endif
+#ifdef WIN_32
+  SOCKET                m_main_socket;
+#endif
 };
 
 #endif

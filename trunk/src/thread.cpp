@@ -5,13 +5,15 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 08:05:03 2007 Nahlwe
-// Last update Tue Apr 17 01:54:57 2007 Nahlwe
+// Last update Mon Apr 23 06:39:46 2007 
 //
 
 #include <iostream>
 #include <semaphore.h>
 #include <sched.h>
 #include <time.h>
+#include <sys/time.h>
+#include <unistd.h>
 #include "thread.hpp"
 
 using namespace std;
@@ -68,7 +70,9 @@ bool            Thread::operator!=(Thread &a_th)
 
 void            Thread::sleep(unsigned int a_usecs)
 {
+#ifdef XNIX
   usleep(a_usecs);
+#endif
 }
 
 void            Thread::yield()
@@ -138,6 +142,7 @@ void                    Event::wait()
 
 void                    Event::wait(unsigned int a_sec)
 {
+#ifdef XNIX
   timespec              time;
 
   clock_gettime(CLOCK_REALTIME, &time);
@@ -146,6 +151,18 @@ void                    Event::wait(unsigned int a_sec)
   lock();
   pthread_cond_timedwait(&m_event, &m_mutex, &time);
   unlock();
+#endif
+#ifdef WIN_32
+  timespec timeout;
+  time_t now;
+
+  lock();
+  time(&now);
+  timeout.tv_sec = now + a_sec;
+  timeout.tv_nsec = 0;
+  pthread_cond_timedwait(&m_event, &m_mutex, &timeout);
+  unlock();
+#endif
 }
 
 Semaphore::Semaphore(unsigned int a_init_value)

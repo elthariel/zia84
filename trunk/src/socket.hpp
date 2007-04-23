@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Sun Mar 11 17:43:22 2007 Nahlwe
-// Last update Mon Mar 12 02:07:58 2007 Nahlwe
+// Last update Mon Apr 23 07:19:09 2007 
 //
 
 /*
@@ -14,14 +14,20 @@
  * sa forme reste indefinie
  */
 #ifndef	 __SOCKET_H__
-#define __SOCKET_H__
+# define __SOCKET_H__
 #include <string>
 #include <iostream>
 #include <pthread.h>
-#include <sys/mman.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#ifdef XNIX
+# include <sys/mman.h>
+# include <sys/types.h>
+# include <sys/stat.h>
+# include <fcntl.h>
+#endif
+#ifdef WIN_32
+# include <windows.h>
+# include <winsock2.h>
+#endif
 #include <errno.h>
 
 struct FilePath
@@ -36,17 +42,27 @@ class SocketError
 class Socket
 {
 public:
+#ifdef XNIX
   Socket(int fd);
+#endif
+#ifdef WIN_32
+  Socket(SOCKET fd);
+#endif
   ~Socket();
 
   unsigned int	  	SocketDoWriteAll(char *buf, unsigned int len);
   unsigned int	  	SocketDoReadAll(std::string &str);
   unsigned int		SocketWriteAll(void  *buf, unsigned int len);
   unsigned int		SocketReadAll(void *addr, unsigned int size);
-  Socket	&operator<<(FilePath &);	
+  Socket	&operator<<(FilePath &);
   Socket        &operator>>(std::string &);
   Socket        &operator<<(std::string str);
+#ifdef XNIX
   int           m_fd;
+#endif
+#ifdef WIN_32
+  SOCKET        m_fd;
+#endif
 private:
   Socket();
 
