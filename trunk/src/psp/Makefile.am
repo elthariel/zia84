@@ -18,7 +18,7 @@ mod_psp_so_CPPFLAGS = -g -Wall -pthread $(PERL_CCOPTS)
 mod_psp_so_LDADD = -lpthread $(PERL_LDOPTS)
 mod_psp_so_LDFLAGS = -shared
 
-perlembed_SOURCES = perlembed.cpp
+perlembed_SOURCES = perlembed.cpp psp_launcher.cpp
 perlembed_CPPFLAGS = -g -Wall -pthread $(PERL_CCOPTS)
 perlembed_LDADD = -lpthread $(PERL_LDOPTS)
 

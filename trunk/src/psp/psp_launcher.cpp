@@ -5,7 +5,7 @@
 //         <maling_c@lse.epita.fr>
 // 
 // started on    Fri Apr 20 04:51:02 2007   loic
-// last update   Fri Apr 20 10:28:47 2007   loic
+// last update   Mon Apr 23 13:49:18 2007   loic
 //
 
 #include <iostream>
@@ -34,7 +34,8 @@ const char *Bloc::op_end = "psp?>";
  *		-> (str) s_bloc_code
  *	
  *
- * TODO string Bloc::interpret_bloc() { PERLIZE(s_bloc_code->c_str) ... return(bloc_to_insert) }
+ * TODO string Bloc::interpret_bloc() became apply_code()
+ *   -> { PERLIZE(s_bloc_code->c_str) ... return(bloc_to_insert) }
  */
 
 Bloc::Bloc()
@@ -59,44 +60,45 @@ int	Bloc::case_sensitive_match(char c1, char c2)
     return (0);
 }
 
-void		Bloc::shift_counters(int actual_pos, int bloc_found)
-{ // bloc_found == bloc_ok,
-  // plutot le gerer avec blocs_count, qui sera
-  // donc a diviser par deux pour chier une erreur si jamais une seule balise ouvrante et magie, moins dlignes
-  if (!bloc_found || pos_bloc_begin == -1 || pos_bloc_end == -1)
-    parse_ended = 1;//TODO cerr en consequence
-  if (pos_bloc_begin != -1 && pos_bloc_end != -1)\
+void		Bloc::shift_counters()
+{
+  if (pos_bloc_begin == -1 || pos_bloc_end == -1)
+    parse_ended = 1;//TODO cerr en consequence car pas de bloc trouve ?
+  if (pos_bloc_begin != -1 && pos_bloc_end != -1)
     {
-      pos_orig = pos_bloc_end + strlen(op_end);
-      blocs_count++;
+      pos_orig = pos_bloc_begin + s_bloc_to_insert->length();
       //pos de prochain start trop grande, servira a rien de relooper
-      if (pos_orig >= s_page->length() - ( strlen(op_begin) + strlen(op_end)))
-	  actual_pos == s_page->length();
+      if (pos_orig >= s_out->length() - (strlen(op_begin) + strlen(op_end)))
+	pos_orig = s_out->length();
+      else
+	blocs_count++;
     }
-  if (actual_pos == s_page->length())
+  if (pos_orig == s_out->length())
     {
       parse_ended = 1;
-      pos_orig = s_page->length();
+      pos_orig = s_out->length();
     }
 }
 
-void	Bloc::find_code_to_replace()
+void		Bloc::find_code_to_replace()
 {
-  int	i;
-  int	bloc_ok;
-  int	checking;
+  unsigned int	i;
+  unsigned int	checking;
+  int		bloc_ok;
 
   pos_bloc_begin = -1;
   pos_bloc_end = -1;
   checking = 0;
   bloc_ok = 0;
-  for (i = pos_orig; i < s_page->length() && bloc_ok < 2; i++)
+  for (i = pos_orig; i < s_out->length() && bloc_ok < 2; i++)
     {
-      if (case_sensitive_match(s_page->c_str()[i], op_begin[checking]) && s_page->c_str()[i])
+      if (case_sensitive_match(s_out->c_str()[i], op_begin[checking])
+	  && s_out->c_str()[i])
 	{
 	  checking++;
 	  bloc_ok++;
-	  while (case_sensitive_match(s_page->c_str()[i + checking], op_begin[checking]))
+	  while (case_sensitive_match(s_out->c_str()[i + checking],
+				      op_begin[checking]))
 	    checking++;
 	  if (checking == strlen(op_begin)) // Is it a real opening bloc
 	    {
@@ -107,15 +109,17 @@ void	Bloc::find_code_to_replace()
 	    bloc_ok--;
 	  checking = 0;
 	}
-      if (case_sensitive_match(s_page->c_str()[i], op_end[checking]) && s_page->c_str()[i])
+      if (case_sensitive_match(s_out->c_str()[i], op_end[checking])
+	  && pos_bloc_begin != 1 // end bloc mark found but bloc not opened
+	  && s_out->c_str()[i])
 	{
-	  if (!(bloc_ok % 2)) // end bloc mark found but bloc not opened
-	    parse_ended = 1; // TODO cerr << "Bloc not opened, line [XUX], stop" << endl;
+	  // TODO cerr << "Bloc not opened, line [XUX], stop" << endl;
 	  bloc_ok++;
-	  while (case_sensitive_match(s_page->c_str()[i + checking], op_end[checking]))
+	  while (case_sensitive_match(s_out->c_str()[i + checking],
+				      op_end[checking]))
 	    checking++;
 	  if (checking == strlen(op_end))
- 	    {
+	    {
 	      pos_bloc_end = i;
 	      i += checking;
 	    }
@@ -124,7 +128,8 @@ void	Bloc::find_code_to_replace()
 	  checking = 0;
 	}
     }
-  shift_counters(i, bloc_ok);
+  if (bloc_ok != 2 && i == s_out->length())
+    parse_ended = 1;
 }
 
 string		Bloc::get_bloc_code()
@@ -134,7 +139,7 @@ string		Bloc::get_bloc_code()
   if (!parsing_ended())
     {
       size = pos_bloc_end - pos_bloc_begin - strlen(op_begin);
-      s_bloc_code = s_page->substr(pos_bloc_begin + strlen(op_begin), size);
+      s_bloc_code = s_out->substr(pos_bloc_begin + strlen(op_begin), size);
     }
   return (s_bloc_code);
 }
@@ -146,32 +151,44 @@ bool		Bloc::parsing_ended()
 
 void		Bloc::apply_code()
 {
-  char		*tmp_str;
+  char		tmp_str[128];
+  int		new_size;
+  int		old_size;
 
-  sprintf(tmp_str, "[%i] replaced [%i]", blocs_count, blocs_count);
-  s_bloc_to_insert = new string(tmp_str);
-  free(tmp_str);
-  s_out->replace(pos_bloc_begin, pos_bloc_end - pos_bloc_begin + strlen(op_begin), s_bloc_to_insert);
-  //TODO delete s_bloc_to_insert
+  if (pos_bloc_begin != -1 && pos_bloc_end != -1 && !parsing_ended())
+    {
+      new_size = sprintf(tmp_str, "[%i] replaced [%i]",
+			 blocs_count, blocs_count);
+      tmp_str[new_size] = 0;
+      s_bloc_to_insert = new string(tmp_str);
+      old_size = pos_bloc_end - pos_bloc_begin + strlen(op_begin);
+      s_out->replace(pos_bloc_begin, old_size, *s_bloc_to_insert);
+      shift_counters(); // TODO error catching here ...
+      delete s_bloc_to_insert;
+    }
 }
 
 // BENCHeurTeSTeUR
-int		main()
-{
-  Bloc		*test = new Bloc();
+// int		main()
+// {
+//   Bloc		*test = new Bloc();
 
-  test->s_page = new string("h,?<\nreth<jer?fg'?>lkjaerlgkjhaer'lkj'lkjsdfg\n\\nsdgawsg\n\\nasdgasdgasdgsdg\n<?pspsdfgaedfglkjhasdg;h}{\n[[][oudthgsfg\nfdsgasdfgasdfgpsp?>\n[sdfgaskjdhgkh;\nvsdcgvsd\nasdgASDG<?PSPsdgasdgasdg\ngsdagasdg'pjwergwrg3456\n5ry3ywg35y35gpsp?>wredgelrjh\ndfsagvkjhasdfg");
-  test->s_out = new string(test->s_page->c_str());
-  cout << "orig: " << *test->s_out << endl << endl;
-  while (!test->parsing_ended())
-    {
-      test->find_code_to_replace();
-      if (!test->parsing_ended())
-	{
-	  test->get_bloc_code();
-	  test->apply_code();
-	  delete (test->s_bloc_to_insert);
-	  cout << " : " << *test->s_out << endl;
-	}
-    }
-}
+//   test->s_page = new string("h,?<\nreth<jer?fg'?>lkjaerlgkjhaer'lkj'lkjsdfg\n\\nsdgawsg\n\\nasdgasdgasdgsdg\n<?pspsdfgaedfglkjhasdg;h}{\n[[][oudthgsfg\nfdsgasdfgasdfgpsp?>\n[sdfgaskjdhgkh;\nvsdcgvsd\nasdgASDG<?PSPsdgasdgasdg\ngsdagasdg'pjwergwrg3456\n5ry3ywg35y35gpsp?>wredgelrjh\ndfsagvkjhasdfg");
+//   test->s_out = new string(test->s_page->c_str());
+//   cout << "[PSP processing] orig: [>" << endl << *test->s_out << endl << "<PSP]" << endl;
+//   while (!test->parsing_ended())
+//     {
+//       test->find_code_to_replace();
+//       if (!test->parsing_ended())
+// 	{
+// 	  test->get_bloc_code();
+// 	  test->apply_code();
+// 	  printf("[PSP processing] modif : (pos_orig: %i, out_length: %i\n[PSP>\n%s\n<PSP]\n",
+// 		 test->pos_orig,
+// 		 test->s_out->length(),
+// 		 test->s_out->c_str());
+// 	  printf("bloc to interpret: [PSP>\n%s\n<PSP]\n", test->s_bloc_code.c_str());
+// 	}
+//     }
+//   delete test;
+// }
