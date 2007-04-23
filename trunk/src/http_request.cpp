@@ -131,6 +131,15 @@ string	HttpRequest::HttpGetCGI()
 }
 
 
+string HttpRequest::HttpGetStatus(void)
+{
+  string  status;
+
+  status = "HTTP/1.1 302 Found\r\n";
+  return (status);
+}
+
+
 int	HttpRequest::HttpCheckRequest(void)
 {
   string::size_type	pos;
@@ -157,6 +166,7 @@ int	HttpRequest::HttpCheckRequest(void)
     return (0);
 //  if (!HttpCheckHttpMap())
   //  return (0);
+  //  chercher si y a host est s il est valide
   HttpSetFile();
  
 
