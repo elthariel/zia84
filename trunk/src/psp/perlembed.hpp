@@ -22,6 +22,7 @@ public:
    * Init perl and clean perl env, call it before each psp file
    */
   void                  init_perl(char **a_env = NULL);
+  // a faire a chaque debut instance de page
 
   /*
    * Cause the perl code in the string to be evaluated by the current perl
@@ -33,6 +34,7 @@ public:
    * Get everything the perl statements wrote on stderr & stdout.
    */
   std::string           &get_out();
+  // XX free *out
 
   protected:
   void                  get_perl_api();
