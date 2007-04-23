@@ -23,6 +23,12 @@
 
 extern	char **environ;
 
+struct status_s
+{
+  int	code;
+  const char *reason;
+};
+
 
 class HttpRequest
 {
@@ -45,7 +51,8 @@ public:
   std::string HttpGetStatus(void);
   std::string  HttpCreateHeader();
   std::string  HttpGetCGI();
-
+  std::string HttpGetReason();
+  static  const status_s m_reason[];
   static  const char *m_method[];
   typedef __gnu_cxx::hash_map<std::string,
                             std::string,
