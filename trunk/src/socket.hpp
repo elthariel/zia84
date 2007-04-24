@@ -29,6 +29,7 @@
 # include <winsock2.h>
 #endif
 #include <errno.h>
+#include <sys/socket.h>
 
 struct FilePath
 {

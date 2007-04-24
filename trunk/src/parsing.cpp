@@ -91,13 +91,15 @@ void	string2::itoa(unsigned int n)
 
   if (!first && !n)
   {
-    *this += '\0';
     first = 1;
     return ;
   }
   if (first)
   {
-    *this += (!n ? '0' :( n < 0) ? '-' : '\0');
+    if (!n)
+     *this += "0";
+    if ( n < 0)
+     *this += "-";
     first = 0;
     if (n < 0)
       n = n * - 1;

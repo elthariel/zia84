@@ -49,7 +49,7 @@ public:
   int	HttpParseChunk(string2 &buff);
   int	HttpSetHeader(string2 chunk);
   int	HttpSetMap(string2 chunk);
-  int	HttpSetData(string2 &chunk);
+  int	HttpSetData(Socket &a_socket);
   int	HttpSetChunk(string2 &chunk);
   void	HttpFill(string2 buff);
   void  HttpTest();

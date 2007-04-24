@@ -76,7 +76,7 @@ unsigned int	Socket::SocketReadAll(void *buf, unsigned int len)
   int r;
 
 #ifdef XNIX
-  do r = read(m_fd, (char *)buf, len);
+  do r = recv(m_fd, (char *)buf, len, MSG_DONTWAIT);
   while ((r == -1 && (errno == EINTR)));
 #endif
 #ifdef WIN_32
@@ -106,9 +106,9 @@ unsigned int  Socket::SocketDoReadAll(std::string &str)
     readden += w;
     str += buff;
   }
-  while (w == 4096);
+  while (w == 4096); // w == -1 em faite read en voie 0 pls sumple ..
 
-  return (readden);
+  return (w);
 }
 
 Socket        &Socket::operator<<(FilePath &file)
@@ -203,10 +203,9 @@ Socket        &Socket::operator<<(std::string str)
 
 Socket        &Socket::operator>>(std::string &str)
 {
-  if (!SocketDoReadAll(str))
+ if (SocketDoReadAll(str) < 1)
   {
     throw new SocketError;
   }
-
   return (*this);
 }
