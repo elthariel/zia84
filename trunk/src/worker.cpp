@@ -131,23 +131,22 @@ void                    Worker::request_entry(Socket &a_socket)
   if (httpreq.HttpCheckRequest())
   {
     try {
-      /*   if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
+         if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
            if (httpreq.reqcgi)
               body = httpreq.HttpGetCGI();
-	*/ if (httpreq.reqdir)
-	   body = httpreq.HttpGetDir();
+	   if (httpreq.reqdir)
+	     body = httpreq.HttpGetDir();
          request += httpreq.HttpGetStatus();
-         request +=  httpreq.HttpCreateHeader();
+         request += httpreq.HttpCreateHeader();
          if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
          {
-         /*  if (httpreq.reqcgi)
+           if (httpreq.reqcgi)
 	     request +=  body;
-          */ if (httpreq.reqfile)
+           if (httpreq.reqfile)
              request += httpreq.HttpGetFile();
 	   if (httpreq.reqdir)
 	     request += body;
          }
-	 cout << "request" << endl << request << endl << "---emd of req" << endl;
 	 a_socket << request;
       }
      catch (SocketError*)
