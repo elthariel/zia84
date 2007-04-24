@@ -123,6 +123,8 @@ string	HttpRequest::HttpCreateHeader()
   header += "server: " + m_http_map["server"] + "\r\n";
   header += "content-type: " + m_http_map["content-type"] + "\r\n";
   header += "content-length: " + m_http_map["content-length"] + "\r\n";
+  if (!m_http_map["method"].compare("OPTIONS"))
+    header += "Allow: GET, HEAD, OPTIONS, TRACE\r\n" ;
   header += "date: ";
   header.itime();
   header += "\r\n\r\n";
@@ -203,8 +205,9 @@ int	HttpRequest::HttpCheckRequest(void)
   if (!HttpCheckHttpMap())
     return (1);
   m_status = 200;
-  if (!HttpSetFile()) //! 403 forbiden
-   m_status = 400;
+  if (m_http_map["method"].compare("OPTIONS"))
+    if (!HttpSetFile()) //! 403 forbiden
+      m_status = 400;
  // else
   // m_status = 302;
  // if (!m_http_map["method"].compare("HEAD"))
