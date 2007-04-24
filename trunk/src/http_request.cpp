@@ -271,6 +271,9 @@ int	HttpRequest::HttpSetFile(void)
   chunk2.strip("HTTP/1.1");
   chunk2.strip(" ");
   chunk = chunk2;
+
+  if (!chunk.length())
+    return (0);
   if (!chunk.compare("/"))
     filepath += chunk + "index.html";
 //  else if (!chunk.(rfind) "/") si le dernier char est un /
