@@ -3,7 +3,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include <windows.h>
+#ifdef WIN_32
+# include <windows.h>
+#endif
 
 using namespace std;
 

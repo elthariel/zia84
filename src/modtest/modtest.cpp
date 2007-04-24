@@ -74,7 +74,7 @@ void                    TestMod::setServerConfiguration(const std::string&, cons
 
 void                    TestMod::clean(void)
 {
-  for(buflist::iterator i = m_bufs.begin();
+  for (buflist::iterator i = m_bufs.begin();
        i != m_bufs.end(); i++)
     delete *i;
   m_bufs.clear();
