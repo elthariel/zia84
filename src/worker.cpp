@@ -126,26 +126,36 @@ void                    Worker::request_entry(Socket &a_socket)
   string2	header;
   string	body;
   FilePath	file;
-
+  string 	tbuff;
+  char	buff[9898];
+ 
   if (httpreq.HttpCheckRequest())
   {
-    a_socket << "HTTP/1.1 302 Found\r\n";
-    if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
-      if (httpreq.reqcgi)
-       body = httpreq.HttpGetCGI();
-       try {
-      a_socket << httpreq.HttpCreateHeader();
-    if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
-    {
-      if (httpreq.reqcgi)
-	a_socket << body;
-      if (httpreq.reqfile)
-      {
-        file.Path = httpreq.m_http_map["uri"];
-        a_socket << file;
-      }
-    }
-    }
+    try {
+         
+         if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
+           if (httpreq.reqcgi)
+              body = httpreq.HttpGetCGI();
+         tbuff += httpreq.HttpGetStatus();
+         tbuff +=  httpreq.HttpCreateHeader();
+         tbuff += "\r\n";
+/*if post re faire un read  car on coupe apres le premier \r\n est k on a les data ? 
+ou pas ou quand on fait un read long non si non c la merde  ??
+on envoie en deux partie ou 1 seul alors >?
+
+*/
+         /*if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
+         {
+           if (httpreq.reqcgi)
+	     t_buff +=  body;
+           if (httpreq.reqfile)
+           {
+             file.Path = httpreq.m_http_map["uri"];
+             t_buff += file;
+           }
+         }
+*/	a_socket << tbuff;
+       }
     catch (SocketError*)
     {
    	cout << "error socket" << endl;
