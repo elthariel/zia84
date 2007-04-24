@@ -285,10 +285,6 @@ int	HttpRequest::HttpSetFile(void)
   if (! (chunk.find("../") == std::string::npos))
     return (403) ;
     //XXX coment 
-  if (! (chunk.find("%23") == std::string::npos))
-    return (412) ;
-
-
   if (!chunk.length())
     return (400);
   if (!chunk.compare("/"))
@@ -332,7 +328,7 @@ int	HttpRequest::HttpSetFile(void)
     m_http_map["content-length"] = chunk2;
     reqfile = 1;
     reqcgi = 0;
-    return (404); //404 met test * 
+    return (200); //404 met test * 
   }
   else
   {

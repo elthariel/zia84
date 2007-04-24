@@ -143,6 +143,7 @@ void                    Worker::request_entry(Socket &a_socket)
            if (httpreq.reqfile)
              request += httpreq.HttpGetFile();
          }
+	 cout << "request" << endl << request << endl << "---emd of req" << endl;
 	 a_socket << request;
       }
      catch (SocketError*)
