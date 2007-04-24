@@ -1,11 +1,11 @@
 //
-// bloc.hpp for psp in /home/lessyv/taf/zia/zia84/src/psp
+// bloc.hpp for psp in /home/lessyv/taf/zia/src/psp
 // 
 // made by Christophe Malinge
 //         <maling_c@lse.epita.fr>
 // 
 // started on    Fri Apr 20 04:37:44 2007   lessyv
-// last update   Tue Apr 24 17:35:46 2007   loic
+// last update   Tue Apr 24 19:56:52 2007   lessyv
 //
 
 #ifndef	__BLOC_H__
@@ -33,6 +33,7 @@ public:
   void		apply_code(string &);
   bool		parsing_ended();
   string	&get_last_bloc_code();
+  string	&get_computed_page();
   int		get_blocs_found();
 protected:
   int		case_sensitive_match(char c1, char c2);

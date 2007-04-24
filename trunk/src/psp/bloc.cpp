@@ -1,11 +1,11 @@
 //
-// bloc.cpp for psp in /home/lessyv/taf/zia/zia84/src/psp
+// bloc.cpp for psp in /home/lessyv/taf/zia/src/psp
 // 
 // made by Christophe Malinge
 //         <maling_c@lse.epita.fr>
 // 
 // started on    Fri Apr 20 04:51:02 2007   lessyv
-// last update   Tue Apr 24 17:37:09 2007   loic
+// last update   Tue Apr 24 20:10:09 2007   lessyv
 //
 
 #include <iostream>
@@ -45,12 +45,12 @@ Bloc::Bloc()
   pos_orig = 0;
   blocs_count = 0;
   parse_ended = 0;
-  s_out = new string(); //how to init an empty string object ?
+  //s_out = new string(); //how to init an empty string object ?
 }
 
 Bloc::~Bloc()
 {
-  // XX delete	s_out;
+  delete s_out;
 }
 
 void	Bloc::init(string &page_orig)
@@ -158,6 +158,11 @@ string		&Bloc::get_bloc_code()
 string		&Bloc::get_last_bloc_code()
 {
   return (s_bloc_code);
+}
+
+string		&Bloc::get_computed_page()
+{
+  return (*s_out);
 }
 
 int		Bloc::get_blocs_found()

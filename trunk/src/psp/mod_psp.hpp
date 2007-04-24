@@ -10,6 +10,8 @@
 # include <list>
 # include <string>
 
+# include "psp_main.hpp"
+
 /*
  * Type of buffer. :
  *   - in  : RequestBuffer
@@ -68,6 +70,9 @@ protected:
 
   buflist                       m_bufs;
   EZ_IModule                    *m_next_mod;
+
+private:
+  Psp				PspData;
 };
 
 #endif /* __MOD_PSP_HPP_ */
