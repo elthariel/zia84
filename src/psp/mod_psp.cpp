@@ -172,7 +172,14 @@ char                    **ModPsp::make_env(EZ_IBasicRequestBuffer *a_buf)
 
 void                    ModPsp::psp_entry(bundle a_bundle)
 {
-  // FIXME do me
+  //place session data in the header of the response :
+  // in *response, a EZ_IBasicResponseBuffer
+
+  PspData.init_psp(a_bundle.raw_post->getData());
+  PspData.replace_all_psp();
+
+  if (PspData.psp_done())
+    a_bundle.raw_response->setData(PspData.get_computed_page());
 }
 
 

@@ -1,15 +1,14 @@
 //
-// psp_main.cpp for psp in /home/loic/taf/zia/zia84
+// psp_main.cpp for psp in /home/lessyv/taf/zia/src/psp
 // 
 // made by Christophe Malinge
 //         <maling_c@lse.epita.fr>
 // 
-// started on    Tue Apr 24 15:02:20 2007   loic
-// last update   Tue Apr 24 17:45:14 2007   loic
+// started on    Tue Apr 24 15:02:20 2007   lessyv
+// last update   Tue Apr 24 20:17:36 2007   lessyv
 //
 
 #include <iostream>
-#include <fstream> //just needed to test replacing <?psp psp?> code in an html FILE
 
 #include "psp_main.hpp"
 #include "bloc.hpp"
@@ -25,45 +24,16 @@ Psp::~Psp()
   delete BlocParser;
 }
 
-void		Psp::set_local_page(string &page)
+bool		Psp::init_psp(const string &real_page)
 {
-// XX this code open a file
-// XX Here we need the raw buffer corresponding to the html page
-// we must get the page requested to PERLIZE it
-  fstream	m_filestream;
-  char		filename[] = "test_page.html";
-
-  if (page.length() > 0)
-    return ;
-  //  if (page != NULL)	     
-  m_filestream.open(filename);
-  if (m_filestream == false)
+  if (real_page.length() <= 0)
     {
-      cerr << "Unable to open " << filename << endl;
-      return ;
-    }
-  m_filestream.read(local_page, 98765);
-  page.append(local_page);
-  // in this case delete object page
-}
-
-bool		Psp::init(string &page)
-{
-  if (BlocParser != NULL)
-    {
-      cerr << "[PSP] already init" << endl;
+      cerr << "[PSP] Input buffer: No data" << endl;
       return false;
     }
-  if (page.length() == 0)
-    set_local_page(page);
-  // XX obtain it from API raw buffer
-  // corresponding to the web page readed on filesystem
-  if (page.length() > 0)
-    BlocParser->init(page);
-  else
-    cerr << "No HTML page found" << endl;
+  BlocParser->init(real_page);
   PerlInterpreter.init_perl();
-  cout << "[PSP] ok to proceed" << endl;
+  cout << "[PSP] OK to proceed" << endl;
   return true;
 }
 
@@ -74,23 +44,28 @@ void		Psp::apply_psp()
   BlocParser->apply_code(BlocParser->get_last_bloc_code());
 }
 
-int	Psp::replace_all_psp(string &page)
+int	Psp::replace_all_psp()
 {
   if (BlocParser == NULL)
-    init(page);
+    {
+      cerr << "[PSP] Not initialized" << endl;
+      return -1;
+    }
   while (!BlocParser->parsing_ended())
     {
-      replace_one_psp_bloc(page);
+      replace_one_psp_bloc();
     }
   return (BlocParser->get_blocs_found());
 }
 
 //AND int	Psp::replace_one_psp_bloc()
-int	Psp::replace_one_psp_bloc(string &page)
+int	Psp::replace_one_psp_bloc()
 {
-  //to check just if page is not set
   if (BlocParser == NULL)
-    init(page);
+    {
+      cerr << "[PSP] Not initialized" << endl;
+      return -1;
+    }
   apply_psp();
   printf("[PSP] source code %i : %s\n",
 	 BlocParser->get_blocs_found(),
@@ -98,4 +73,14 @@ int	Psp::replace_one_psp_bloc(string &page)
   if (BlocParser->parsing_ended())
     return (-1);
   return (BlocParser->get_blocs_found());
+}
+
+string	&Psp::get_computed_page()
+{
+  return (BlocParser->get_computed_page());
+}
+
+bool	Psp::psp_done()
+{
+  return (!(BlocParser->parsing_ended()));
 }
