@@ -377,7 +377,7 @@ int	HttpRequest::HttpSetFile(void)
 
   reqcgi = 0;
   reqfile = 0;
-    
+  reqdir = 0; 
     
   filepath = HttpdConf::get().get_key("/zia/server/root")->c_str();
   chunk = m_http_map[m_http_map["method"]];
@@ -443,13 +443,17 @@ int	HttpRequest::HttpSetFile(void)
   }
   else
   {
+      
    if (!reqcgi)
    {
     m_http_map["uri"] = filepath;
     chunk2 = "";
     chunk2.itoa(st.st_size);
     m_http_map["content-length"] = chunk2;
-    reqfile = 1;
+    if (S_ISDIR(st.st_mode))
+      reqdir = 1;
+    else 
+      reqfile = 1;
     }
   }
   return (200); //302
@@ -488,6 +492,18 @@ int	HttpRequest::HttpSetHeader(string2 chunk)
   m_http_map[header_method] = chunk;
   m_chunk_type = TYPE_MAP;
   return (1);
+}
+
+string	HttpRequest::HttpGetDir()
+{
+  Dired	dir(m_http_map["uri"]); 
+  string buff;
+  string2 len;
+
+  buff = dir.output();
+  len.itoa(buff.length());
+  m_http_map["content-length"] = len;
+  return (buff);
 }
 
 int	HttpRequest::HttpSetMap(string2 chunk)

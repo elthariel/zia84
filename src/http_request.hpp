@@ -26,7 +26,7 @@
 #include "conf.hpp"
 #include "socket.hpp"
 #include "parsing.hpp"
-
+#include "dired.hpp"
 
 extern	char **environ;
 
@@ -61,6 +61,7 @@ public:
   std::string  HttpCreateHeader();
   std::string  HttpGetCGI();
   std::string HttpGetReason();
+  std::string HttpGetDir();
   static  const status_s m_reason[];
   static  const char *m_method[];
   typedef __gnu_cxx::hash_map<std::string,
@@ -69,6 +70,7 @@ public:
   int			m_status;
   int			reqcgi;
   int			reqfile;
+  int			reqdir;
   int			m_chunk_type;
   HttpMap		m_http_map;
   std::string		m_data;

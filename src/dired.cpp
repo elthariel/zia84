@@ -34,50 +34,39 @@ void                    Dired::read_directory()
   struct dirent         *direl;
 
   dir = opendir(m_path.c_str());
-  if (dir)
-    {
-      while ((direl = readdir(dir)))
-        {
+  while ((direl = readdir(dir)))
+  {
           m_dir.push_back(string(direl->d_name));
-        }
-    }
-  else
-    {
-      //FIXME generate appropriate html error
-    }
+  }
 }
 
-void                    Dired::output()
+std::string                   Dired::output()
 {
+  string buff;
   list<string>::iterator i;
 
-  output_header();
+  buff += output_header();
   for (i = m_dir.begin(); i != m_dir.end(); i++)
     {
-      cout << "<a href=\"" << *i << "\">"
-           << *i << "</a>" << "<br>"<< endl;
+       buff += "<a href=\"" + *i + "\">"
+           + *i + "</a>" + "<br>\n";
     }
-  output_footer();
+  buff += output_footer();
+  return (buff);
 }
 
-void                    Dired::output_header()
+std::string                    Dired::output_header()
 {
-  cout << "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">"
-       << endl << "<html>" << endl
-       << "<head>" << endl
-       << "<meta content=\"text/html; charset=ISO-8859-1\" http-equiv=\"content-type\">"
-       << endl << "<title>Ziadir : "
-       << m_path << "</title>" << endl
-       << "</head>" << endl
-       << "<body>" << endl
-       << "<h2>Viewing directory : " << m_path << "</h2>" << endl
-       << "<br><br>" << endl;
+  string buff = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\n<html>\n<head>\n<meta content=\"text/html; charset=ISO-8859-1\" http-equiv=\"content-type\">\n<title>Ziadir : " + m_path;
+  buff += "</title>\n</head>\n<body>\n<h2>Viewing directory : ";
+  buff += m_path + "</h2>\n<br><br>\n";
+  return (buff);
 }
 
-void                    Dired::output_footer()
+std::string                    Dired::output_footer()
 {
-  cout << "<h3>Zia server on " << HttpdConf::get().get_key("/zia/server/name")
-       <<"</h3>" << endl
-       << "</body>" << endl
-       << "</html>" << endl << endl;
+  string buff = "<h3>Zia server on ";
+  buff += HttpdConf::get().get_key("/zia/server/name")->c_str();
+  buff += "</h3>\n</body>\n</html>\n\n";
+  return (buff);
 }
