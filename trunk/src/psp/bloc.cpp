@@ -5,7 +5,7 @@
 //         <maling_c@lse.epita.fr>
 // 
 // started on    Fri Apr 20 04:51:02 2007   lessyv
-// last update   Tue Apr 24 15:06:13 2007   lessyv
+// last update   Tue Apr 24 17:37:09 2007   loic
 //
 
 #include <iostream>
@@ -45,11 +45,17 @@ Bloc::Bloc()
   pos_orig = 0;
   blocs_count = 0;
   parse_ended = 0;
+  s_out = new string(); //how to init an empty string object ?
 }
 
 Bloc::~Bloc()
 {
   // XX delete	s_out;
+}
+
+void	Bloc::init(string &page_orig)
+{
+  s_out = new string(page_orig);
 }
 
 int	Bloc::case_sensitive_match(char c1, char c2)
@@ -72,8 +78,9 @@ void		Bloc::shift_counters(string &to_insert)
 	pos_orig = s_out->length();
       else
 	blocs_count++;
+      pos_bloc_begin = -1;
     }
-  if (pos_orig == s_out->length())
+  if (pos_orig == s_out->length() || pos_bloc_begin == -1)
     {
       parse_ended = 1;
       pos_orig = s_out->length();
@@ -90,7 +97,8 @@ void		Bloc::find_code_to_replace()
   pos_bloc_end = -1;
   checking = 0;
   bloc_ok = 0;
-  for (i = pos_orig; i < s_out->length() && bloc_ok < 2; i++)
+  i = pos_orig;
+  while (i < s_out->length() && bloc_ok < 2)
     {
       if (case_sensitive_match(s_out->c_str()[i], op_begin[checking])
 	  && s_out->c_str()[i])
@@ -127,7 +135,10 @@ void		Bloc::find_code_to_replace()
 	    bloc_ok--;
 	  checking = 0;
 	}
+      i++;
     }
+  get_bloc_code();
+// TODO error catching here ...
   if (bloc_ok != 2 && i == s_out->length())
     parse_ended = 1;
 }
@@ -136,12 +147,22 @@ string		&Bloc::get_bloc_code()
 {
   unsigned int	size;
 
-  if (!parsing_ended())
+  if (!parsing_ended() && pos_bloc_begin != -1)
     {
       size = pos_bloc_end - pos_bloc_begin - strlen(op_begin);
       s_bloc_code = s_out->substr(pos_bloc_begin + strlen(op_begin), size);
     }
   return (s_bloc_code);
+}
+
+string		&Bloc::get_last_bloc_code()
+{
+  return (s_bloc_code);
+}
+
+int		Bloc::get_blocs_found()
+{
+  return (blocs_count);
 }
 
 bool		Bloc::parsing_ended()
@@ -151,21 +172,23 @@ bool		Bloc::parsing_ended()
 
 void		Bloc::apply_code(string &to_insert)
 {
-  char		tmp_str[128];
-  int		new_size;
+  //char	tmp_str[128];
+  //int		new_size;
   int		old_size;
 
   if (pos_bloc_begin != -1 && pos_bloc_end != -1 && !parsing_ended())
     {
-      new_size = sprintf(tmp_str, "[%i] replaced [%i]",
-			 blocs_count, blocs_count);
-      tmp_str[new_size] = 0;
-      // s_bloc_to_insert = new string(tmp_str);
+      //new_size = sprintf(tmp_str, "[%i] replaced [%i]",
+      //		 blocs_count, blocs_count);
+      //tmp_str[new_size] = 0;
+      // to_insert = new string(tmp_str);
       old_size = pos_bloc_end - pos_bloc_begin + strlen(op_begin);
       s_out->replace(pos_bloc_begin, old_size, to_insert);
-      shift_counters(to_insert); // TODO error catching here ...
-      // delete s_bloc_to_insert;
+      shift_counters(to_insert);
+      pos_bloc_begin = -1;
     }
+  else
+    cerr << "Bloc already replaced" << endl;
 }
 
 // BENCHeurTeSTeUR
