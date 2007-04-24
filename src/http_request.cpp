@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Sat Feb 24 15:31:55 2007 Nahlwe
-// Last update Mon Apr 23 12:51:57 2007 
+// Last update Tue Apr 24 14:18:14 2007 
 //
 
 #include <pthread.h>
@@ -108,7 +108,7 @@ HttpRequest::HttpRequest(Socket &sock)
   }
   catch (SocketError*)
   {
-    cout << "read error " << endl; 
+    cout << "read error " << endl;
   }
 }
 
@@ -141,16 +141,17 @@ string	HttpRequest::HttpGetCGI()
 {
   string2	buff;
   string2	buffsize;
+
 #ifdef XNIX
   int		pfd[2];
 
-  pipe(pfd);
   setenv("GATEWAY_INTERFACE", "CGI/1.1", 1);
   setenv("REQUEST_METHOD", m_http_map["method"].c_str(), 1);
   setenv("QUERY_STRING", m_http_map["cgi_arg"].c_str(), 1);
   if (!m_http_map["method"].compare("POST"))
     setenv("CONTENT_LENGTH", m_http_map["content-length"].c_str(), 1);
 
+  pipe(pfd);
   if (!fork())
   {
     if (!m_http_map["method"].compare("POST"))
@@ -177,6 +178,108 @@ string	HttpRequest::HttpGetCGI()
   //XX try catch sur l envoie
   buffsize.itoa(buff.length());
   m_http_map["content-length"] = buffsize;
+#endif
+#ifdef WIN_32
+  HANDLE                pipe_stdin[2];
+  HANDLE                pipe_stdout[2];
+  HANDLE                child_fd[2];
+  SECURITY_ATTRIBUTES   sec_attr;
+  PROCESS_INFORMATION   proc_info;
+  STARTUPINFO           start_info;
+  string                cgi_path;
+  char                  pwd[MAX_PATH];
+  char                  cgi_out[256];
+  DWORD                 cgi_read;
+
+  sec_attr.nLength = sizeof(SECURITY_ATTRIBUTES);
+  sec_attr.lpSecurityDescriptor = NULL;
+  sec_attr.bInheritHandle = TRUE;
+  if (!CreatePipe(&pipe_stdin[0], &pipe_stdin[1], &sec_attr, 0))
+    {
+      cerr << "Unable to create pipe for cgi stdin : " << GetLastError() << endl;
+      return (buff);
+    }
+  if (!CreatePipe(&pipe_stdout[0], &pipe_stdout[1], &sec_attr, 0))
+    {
+      cerr << "Unable to create pipe for cgi stdout : " << GetLastError() << endl;
+      return (buff);
+    }
+
+  if (!DuplicateHandle(GetCurrentProcess(), pipe_stdout[0],
+                       GetCurrentProcess(),
+                       &child_fd[0], // Address of new handle.
+                       0,FALSE, // Make it uninheritable.
+                       DUPLICATE_SAME_ACCESS))
+    {
+      cerr << "Unable to duplicate handle : " << GetLastError() << endl;
+      return (buff);
+    }
+
+  if (!DuplicateHandle(GetCurrentProcess(), pipe_stdin[1],
+                       GetCurrentProcess(),
+                       &child_fd[1], // Address of new handle.
+                       0,FALSE, // Make it uninheritable.
+                       DUPLICATE_SAME_ACCESS))
+    {
+      cerr << "Unable to duplicate handle : " << GetLastError() << endl;
+      return (buff);
+    }
+  CloseHandle(pipe_stdin[1]);
+  CloseHandle(pipe_stdout[0]);
+
+  GetCurrentDirectory(MAX_PATH, (char *)&pwd);
+  cgi_path.append((char *)pwd);
+  cgi_path.append("/");
+  cgi_path.append(*HttpdConf::get().get_key("/zia/server/cgi"));
+  ZeroMemory(&start_info,sizeof(STARTUPINFO));
+  start_info.cb = sizeof(STARTUPINFO);
+  start_info.dwFlags = STARTF_USESTDHANDLES;
+  start_info.hStdOutput = pipe_stdout[1];
+  start_info.hStdInput  = pipe_stdin[0];
+  start_info.hStdError  = pipe_stdout[1];
+
+  SetEnvironmentVariable("GATEWAY_INTERFACE", "CGI/1.1");
+  SetEnvironmentVariable("REQUEST_METHOD", m_http_map["method"].c_str());
+  SetEnvironmentVariable("QUERY_STRING", m_http_map["cgi_arg"].c_str());
+  if (!m_http_map["method"].compare("POST"))
+    SetEnvironmentVariable("CONTENT_LENGTH", m_http_map["content-length"].c_str());
+
+  if (!CreateProcess(m_http_map["cgi"].c_str(),
+                     NULL, NULL, NULL, TRUE, 0,
+                     environ, cgi_path.c_str(),
+                     &start_info, &proc_info))
+    {
+      cerr << "Unable to create cgi process : " << GetLastError() << endl;
+      return (buff);
+    }
+  CloseHandle(pipe_stdin[0]);
+  CloseHandle(pipe_stdout[1]);
+//   CloseHandle(child_fd[0]);
+//   CloseHandle(child_fd[1]);
+//     if (WaitForSingleObject(proc_info.hProcess, INFINITE) == WAIT_FAILED)
+//       cerr  << "Unable to wait for cgi" << GetLastError() << endl;
+//    if (WaitForInputIdle(proc_info.hProcess, INFINITE) == WAIT_FAILED)
+//          cerr  << "Unable to wait for cgi : " << GetLastError() << endl;
+  cerr << "started to read cgi_out" << endl;
+  bool tmp = true;
+  while (tmp)
+    {
+      if (!ReadFile(child_fd[0],&cgi_out,sizeof(cgi_out),
+                    &cgi_read,NULL) || !cgi_read)
+        {
+          if (GetLastError() == ERROR_BROKEN_PIPE)
+            {
+              cerr << "Broken pipe" << endl;
+              //  break; // pipe done - normal exit path.
+              tmp = false;
+            }
+          else
+            cerr << "Error on reading cgi output : " << GetLastError() << endl;
+          buff.append((char *)&cgi_out, cgi_read);
+        }
+    }
+
+
 #endif
   return (buff);
 }
@@ -239,7 +342,7 @@ std::string	HttpRequest::HttpGetFile(void)
    struct	stat st;
    int		fd;
    int		len;
-   int		n; 
+   int		n;
    char		buff[4096];
 
    if ((fd  = open(path.c_str(), O_RDONLY)) == -1)
