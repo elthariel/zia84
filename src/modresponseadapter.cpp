@@ -4,6 +4,7 @@ ResponseAdapter::ResponseAdapter(HttpRequest &httpreq)
 : m_httpreq(httpreq)
 {
  m_code = m_httpreq.m_status;
+ m_httpreq.m_http_map["reason"] = m_httpreq.m_reason[m_code].reason;
 }
 
 bool	ResponseAdapter::setHTTPVersion(const std::string &version)
@@ -16,6 +17,7 @@ bool	ResponseAdapter::setHTTPVersion(const std::string &version)
 bool 	ResponseAdapter::setStatusCode(const CODE &code)
 {
   m_httpreq.m_status = code;
+  m_code = code;
   return (1);
 }
 
@@ -60,7 +62,7 @@ const CODE&         ResponseAdapter::getStatusCode(void) const
 
 const std::string&  ResponseAdapter::getReasonPhrase(void) const
 {
- return (m_httpreq.m_http_map["reason"]);
+  return (m_httpreq.m_http_map["reason"]); 
 }
 
 const MHEADERS&     ResponseAdapter::getHeaders(void) const

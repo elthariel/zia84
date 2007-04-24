@@ -124,7 +124,6 @@ void                    Worker::request_entry(Socket &a_socket)
 {
   HttpRequest	httpreq(a_socket);
   string2	header;
-  string	body;
   string	file;
   string 	request;
  
@@ -133,19 +132,17 @@ void                    Worker::request_entry(Socket &a_socket)
     try {
          if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
            if (httpreq.reqcgi)
-              body = httpreq.HttpGetCGI();
+              httpreq.m_body = httpreq.HttpGetCGI();
 	   if (httpreq.reqdir)
-	     body = httpreq.HttpGetDir();
+	     httpreq.m_body = httpreq.HttpGetDir();
+           if (httpreq.reqfile)
+             httpreq.m_body = httpreq.HttpGetFile();
          request += httpreq.HttpGetStatus();
          request += httpreq.HttpCreateHeader();
          if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
          {
-           if (httpreq.reqcgi)
-	     request +=  body;
-           if (httpreq.reqfile)
-             request += httpreq.HttpGetFile();
-	   if (httpreq.reqdir)
-	     request += body;
+           if (httpreq.reqcgi || httpreq.reqfile || httpreq.reqdir)
+	     request +=  httpreq.m_body;
          }
 	 a_socket << request;
       }
