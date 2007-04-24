@@ -176,8 +176,6 @@ string	HttpRequest::HttpGetCGI()
     close(pfd[0]);
   }
   //XX try catch sur l envoie
-  buffsize.itoa(buff.length());
-  m_http_map["content-length"] = buffsize;
 #endif
 #ifdef WIN_32
   HANDLE                pipe_stdin[2];
@@ -278,9 +276,9 @@ string	HttpRequest::HttpGetCGI()
           buff.append((char *)&cgi_out, cgi_read);
         }
     }
-
-
 #endif
+  buffsize.itoa(buff.length());
+  m_http_map["content-length"] = buffsize;
   return (buff);
 }
 
@@ -306,9 +304,11 @@ int	HttpRequest::HttpCheckRequest(void)
     return (1);
   if (subchunk.find("HTTP") == string::npos)
     return (1);
-    //XXX test 1.1 est < 
+    //XXX test 1.1 est <
+    //XXX test 1.0 links
   if ((pos = chunk2.find("1.1")) == string::npos && (pos = chunk2.find("0.9")) == string::npos)
     return (1); //renvoyer si bad version
+
   if (!HttpCheckHttpMap())
     return (1);
   m_status = 200;
