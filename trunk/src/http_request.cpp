@@ -93,11 +93,11 @@ HttpRequest::HttpRequest(char *filename)
 HttpRequest::HttpRequest(Socket &sock)
 {
   string2	buff;
-  string2	tbuff;
   try
   {
     sock >> buff;
 
+    cout << "Receving" << endl << buff << endl << "---end recv" << endl;
     m_chunk_type = TYPE_HEADER;
     m_http_map["content-length"] = "0";
     m_http_map["version"] = "HTTP/1.1";
