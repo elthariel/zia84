@@ -93,9 +93,13 @@ HttpRequest::HttpRequest(char *filename)
 HttpRequest::HttpRequest(Socket &sock)
 {
   string2	buff;
+  string2	tbuff;
   try
   {
+   do {
     sock >> buff;
+    } while (buff.find("\r\n\r\n") == std::string::npos);
+    cout << "receive" << buff << endl;
 
     m_chunk_type = TYPE_HEADER;
     m_http_map["content-length"] = "0";
@@ -199,7 +203,8 @@ int	HttpRequest::HttpCheckRequest(void)
     return (1);
   if (subchunk.find("HTTP") == string::npos)
     return (1);
-  if ((pos = chunk2.find("1.1")) == string::npos)
+    //XXX test 1.1 est < 
+  if ((pos = chunk2.find("1.1")) == string::npos && (pos = chunk2.find("0.9")) == string::npos)
     return (1); //renvoyer si bad version
   if (!HttpCheckHttpMap())
     return (1);
@@ -274,6 +279,8 @@ int	HttpRequest::HttpSetFile(void)
   filepath = HttpdConf::get().get_key("/zia/server/root")->c_str();
   chunk = m_http_map[m_http_map["method"]];
   chunk2.append(chunk);
+  chunk2.strip("HTTP/0.9");
+  //XXX
   chunk2.strip("HTTP/1.1");
   chunk2.strip(" ");
   chunk = chunk2;
@@ -284,6 +291,7 @@ int	HttpRequest::HttpSetFile(void)
     return (400);
   if (! (chunk.find("../") == std::string::npos))
     return (403) ;
+
     //XXX coment 
   if (!chunk.length())
     return (400);
