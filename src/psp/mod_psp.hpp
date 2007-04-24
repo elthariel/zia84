@@ -64,6 +64,7 @@ protected:
   bool                          have_buffer_bundle(int *);
   bool                          have_buffer_bundle_id(int a_req_id);
   bundle                        make_bundle(int a_req_id);
+  void                          psp_entry(bundle a_bundle);
 
   buflist                       m_bufs;
   EZ_IModule                    *m_next_mod;
