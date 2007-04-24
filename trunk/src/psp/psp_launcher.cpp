@@ -1,15 +1,15 @@
 //
-// psp_launcher.cpp for psp in /home/lessyv/taf/zia/zia84/src/psp
+// bloc.cpp for psp in /home/lessyv/taf/zia/zia84/src/psp
 // 
 // made by Christophe Malinge
 //         <maling_c@lse.epita.fr>
 // 
 // started on    Fri Apr 20 04:51:02 2007   lessyv
-// last update   Mon Apr 23 15:30:16 2007   lesyyv
+// last update   Tue Apr 24 15:06:13 2007   lessyv
 //
 
 #include <iostream>
-#include "psp_launcher.hpp"
+#include "bloc.hpp"
 
 using namespace std;
 
