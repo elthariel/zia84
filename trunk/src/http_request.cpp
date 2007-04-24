@@ -204,7 +204,7 @@ int	HttpRequest::HttpCheckRequest(void)
     return (1);
   m_status = 200;
   if (!HttpSetFile()) //! 403 forbiden
-   m_status = 404;
+   m_status = 400;
  // else
   // m_status = 302;
  // if (!m_http_map["method"].compare("HEAD"))
