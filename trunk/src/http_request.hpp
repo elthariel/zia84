@@ -75,6 +75,7 @@ public:
   int			m_chunk_type;
   HttpMap		m_http_map;
   std::string		m_data;
+  std::string		m_body;
 private:
   enum 			chunk_type { TYPE_HEADER, TYPE_MAP, TYPE_DATA };
   // Internals
