@@ -129,6 +129,7 @@ void                    Worker::request_entry(Socket &a_socket)
  
   if (httpreq.HttpCheckRequest())
   {
+//XXX   HOOK1 // http_m_map // m_data
     try {
          if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
            if (httpreq.reqcgi)
@@ -137,6 +138,8 @@ void                    Worker::request_entry(Socket &a_socket)
 	     httpreq.m_body = httpreq.HttpGetDir();
            if (httpreq.reqfile)
              httpreq.m_body = httpreq.HttpGetFile();
+	//XXX HOOk2  // http_m_map // m_data  //  http_map  // m_body
+	 //XXX HOOK3 //htt_map /// m_body
          request += httpreq.HttpGetStatus();
          request += httpreq.HttpCreateHeader();
          if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
