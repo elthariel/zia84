@@ -3,6 +3,8 @@
 #include <iostream>
 #include "mod_psp.hpp"
 
+using namespace std;
+
 /*
  * Functions
  */
@@ -31,14 +33,15 @@ bundle::bundle()
  * ModPsp class
  */
 ModPsp::ModPsp()
-  : m_next_mod(0)
+  : m_next_mod(this)
 {
 }
 
 bundle                  ModPsp::make_bundle(int a_req_id)
 {
   buflist::iterator     iter = m_bufs.begin();
-  buflist::iterator     iter_to_delete;         ;
+  buflist::iterator     iter_to_delete;
+  bool                  delete_pending = false;
   bool                  finished = false;
   bool                  post_found = false;
   bundle                b;
@@ -50,33 +53,39 @@ bundle                  ModPsp::make_bundle(int a_req_id)
           switch (identify_buffer(*iter))
             {
             case IN:
-              b.request = *iter;
+              b.request = dynamic_cast<EZ_IBasicRequestBuffer *>(*iter);
+              if ((dynamic_cast<EZ_IBasicRequestBuffer *>(*iter))->getMethode()
+                  != EZ_IBasicRequestBuffer::POST)
+                post_found = true;
               break;
             case RAW:
               if (post_found)
-                b.raw_response = *iter;
+                b.raw_response = dynamic_cast<EZ_IBasicRawBuffer *>(*iter);
               else
                 {
-                  b.raw_post = *iter;
+                  b.raw_post = dynamic_cast<EZ_IBasicRawBuffer *>(*iter);
                   post_found = true;
                 }
               break;
             case OUT:
-              b.response = *iter;
+              b.response = dynamic_cast<EZ_IBasicResponseBuffer*>(*iter);
               break;
             default:
               break;
             }
           iter_to_delete = iter;
-          iter++;
-          m_bufs.remove(*iter_to_delete);
-          finished = b.request && b.raw_port && b.response && b.raw_response;
+          delete_pending = true;
+          finished = b.request && b.raw_post && b.response && b.raw_response;
         }
+      iter++;
+      if (delete_pending)
+        m_bufs.remove(*iter_to_delete);
+      delete_pending = false;
     }
   return (b);
 }
 
-bool                    ModPsp::have_buffer_bundle(int *a_id)
+bool                    ModPsp::have_buffer_bundle(int *a_id = 0)
 {
   buflist::iterator     iter = m_bufs.begin();
   bool                  res = false;
@@ -84,7 +93,7 @@ bool                    ModPsp::have_buffer_bundle(int *a_id)
   while(!res && iter != m_bufs.end())
     {
       res = have_buffer_bundle_id((*iter)->getRequestID());
-      if (res)
+      if (res && a_id)
         *a_id = (*iter)->getRequestID();
 
       iter++;
@@ -102,7 +111,7 @@ bool                    ModPsp::have_buffer_bundle_id(int a_req_id)
   found[IN] = false;
   found[RAW] = false;
   found[OUT] = false;
-  found{4] = false;
+  found[4] = false;
 
   while(!res && iter != m_bufs.end())
     {
@@ -112,6 +121,9 @@ bool                    ModPsp::have_buffer_bundle_id(int a_req_id)
             {
             case IN:
               found[IN] = true;
+              if (dynamic_cast<EZ_IBasicRequestBuffer *>(*iter)->getMethode()
+                  != EZ_IBasicRequestBuffer::POST)
+                found[4] = true;
               break;
             case RAW:
               if (raw_flag)
@@ -137,16 +149,38 @@ bool                    ModPsp::have_buffer_bundle_id(int a_req_id)
 
 bool                    ModPsp::needProceed()
 {
+  return have_buffer_bundle();
 }
 
 bool                    ModPsp::proceed()
 {
+  int                   req_id;
+
+  if (have_buffer_bundle(&req_id))
+    {
+      psp_entry(make_bundle(req_id));
+      return true;
+    }
+  else
+    return false;
 }
 
 char                    **ModPsp::make_env(EZ_IBasicRequestBuffer *a_buf)
 {
   // FIXME : do me
 }
+
+void                    ModPsp::psp_entry(bundle a_bundle)
+{
+  // FIXME do me
+}
+
+
+
+
+
+
+
 
 
 /*
@@ -155,7 +189,7 @@ char                    **ModPsp::make_env(EZ_IBasicRequestBuffer *a_buf)
 
 const EZ_IModule&       ModPsp::getNext() const
 {
-  return (m_next_mod);
+  return (*m_next_mod);
 }
 
 bool                    ModPsp::setNext(EZ_IModule &a_mod)
@@ -178,7 +212,7 @@ EZ_IBuffer              *ModPsp::popBuffer()
     return 0;
 }
 
-bool                    ModPsp::pushBuffer(EZ_IBuffer &)
+bool                    ModPsp::pushBuffer(EZ_IBuffer &a_buf)
 {
   m_bufs.push_back(&a_buf);
   return (true);
