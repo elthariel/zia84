@@ -1,15 +1,15 @@
 //
-// psp_launcher.hpp for psp in /home/lessyv/taf/zia/zia84/src/psp
+// bloc.hpp for psp in /home/lessyv/taf/zia/zia84/src/psp
 // 
 // made by Christophe Malinge
 //         <maling_c@lse.epita.fr>
 // 
 // started on    Fri Apr 20 04:37:44 2007   lessyv
-// last update   Mon Apr 23 15:34:51 2007   lessyv
+// last update   Tue Apr 24 15:05:37 2007   lessyv
 //
 
-#ifndef	__PSP_LAUNCHER_H__
-#define	__PSP_LAUNCHER_H__
+#ifndef	__BLOC_H__
+#define	__BLOC_H__
 
 #include <string>
 

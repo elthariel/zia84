@@ -4,10 +4,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include "string.h"
+#include <string.h>
 #include "perlembed.hpp"
-#include "psp_launcher.hpp"
-#include <fstream>
+//#include "bloc.hpp"
+
 
 using namespace std;
 
@@ -23,10 +23,10 @@ using namespace std;
 //       cooking ... for us
 //       document root and other for module
 //
-// 3 - objet Psp
+// 3 - psp_main.cpp objet Psp
 //       generalisant l'acces a
 //         perlembed
-//         + psp parser
+//         + BLOC psp parser
 //
 
 const char              *PerlEmbed::m_perl_api = 0;
