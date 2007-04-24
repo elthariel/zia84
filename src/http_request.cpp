@@ -220,6 +220,8 @@ int	HttpRequest::HttpCheckHttpMap(void)
     return (0);
   if (!m_http_map["method"].compare("POST") && !m_http_map["content-length"].compare("0"))
   {
+    reqcgi = 0;
+    reqfile = 0;
     m_status = 411;
     return (0);
   }
@@ -274,8 +276,16 @@ int	HttpRequest::HttpSetFile(void)
   chunk2.strip("HTTP/1.1");
   chunk2.strip(" ");
   chunk = chunk2;
+  
+  if ((chunk.find("/") == std::string::npos))
+    return (400);
+  if (!(chunk.find("*") == std::string::npos))
+    return (400);
   if (! (chunk.find("../") == std::string::npos))
     return (403) ;
+  if (! (chunk.find("%23") == std::string::npos))
+    return (404) ;
+
 
   if (!chunk.length())
     return (400);
@@ -320,7 +330,7 @@ int	HttpRequest::HttpSetFile(void)
     m_http_map["content-length"] = chunk2;
     reqfile = 1;
     reqcgi = 0;
-    return (400); //404 met test * 
+    return (404); //404 met test * 
   }
   else
   {
