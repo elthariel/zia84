@@ -5,7 +5,7 @@
 ##         <maling_c@lse.epita.fr>
 ## 
 ## started on    Mon Apr 23 11:21:09 2007   lessyv
-## last update   Mon Apr 23 11:21:34 2007   lessyv
+## last update   Wed Apr 25 01:51:39 2007   loic
 ##
 
 use strict;
@@ -18,7 +18,7 @@ sub spawn;  # forward declaration
 sub reply;  # ' '
 sub logmsg { print "$0 $$: @_ at ", scalar localtime, "\n" }
 
-my $port = shift || 8080;
+my $port = shift || 31337;
 my $proto = getprotobyname('tcp');
 
 ($port) = $port =~ /^(\d+)$/                        or die "invalid port";
@@ -99,7 +99,15 @@ for ( $waitedpid = 0;
 		my $output = 'tachate';
 
 		$request_string = reply($request_index);
-		send(Client, $request_string, 0);
+#		if ($computed == 25)
+# 		       {
+# 		        	close(Client);
+			       
+# 		       }
+# 		else
+# 		{
+		    send(Client, $request_string, 0);
+# 		}
 		$output = $request_string;
 		$output =~ s/\r//g;
 		$output =~ s/\n//g;
@@ -200,7 +208,8 @@ sub reply
     }
     if ($computed == 12)
     {
- 	return "HTTP/1.1 200 OK\r\n\r\n";
+ 	return "HTTP/1.1 400 Bad Request\r\n\r\n";
+#200 OK avant hier ...;
 # KO avec 302
     }
     if ($computed == 13)
@@ -213,33 +222,82 @@ sub reply
     }
     if ($computed == 15)
     {
-  	return "HTTP/1.1 400 Bad Request\r\n\r\n";
+  	return "HTTP/1.1 200 OK\r\n\r\n";
+#Allow: GET, HEAD, OPTIONS, TRACE
     }
     if ($computed == 16)
     {
-  	return "HTTP/1.1 400 Bad Request\r\n\r\n";
+  	return "HTTP/1.1 200 OK\r\n\r\n";
+#OK avant hier ... HTTP/1.1 400 Bad Request\r\n\r\n";
     }
     if ($computed == 17)
     {
 #  	return "HTTP/1.1 405 Method Not Allowed\r\nAllow: GET, HEAD, OPTIONS, TRACE\r\n\r\n";
- 	return "HTTP/1.1 411 Length Required\r\n\r\n";
+ # 	return "HTTP/1.1 400 Bad Request\r\n\r\n";
+# 	return "HTTP/1.1 411 Length Required\r\n\r\n";
+#	return "HTTP/1.1 302 Found\r\n\r\n";
+	return "HTTP/1.1 200 OK\r\n\r\n";
     }
     if ($computed == 18)
     {
-  	return "HTTP/1.1 403 Forbidden\r\n\r\n";
+  	return "HTTP/1.1 400 Bad Request\r\n\r\n";
+#return "HTTP/1.1 403 Forbidden\r\n\r\n";
 # KO avec 404
     }
-
     if ($computed == 19)
     {
-  	return "HTTP/1.1 403 Forbidden\r\n\r\n"; # XX KOOOO
+  	return "HTTP/1.1 400 Bad Request\r\n\r\n";
+# return "HTTP/1.1 403 Forbidden\r\n\r\n"; # XX KOOOO
 # KO avec 404 et ses potes
 # KO avec 300 et 302
-   }
-
-    if ($computed == 20)
+    }
+    if ($computed == 20) #ErrorGet06
     {
-  	return "HTTP/1.1 200 OK";
+  	return "HTTP/1.1 400 Bad Request\r\n\r\n";
+#  	return "HTTP/1.1 200 OK";
+    }
+    if ($computed == 21)
+    {
+#  	return "HTTP/1.1 400 Bad Request\r\n\r\n";
+	return "HTTP/1.1 411 Length Required\r\n\r\n";
+#	return "HTTP/1.1 302 Found\r\n\r\n";
+#	return "HTTP/1.1 200 OK\r\n\r\n";
+#  	return "HTTP/1.1 405 Method Not Allowed\r\n\r\n";
+#HTTP/1.1 400 Bad Request\r\n\r\n";
+    }
+    if ($computed == 22)
+    {
+  	return "HTTP/1.1 403 Forbidden\r\n\r\n";
+#HTTP/1.1 400 Bad Request\r\n\r\n";
+    }
+    if ($computed == 23)
+    {
+	return "HTTP/1.1 200 OK\r\n\r\n";
+#	return "HTTP/1.1 302 Found\r\n\r\n";
+    }
+
+    if ($computed == 24)
+    {
+	return "HTTP/1.1 200 OK\r\n\r\n";
+    }
+    if ($computed == 25)
+    {
+
+#  	return "HTTP/1.1 403 Forbidden\r\n\r\n";
+	return "HTTP/1.1 505 HTTP Version Not Supported\r\n\r\n";
+#	return "501 Not Implemented\r\n\r\n";
+#	return "HTTP/1.1 400 Bad Request\r\n\r\n";
+#	return "HTTP/0.9 300 Multiple Choices\r\n\r\n";
+#	return "HTTP/0.9 200 OK\r\n\r\n"; #KO free
+#	return "HTTP/0.9 302 Found\r\n\r\n"; #KO linuxfr
+# google cloture direct
+    }
+    if ($computed == 26)
+    {
+#  	return "HTTP/1.1 405 Method Not Allowed\r\n\r\n";
+#	return "HTTP/1.1 200 OK\r\n\r\n";
+	return "HTTP/1.1 400 Bad Request\r\n\r\n";
+#	return "HTTP/1.1 302 Found\r\n\r\n";
     }
 
     return "ChiIIiIiicHEEEE\r\n\r\n";
