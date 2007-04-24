@@ -44,12 +44,13 @@ public:
   HttpRequest(char *filename);
   ~HttpRequest();
 
+  std::string	HttpGetFile(void);
   int	HttpCheckHttpMap(void);
   int	HttpSetFile(void);
   int	HttpParseChunk(string2 &buff);
   int	HttpSetHeader(string2 chunk);
   int	HttpSetMap(string2 chunk);
-  int	HttpSetData(Socket &a_socket);
+  int	HttpSetData(string2 &chunk);
   int	HttpSetChunk(string2 &chunk);
   void	HttpFill(string2 buff);
   void  HttpTest();

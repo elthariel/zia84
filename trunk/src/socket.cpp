@@ -76,7 +76,7 @@ unsigned int	Socket::SocketReadAll(void *buf, unsigned int len)
   int r;
 
 #ifdef XNIX
-  do r = recv(m_fd, (char *)buf, len, MSG_DONTWAIT);
+  do r = read(m_fd, (char *)buf, len);
   while ((r == -1 && (errno == EINTR)));
 #endif
 #ifdef WIN_32
