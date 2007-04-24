@@ -5,7 +5,7 @@
 ## Login   <elthariel@lse.epita.fr>
 ##
 
-noinst_HEADERS =
+noinst_HEADERS = mod_psp.hpp bloc.hpp perlembed.hpp
 
 EXTRA_DIST = zia_psp_api.pl
 
@@ -13,12 +13,13 @@ bin_PROGRAMS = mod_psp.so perlembed
 
 
 ### Final psp modules
-mod_psp_so_SOURCES =
-mod_psp_so_CPPFLAGS = -g -Wall -pthread $(PERL_CCOPTS)
+mod_psp_so_SOURCES = mod_psp.cpp bloc.cpp perlembed.cpp
+mod_psp_so_CPPFLAGS = -g -Wall -pthread $(PERL_CCOPTS) \
+	-I../../modapi
 mod_psp_so_LDADD = -lpthread $(PERL_LDOPTS)
 mod_psp_so_LDFLAGS = -shared
 
-perlembed_SOURCES = perlembed.cpp psp_launcher.cpp
+perlembed_SOURCES = perlembed.cpp bloc.cpp
 perlembed_CPPFLAGS = -g -Wall -pthread $(PERL_CCOPTS)
 perlembed_LDADD = -lpthread $(PERL_LDOPTS)
 
