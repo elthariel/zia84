@@ -99,7 +99,7 @@ int main (int ac, char **av)
   HttpdConf::init(av[1]);
 
 #ifdef XNIX
-  signal(SIGPIPE, SIG_IGN);
+//  signal(SIGPIPE, SIG_IGN);
   //pid_fd = daemonize();
 #endif
 

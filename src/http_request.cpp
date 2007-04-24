@@ -14,8 +14,6 @@
 
 using namespace std;
 
-
-
 const status_s HttpRequest::m_reason[] =
 {
 {100,"Continue"},
@@ -60,6 +58,7 @@ const status_s HttpRequest::m_reason[] =
 {505,"HTTPVersionNotSupported"},
 {0, 0},
 };
+
 const char * HttpRequest::m_method [] =  { "OPTIONS" , "GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "CONNECT",  0 };
 
 void HttpRequest::HttpTest()
@@ -99,11 +98,8 @@ HttpRequest::HttpRequest(Socket &sock)
    do {
     sock >> buff;
     } while (buff.find("\r\n\r\n") == std::string::npos);
-    cout << "receive" << buff << endl;
-
     m_chunk_type = TYPE_HEADER;
     m_http_map["content-length"] = "0";
-    m_http_map["version"] = "HTTP/1.1";
     HttpFill(buff);
   }
   catch (SocketError*)
@@ -122,7 +118,7 @@ string	HttpRequest::HttpCreateHeader()
   string2	header;
 
   m_http_map["server"] = "zia";
-  m_http_map["content-type"] = "text/html"; 	//XXX cahnger le type au bon moment
+  m_http_map["content-type"] = "text/html"; 
   header += "server: " + m_http_map["server"] + "\r\n";
   header += "content-type: " + m_http_map["content-type"] + "\r\n";
   header += "content-length: " + m_http_map["content-length"] + "\r\n";
@@ -175,7 +171,6 @@ string	HttpRequest::HttpGetCGI()
     cgi_socket >> buff;
     close(pfd[0]);
   }
-  //XX try catch sur l envoie
 #endif
 #ifdef WIN_32
   HANDLE                pipe_stdin[2];
@@ -282,42 +277,67 @@ string	HttpRequest::HttpGetCGI()
   return (buff);
 }
 
+int	HttpRequest::HttpCheckVersion()
+{
+  string2 chunk;
+  string2 subchunk;
+  string fdig;
+  string dot;
+  string ldig;
+
+  chunk = m_http_map[m_http_map["method"]].c_str();
+  if (!chunk.split("HTTP/", subchunk))
+    return (0);
+  chunk.strip("\r\n");
+  chunk.strip(" ");
+  if (chunk.length() != 3)
+    return (0);
+  fdig = chunk[0];
+  dot = chunk[1];
+  ldig = chunk[2];
+  if (dot.compare("."))
+    return (0);
+  if (atoi(fdig.c_str()) > 1)
+   return (0);
+  if (atoi(fdig.c_str()) == 1 && atoi(ldig.c_str()) > 1)
+   return (0);
+  if (atoi(ldig.c_str()) < 0 || atoi(ldig.c_str()) > 9)
+   return (0);
+  subchunk = m_http_map[m_http_map["method"]].c_str();
+  chunk = "HTTP/" + fdig + dot + ldig;
+  subchunk.strip(chunk.c_str());
+  m_http_map[m_http_map["method"]] = subchunk;
+  m_http_map["version"] = chunk;
+  return (1);
+}
+
 
 int	HttpRequest::HttpCheckRequest(void)
 {
-  string::size_type	pos;
   string	chunk;
   string2	subchunk;
   string2	chunk2;
 
+  m_http_map["version"] = "HTTP/1.1";
+  reqfile = 0;
+  reqdir = 0;
+  reqcgi = 0;
   m_status = 400;
   chunk = m_http_map["method"];
   chunk2.append(chunk);
   if (!chunk2.is_in_list(m_method))
     return (1);
-  chunk = m_http_map[m_http_map["method"]];
-  if ((pos = chunk.rfind("HTTP/")) == string::npos)
+  if (!HttpCheckVersion()) 
     return (1);
-  chunk2 = chunk.substr(pos, chunk.length());
-  chunk2.strip("\r\n");
-  if (!chunk2.split("/", subchunk))
-    return (1);
-  if (subchunk.find("HTTP") == string::npos)
-    return (1);
-    //XXX test 1.1 est <
-    //XXX test 1.0 links
-  if ((pos = chunk2.find("1.1")) == string::npos && (pos = chunk2.find("0.9")) == string::npos)
-    return (1); //renvoyer si bad version
-
   if (!HttpCheckHttpMap())
     return (1);
   m_status = 200;
   if (m_http_map["method"].compare("OPTIONS"))
      m_status = HttpSetFile();
- // else
-  // m_status = 302;
- // if (!m_http_map["method"].compare("HEAD"))
-   //  m_status = 200;
+ /*XXX else
+   m_status = 302;
+  if (!m_http_map["method"].compare("HEAD"))
+     m_status = 200;*/
   return (1);
 }
 
@@ -329,6 +349,7 @@ int	HttpRequest::HttpCheckHttpMap(void)
   {
     reqcgi = 0;
     reqfile = 0;
+    reqdir = 0;
     m_status = 411;
     return (0);
   }
@@ -362,8 +383,6 @@ std::string	HttpRequest::HttpGetFile(void)
     file.append(buff,n);
    }
    while (len);
-
-
    close(fd);
    return (file);
 }
@@ -382,9 +401,6 @@ int	HttpRequest::HttpSetFile(void)
   filepath = HttpdConf::get().get_key("/zia/server/root")->c_str();
   chunk = m_http_map[m_http_map["method"]];
   chunk2.append(chunk);
-  chunk2.strip("HTTP/0.9");
-  //XXX
-  chunk2.strip("HTTP/1.1");
   chunk2.strip(" ");
   chunk = chunk2;
   
@@ -400,9 +416,6 @@ int	HttpRequest::HttpSetFile(void)
     return (400);
   if (!chunk.compare("/"))
     filepath += chunk + "index.html";
-//  else if (!chunk.(rfind) "/") si le dernier char est un /
-//
-// set_get_dirlisting
   else
     filepath += chunk;
   if (!filepath.find(HttpdConf::get().get_key("/zia/server/cgi")->c_str()))
@@ -424,10 +437,6 @@ int	HttpRequest::HttpSetFile(void)
     }
     reqcgi = 1;
   }
-
-//faire un stat / si c un rep on fait un get dirlist ou on renvoie erreur
-//// si pas les drois renvoyer can't stat FORBIDEN
-//
   if (stat(filepath.c_str(), &st)  == -1)
   {
     filepath = HttpdConf::get().get_key("/zia/server/root")->c_str();
@@ -439,7 +448,7 @@ int	HttpRequest::HttpSetFile(void)
     m_http_map["content-length"] = chunk2;
     reqfile = 1;
     reqcgi = 0;
-    return (200); //404 met test * 
+    return (200); 
   }
   else
   {
@@ -456,7 +465,7 @@ int	HttpRequest::HttpSetFile(void)
       reqfile = 1;
     }
   }
-  return (200); //302
+  return (200); 
 }
 
 int	HttpRequest::HttpParseChunk(string2 &buff)

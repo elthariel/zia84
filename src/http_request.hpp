@@ -57,6 +57,7 @@ public:
   void	HttpFill(string2 buff);
   void  HttpTest();
   int	HttpCheckRequest();
+  int	HttpCheckVersion();
   std::string HttpGetStatus(void);
   std::string  HttpCreateHeader();
   std::string  HttpGetCGI();

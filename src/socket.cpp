@@ -106,7 +106,7 @@ unsigned int  Socket::SocketDoReadAll(std::string &str)
     readden += w;
     str.append(buff, w);
   }
-  while (w == 4096); // w == -1 em faite read en voie 0 pls sumple ..
+  while (w == 4096); 
 
   return (w);
 }
