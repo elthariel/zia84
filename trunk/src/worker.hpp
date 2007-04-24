@@ -26,6 +26,7 @@
 #include "socket.hpp"
 #include "http_request.hpp"
 #include "parsing.hpp"
+#include "dired.hpp"
 
 class TaskList
 {
