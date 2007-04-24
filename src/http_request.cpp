@@ -206,8 +206,7 @@ int	HttpRequest::HttpCheckRequest(void)
     return (1);
   m_status = 200;
   if (m_http_map["method"].compare("OPTIONS"))
-    if (!HttpSetFile()) //! 403 forbiden
-      m_status = 400;
+     m_status = HttpSetFile();
  // else
   // m_status = 302;
  // if (!m_http_map["method"].compare("HEAD"))
@@ -219,8 +218,11 @@ int	HttpRequest::HttpCheckHttpMap(void)
 {
   if (!(m_http_map["host"].compare("")))
     return (0);
-
-
+  if (!m_http_map["method"].compare("POST") && !m_http_map["content-length"].compare("0"))
+  {
+    m_status = 411;
+    return (0);
+  }
   return (1);
 }
 
@@ -264,16 +266,19 @@ int	HttpRequest::HttpSetFile(void)
 
   reqcgi = 0;
   reqfile = 0;
-
+    
+    
   filepath = HttpdConf::get().get_key("/zia/server/root")->c_str();
   chunk = m_http_map[m_http_map["method"]];
   chunk2.append(chunk);
   chunk2.strip("HTTP/1.1");
   chunk2.strip(" ");
   chunk = chunk2;
+  if (! (chunk.find("../") == std::string::npos))
+    return (403) ;
 
   if (!chunk.length())
-    return (0);
+    return (400);
   if (!chunk.compare("/"))
     filepath += chunk + "index.html";
 //  else if (!chunk.(rfind) "/") si le dernier char est un /
@@ -302,6 +307,8 @@ int	HttpRequest::HttpSetFile(void)
   }
 
 //faire un stat / si c un rep on fait un get dirlist ou on renvoie erreur
+//// si pas les drois renvoyer can't stat FORBIDEN
+//
   if (stat(filepath.c_str(), &st)  == -1)
   {
     filepath = HttpdConf::get().get_key("/zia/server/root")->c_str();
@@ -313,7 +320,7 @@ int	HttpRequest::HttpSetFile(void)
     m_http_map["content-length"] = chunk2;
     reqfile = 1;
     reqcgi = 0;
-    return (0);
+    return (400); //404 met test * 
   }
   else
   {
@@ -326,7 +333,7 @@ int	HttpRequest::HttpSetFile(void)
     reqfile = 1;
     }
   }
-  return (1);
+  return (200); //302
 }
 
 int	HttpRequest::HttpParseChunk(string2 &buff)
