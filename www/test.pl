@@ -22,8 +22,6 @@ Merci.
 
 <br>
 <br>
-<br>
-<a href=\"index.html\">prev</a>
 </body>
 ";
 
