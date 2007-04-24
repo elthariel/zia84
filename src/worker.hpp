@@ -5,7 +5,6 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 12:18:17 2007 Nahlwe
-// Last update Mon Apr 23 12:20:28 2007 
 //
 
 #ifndef WORKER_HPP_
@@ -27,6 +26,7 @@
 #include "http_request.hpp"
 #include "parsing.hpp"
 #include "dired.hpp"
+#include "mod_manager.hpp"
 
 class TaskList
 {
@@ -79,6 +79,7 @@ private:
   TaskList              &m_tasks;
   bool                  m_highlander;
   Thread                m_thread;
+  ModManager            m_mods;
 
   void                  main_loop();
   void                  request_entry(Socket &a_socket);
