@@ -11,7 +11,7 @@ int main (int ac, char **av)
 {
 
   for (int i = 0; i < 100000; i++)
-    WriteFile(GetStdHandle(STD_INPUT_HANDLE), "123456789", 10, 0,  NULL);
+    cout << "Hellow world" << endl;
 
   //  sleep(10);
 }
