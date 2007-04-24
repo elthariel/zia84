@@ -15,7 +15,19 @@ using namespace std;
  * PerlEmbed class
  */
 
-//TODO envs, for cooking ...
+//TODO
+// 1 - psp_api.cpp like
+//       module ez !@# compliant
+//
+// 2 - envs & session ;
+//       cooking ... for us
+//       document root and other for module
+//
+// 3 - objet Psp
+//       generalisant l'acces a
+//         perlembed
+//         + psp parser
+//
 
 const char              *PerlEmbed::m_perl_api = 0;
 int                     PerlEmbed::m_perl_api_fd = 0;
