@@ -53,7 +53,7 @@ case $MACHTYPE in
   *)
     AC_DEFINE(XNIX)
     ARCH_CFLAGS=""
-    ARCH_LDADD=" -ldl "
+    ARCH_LDADD=" -ldl -lrt"
     AC_SUBST(ARCH_CFLAGS)
     AC_SUBST(ARCH_LDADD)
     ;;
