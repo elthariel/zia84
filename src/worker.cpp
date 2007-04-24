@@ -127,7 +127,6 @@ void                    Worker::request_entry(Socket &a_socket)
   string	body;
   FilePath	file;
   string 	tbuff;
-  char	buff[9898];
  
   if (httpreq.HttpCheckRequest())
   {
@@ -138,7 +137,6 @@ void                    Worker::request_entry(Socket &a_socket)
          tbuff += httpreq.HttpGetStatus();
          tbuff +=  httpreq.HttpCreateHeader();
          tbuff += "\r\n";
-	 cout << "*Sending :" << endl << tbuff << endl << "--end" << endl;
 /*if post re faire un read  car on coupe apres le premier \r\n est k on a les data ? 
 ou pas ou quand on fait un read long non si non c la merde  ??
 on envoie en deux partie ou 1 seul alors >?*/
@@ -150,6 +148,7 @@ on envoie en deux partie ou 1 seul alors >?*/
            if (httpreq.reqfile)
              tbuff += httpreq.HttpGetFile();
          }
+	 cout << "*Sending :" << endl << tbuff << endl << "--end" << endl;
 	 a_socket << tbuff;
       }
      catch (SocketError*)
