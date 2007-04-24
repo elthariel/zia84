@@ -96,14 +96,8 @@ HttpRequest::HttpRequest(Socket &sock)
   string2	tbuff;
   try
   {
-    do {
-    tbuff = "";
-    sock >> tbuff;
-    buff += tbuff;
-    }
-    while (buff.find("\r\n\r\n") == std::string::npos );
-    
     sock >> buff;
+
     m_chunk_type = TYPE_HEADER;
     m_http_map["content-length"] = "0";
     m_http_map["version"] = "HTTP/1.1";
@@ -211,10 +205,10 @@ int	HttpRequest::HttpCheckRequest(void)
   m_status = 200;
   if (!HttpSetFile()) //! 403 forbiden
    m_status = 404;
-  else
-   m_status = 302;
-  if (!m_http_map["method"].compare("HEAD"))
-     m_status = 200;
+ // else
+  // m_status = 302;
+ // if (!m_http_map["method"].compare("HEAD"))
+   //  m_status = 200;
   return (1);
 }
 
@@ -225,6 +219,37 @@ int	HttpRequest::HttpCheckHttpMap(void)
 
 
   return (1);
+}
+
+std::string	HttpRequest::HttpGetFile(void)
+{
+   string	path = m_http_map["uri"];
+   string	file;
+   struct	stat st;
+   int		fd;
+   int		len;
+   int		n; 
+   char		buff[4096];
+
+   if ((fd  = open(path.c_str(), O_RDONLY)) == -1)
+    {
+      cerr << "Can't open file" << endl;
+      return ("");
+    }
+   fstat(fd, &st);
+   len = st.st_size;
+   do
+   {
+    n = read(fd, buff, 4096);
+    if (n < 1)
+      break;
+    buff[n] = 0;
+    len -= n;
+    file += buff;
+   }
+   while (len);
+
+   return (file);
 }
 
 int	HttpRequest::HttpSetFile(void)
@@ -352,36 +377,18 @@ int	HttpRequest::HttpSetMap(string2 chunk)
   return (1);
 }
 
-int	HttpRequest::HttpSetData(Socket &a_socket)
+int	HttpRequest::HttpSetData(string2 &chunk)
 {
- string tbuff;
-string buff;
+ m_data = chunk;
+ chunk = "";
 
- cout << "jere" << endl;
-
- a_socket.SocketDoReadAll(buff);
- cout << "buff" << buff <<  endl;
- cout << "jend" << endl;
- m_data = buff;
- //  if (m_chunk_type == TYPE_DATA)
-/*    do {
-    tbuff = "";
-    a_socket >> tbuff;
-    buff += tbuff;
-    cout << "here2" << buff <<"--" <<  endl;
-    }
-    while (buff.find("\r\n") == std::string::npos && tbuff.length());
-    m_data = buff;
-*/ // {
-   // do
-    //a_socket >> m_data
-    //while ("");
- // }
-  return (1);
+ return (1);
 }
 
 int	HttpRequest::HttpSetChunk(string2 &chunk)
 {
+  if (m_chunk_type == TYPE_DATA)
+    return (HttpSetData(chunk));
   if (m_chunk_type == TYPE_HEADER)
     return (HttpSetHeader(chunk));
   if (m_chunk_type == TYPE_MAP)

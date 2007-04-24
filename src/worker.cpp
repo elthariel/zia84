@@ -132,31 +132,27 @@ void                    Worker::request_entry(Socket &a_socket)
   if (httpreq.HttpCheckRequest())
   {
     try {
-         
          if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
            if (httpreq.reqcgi)
               body = httpreq.HttpGetCGI();
          tbuff += httpreq.HttpGetStatus();
          tbuff +=  httpreq.HttpCreateHeader();
          tbuff += "\r\n";
+	 cout << "*Sending :" << endl << tbuff << endl << "--end" << endl;
 /*if post re faire un read  car on coupe apres le premier \r\n est k on a les data ? 
 ou pas ou quand on fait un read long non si non c la merde  ??
-on envoie en deux partie ou 1 seul alors >?
+on envoie en deux partie ou 1 seul alors >?*/
 
-*/
-         /*if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
+         if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
          {
            if (httpreq.reqcgi)
-	     t_buff +=  body;
+	     tbuff +=  body;
            if (httpreq.reqfile)
-           {
-             file.Path = httpreq.m_http_map["uri"];
-             t_buff += file;
-           }
+             tbuff += httpreq.HttpGetFile();
          }
-*/	a_socket << tbuff;
-       }
-    catch (SocketError*)
+	 a_socket << tbuff;
+      }
+     catch (SocketError*)
     {
    	cout << "error socket" << endl;
     }
