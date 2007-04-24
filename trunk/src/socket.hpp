@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Sun Mar 11 17:43:22 2007 Nahlwe
-// Last update Mon Apr 23 10:30:38 2007 
+// Last update Tue Apr 24 08:03:57 2007 
 //
 
 /*
@@ -20,6 +20,7 @@
 #include <pthread.h>
 #ifdef XNIX
 # include <sys/mman.h>
+# include <sys/socket.h>
 #endif
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -29,7 +30,6 @@
 # include <winsock2.h>
 #endif
 #include <errno.h>
-#include <sys/socket.h>
 
 struct FilePath
 {

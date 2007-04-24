@@ -5,7 +5,7 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Sat Feb 24 15:32:05 2007 Nahlwe
-// Last update Mon Apr 23 10:25:45 2007 
+// Last update Tue Apr 24 10:10:43 2007 
 //
 #ifndef __HTTP_REQUEST__
 #define __HTTP_REQUEST__
@@ -17,10 +17,12 @@
 # include <sys/wait.h>
 #endif
 #ifdef WIN_32
+# include <windows.h>
 #endif
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include "conf.hpp"
 #include "socket.hpp"
 #include "parsing.hpp"
