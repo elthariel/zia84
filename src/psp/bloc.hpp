@@ -5,7 +5,7 @@
 //         <maling_c@lse.epita.fr>
 // 
 // started on    Fri Apr 20 04:37:44 2007   lessyv
-// last update   Tue Apr 24 15:05:37 2007   lessyv
+// last update   Tue Apr 24 17:35:46 2007   loic
 //
 
 #ifndef	__BLOC_H__
@@ -23,27 +23,31 @@ class		Bloc
 {
 public:
   //string	*s_page; // A recup plutot depuis perl lta... (heritage ? non)
-  string	*s_out; // crade, modif dans la chaine originele ?
-  string	s_bloc_code; // XX mettre en private ? accesseur ...
-  string	*s_bloc_to_insert; // from interpreter
-  int		blocs_count; // ACCESSEUR ...
+  string	*s_out; // crade, need a constructor
   unsigned int	pos_orig;
 
   Bloc(); //un autre prenant 1 parametre ; la position dans la page du prochain bloc
   ~Bloc();
+  void		init(string &);
   void		find_code_to_replace();
   void		apply_code(string &);
-  string	&get_bloc_code();
   bool		parsing_ended();
+  string	&get_last_bloc_code();
+  int		get_blocs_found();
 protected:
   int		case_sensitive_match(char c1, char c2);
-  void		shift_counters(string &);
+
 private:
+  string	&get_bloc_code();
+  void		shift_counters(string &);
+
   static const char	*op_begin;
   static const char	*op_end;
+  string		s_bloc_code; // last found bloc
+  int			blocs_count;
   int			pos_bloc_begin;
   int			pos_bloc_end;
-  bool			parse_ended; // number of bloc found * 2
+  bool			parse_ended;
 };
 
 #endif
