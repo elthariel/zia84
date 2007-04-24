@@ -104,7 +104,7 @@ unsigned int  Socket::SocketDoReadAll(std::string &str)
     if (w <= 0) break ;
     buff[w] = 0;
     readden += w;
-    str += buff;
+    str.append(buff, w);
   }
   while (w == 4096); // w == -1 em faite read en voie 0 pls sumple ..
 

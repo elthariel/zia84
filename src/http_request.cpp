@@ -97,7 +97,6 @@ HttpRequest::HttpRequest(Socket &sock)
   {
     sock >> buff;
 
-    cout << "Receving" << endl << buff << endl << "---end recv" << endl;
     m_chunk_type = TYPE_HEADER;
     m_http_map["content-length"] = "0";
     m_http_map["version"] = "HTTP/1.1";
@@ -231,7 +230,7 @@ int	HttpRequest::HttpCheckHttpMap(void)
 std::string	HttpRequest::HttpGetFile(void)
 {
    string	path = m_http_map["uri"];
-   string	file;
+   string	file = "";
    struct	stat st;
    int		fd;
    int		len;
@@ -252,10 +251,12 @@ std::string	HttpRequest::HttpGetFile(void)
       break;
     buff[n] = 0;
     len -= n;
-    file += buff;
+    file.append(buff,n);
    }
    while (len);
 
+
+   close(fd);
    return (file);
 }
 
@@ -283,8 +284,9 @@ int	HttpRequest::HttpSetFile(void)
     return (400);
   if (! (chunk.find("../") == std::string::npos))
     return (403) ;
+    //XXX coment 
   if (! (chunk.find("%23") == std::string::npos))
-    return (404) ;
+    return (412) ;
 
 
   if (!chunk.length())
