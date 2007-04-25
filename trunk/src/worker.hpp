@@ -81,6 +81,7 @@ private:
   Thread                m_thread;
   ModManager            m_mods;
 
+  void                  load_mods();
   void                  main_loop();
   void                  request_entry(Socket &a_socket);
 };

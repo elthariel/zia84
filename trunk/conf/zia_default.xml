@@ -10,8 +10,8 @@
     <root>../www</root>
     <cgi>../www/cgi-bin</cgi>
     <mod>
-      <folder>./</folder>
-      <load_mod>test_mod.so</load_mod>
+      <folder>.</folder>
+      <load_mod>modtest/mod_test.so;psp/mod_psp.so</load_mod>
     </mod>
   </server>
   <intern>

@@ -17,6 +17,20 @@ RawAdapter::RawAdapter(HttpRequest &httpreq, int id, EZ_IBasicRawBuffer::RAWTYPE
   }
 }
 
+EZ_IBuffer::TYPE    RawAdapter::getBufferType() const
+{
+  return EZ_IBuffer::EZ_RAW;
+}
+/*
+bool   RawAdapter::setRawType(const EZ_IBasicRawBuffer::RAWTYPE&)
+{
+  return false;
+}
+
+const EZ_IBasicRawBuffer::RAWTYPE&  RawAdapter::getRawType(void) const
+{
+}
+*/
 bool	RawAdapter::setData(const std::string& data)
 {
   if (m_rawtype == EZ_IBasicRawBuffer::RESPONSE)
@@ -39,7 +53,7 @@ bool	RawAdapter::setLength(const int &length)
 const std::string&  RawAdapter::getData(void) const
 {
   if (m_rawtype == EZ_IBasicRawBuffer::RESPONSE)
-    return (m_httpreq.m_body); //set une varibale plutot ? 
+    return (m_httpreq.m_body); //set une varibale plutot ?
   else
     return (m_httpreq.m_data);
 }
@@ -63,10 +77,10 @@ bool  RawAdapter::setRawType(const EZ_IBasicRawBuffer::RAWTYPE& newtype)
 
 const	int& RawAdapter::getRequestID(void) const
 {
-  return (m_id); 
+  return (m_id);
 }
 
 void	RawAdapter::setRequestID(const int &newid)
 {
-  m_id = newid; 
+  m_id = newid;
 }

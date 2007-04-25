@@ -16,9 +16,9 @@ bool                    ModQOut::proceed()
   return true;
 }
 
-const EZ_IModule&       ModQOut::getNext() const
+EZ_IModule&             ModQOut::getNext() const
 {
-  return (*this);
+  return (const_cast<ModQOut&>(*this));
 }
 
 bool                    ModQOut::setNext(EZ_IModule &)
