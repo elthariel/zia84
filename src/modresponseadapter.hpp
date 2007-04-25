@@ -6,7 +6,7 @@
 class ResponseAdapter : public EZ_IBasicResponseBuffer
 {
   public:
-    ResponseAdapter(HttpRequest &);
+    ResponseAdapter(HttpRequest &, int);
 
     virtual bool                setHTTPVersion(const std::string&);
     virtual bool                setStatusCode(const CODE&);
@@ -19,10 +19,13 @@ class ResponseAdapter : public EZ_IBasicResponseBuffer
     virtual const std::string&  getReasonPhrase(void) const;
     virtual const MHEADERS&     getHeaders(void) const;    
     virtual const std::string&  getHeader(const std::string&) const;   
+    virtual const int&	 	    getRequestID(void) const;
+    virtual void 	    setRequestID(const int &);
     protected:
       CODE		m_code;
       HttpRequest 	&m_httpreq;
       MHEADERS		m_headers;
+      int		m_id;
 };
 #endif
 

@@ -2,12 +2,12 @@
 #define __MODREQUESTADAPTER_H__
 #include "http_request.hpp"
 #include "EZ_IStreamBuffer.h"
-
+#include "my_uuid.hpp"
 
 class RequestAdapter : public EZ_IBasicRequestBuffer
 {
    public : 
-    RequestAdapter(HttpRequest &);
+    RequestAdapter(HttpRequest &, int );
         
 	
 
@@ -22,10 +22,13 @@ class RequestAdapter : public EZ_IBasicRequestBuffer
 	virtual const std::string&  getRequestURI(void) const; 
         virtual const std::string&  getHTTPVersion(void) const; 
 	virtual const MHEADERS&     getHeaders(void) const; 
-	virtual const std::string&   getHeader(const std::string&) const;
+	virtual const std::string&  getHeader(const std::string&) const;
+	virtual const int&	 	    getRequestID(void) const;
+	virtual void 	    setRequestID(const int &);
     protected:
       HttpRequest 	&m_httpreq;
       METHODE		m_httpmethod;
       MHEADERS		m_headers;
+      int		m_id;
 };
 #endif

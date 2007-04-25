@@ -36,10 +36,9 @@ const RequestAdapter::METHODE RequestAdapter::RequestAdapterGetMethode(std::stri
   }
 }
 
-RequestAdapter::RequestAdapter(HttpRequest &httpreq)
-: m_httpreq(httpreq)
+RequestAdapter::RequestAdapter(HttpRequest &httpreq, int id)
+: m_httpreq(httpreq), m_id(id)
 {
-
   m_httpmethod = RequestAdapterGetMethode(m_httpreq.m_http_map["method"]);
 }
 
@@ -113,4 +112,14 @@ const MHEADERS&     RequestAdapter::getHeaders(void) const
 const std::string&  RequestAdapter::getHeader(const std::string&key) const
 {
   return (m_httpreq.m_http_map[key]);
+}
+
+const	int& RequestAdapter::getRequestID(void) const
+{
+  return (m_id); 
+}
+
+void	RequestAdapter::setRequestID(const int &newid)
+{
+  m_id = newid; 
 }
