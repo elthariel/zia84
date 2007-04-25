@@ -9,19 +9,19 @@ noinst_HEADERS = mod_psp.hpp bloc.hpp perlembed.hpp
 
 EXTRA_DIST = zia_psp_api.pl
 
-bin_PROGRAMS = mod_psp.so perlembed
+bin_PROGRAMS = mod_psp.so
 
 
 ### Final psp modules
-mod_psp_so_SOURCES = mod_psp.cpp bloc.cpp perlembed.cpp
+mod_psp_so_SOURCES = mod_psp.cpp bloc.cpp perlembed.cpp psp_main.cpp
 mod_psp_so_CPPFLAGS = -g -Wall -pthread $(PERL_CCOPTS) \
 	-I../../modapi
 mod_psp_so_LDADD = -lpthread $(PERL_LDOPTS)
 mod_psp_so_LDFLAGS = -shared -fPIC
 
-perlembed_SOURCES = perlembed.cpp bloc.cpp
-perlembed_CPPFLAGS = -g -Wall -pthread $(PERL_CCOPTS)
-perlembed_LDADD = -lpthread $(PERL_LDOPTS)
+#perlembed_SOURCES = perlembed.cpp bloc.cpp
+#perlembed_CPPFLAGS = -g -Wall -pthread $(PERL_CCOPTS)
+#perlembed_LDADD = -lpthread $(PERL_LDOPTS)
 
 
 
