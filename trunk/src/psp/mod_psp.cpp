@@ -55,9 +55,9 @@ bundle                  ModPsp::make_bundle(int a_req_id)
             {
             case EZ_IBuffer::EZ_REQUEST:
               b.request = static_cast<EZ_IBasicRequestBuffer *>(*iter);
-              /*              if ((static_cast<EZ_IBasicRequestBuffer *>(*iter))->getMethode()
+              if ((static_cast<EZ_IBasicRequestBuffer *>(*iter))->getMethode()
                   != EZ_IBasicRequestBuffer::POST)
-                  post_found = true;*/
+                  post_found = true;
               break;
             case EZ_IBuffer::EZ_RAW:
               if (post_found)
@@ -72,7 +72,7 @@ bundle                  ModPsp::make_bundle(int a_req_id)
               b.response = static_cast<EZ_IBasicResponseBuffer*>(*iter);
               break;
             default:
-              cerr << "I'm not a buffer ?" << endl;
+              cerr << "Modpsp : a buffer said \"I'm not a buffer\" --> ?" << endl;
               break;
             }
           iter_to_delete = iter;
@@ -124,14 +124,12 @@ bool                    ModPsp::have_buffer_bundle_id(int a_req_id)
           switch (identify_buffer(*iter))
             {
             case EZ_IBuffer::EZ_REQUEST:
-              cout << "found in" << endl;
               found[IN] = true;
               if (static_cast<EZ_IBasicRequestBuffer *>(*iter)->getMethode()
                   != EZ_IBasicRequestBuffer::POST)
                 found[4] = true;
               break;
             case EZ_IBuffer::EZ_RAW:
-              cout << "found raw" << endl;
               if (raw_flag)
                 found[4] = true;
               else
@@ -141,7 +139,6 @@ bool                    ModPsp::have_buffer_bundle_id(int a_req_id)
                 }
               break;
             case EZ_IBuffer::EZ_RESPONSE:
-              cout << "found out" << endl;
               found[OUT] = true;
               break;
             default:

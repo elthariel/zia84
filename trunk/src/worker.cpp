@@ -165,12 +165,17 @@ void                    Worker::request_entry(Socket &a_socket)
              m_mods.push_buffer(apost, EZ_IModule::EZ_PROCEED);
            m_mods.push_buffer(aresp, EZ_IModule::EZ_PROCEED);
            m_mods.push_buffer(adata, EZ_IModule::EZ_PROCEED);
-           if (m_mods.process_stack(EZ_IModule::EZ_PROCEED))
-             cerr << "Modpsp had proceed smth" << endl;
-           while(m_mods.pop_buffer(EZ_IModule::EZ_IN));
+           m_mods.process_stack(EZ_IModule::EZ_PROCEED);
+           while(m_mods.pop_buffer(EZ_IModule::EZ_PROCEED));
            // end of hook proceed
 
            //XXX HOOK3 //htt_map /// m_body
+           m_mods.push_buffer(aresp, EZ_IModule::EZ_OUT);
+           m_mods.push_buffer(adata, EZ_IModule::EZ_OUT);
+           m_mods.process_stack(EZ_IModule::EZ_OUT);
+           while(m_mods.pop_buffer(EZ_IModule::EZ_OUT));
+           // end of hook out
+
            request += httpreq.HttpGetStatus();
            request += httpreq.HttpCreateHeader();
 
