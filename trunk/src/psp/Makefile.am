@@ -15,7 +15,7 @@ bin_PROGRAMS = mod_psp.so perlembed
 ### Final psp modules
 mod_psp_so_SOURCES = mod_psp.cpp bloc.cpp perlembed.cpp \
 	psp_main.cpp thread.cpp foncteurs.cpp
-mod_psp_so_CPPFLAGS = -g -Wall -pthread $(PERL_CCOPTS) \
+mod_psp_so_CPPFLAGS = -fPIC -g -Wall -pthread $(PERL_CCOPTS) \
 	-I../../modapi
 mod_psp_so_LDADD = -lpthread $(PERL_LDOPTS) -lrt
 mod_psp_so_LDFLAGS = -shared -fPIC
@@ -23,7 +23,7 @@ mod_psp_so_LDFLAGS = -shared -fPIC
 perlembed_SOURCES = perlembed.cpp bloc.cpp test.cpp thread.cpp \
 	foncteurs.cpp
 perlembed_CPPFLAGS = -g -Wall -pthread $(PERL_CCOPTS)
-perlembed_LDADD = -lpthread $(PERL_LDOPTS) -lrt
+perlembed_LDADD =  -lpthread $(PERL_LDOPTS) -lrt
 
 
 

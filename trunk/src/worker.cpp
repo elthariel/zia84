@@ -201,6 +201,9 @@ void                    Worker::load_mods()
   unsigned int          sep_pos = 0;
   EZ_IModule            *mod = 0;
 
+  if (!modlist.length())
+    return ;
+
   while ((sep_pos = modlist.find(';', 0)) != string::npos)
     {
       toload = "";
