@@ -5,7 +5,7 @@
 //         <maling_c@lse.epita.fr>
 // 
 // started on    Tue Apr 24 15:02:20 2007   lessyv
-// last update   Wed Apr 25 06:59:54 2007   loic
+// last update   Wed Apr 25 08:57:47 2007   loic
 //
 
 #include <iostream>
@@ -32,8 +32,7 @@ bool		Psp::init_psp(const string &real_page, char **env)
       return false;
     }
   BlocParser->init(real_page);
-  PerlInterpreter.init_perl(env);
-  cout << "[PSP] OK to proceed" << endl;
+  PerlInterpreter.init_perl(0); // oO mgep
   return true;
 }
 
@@ -44,18 +43,29 @@ void		Psp::apply_psp()
   BlocParser->apply_code(BlocParser->get_last_bloc_code());
 }
 
-int	Psp::replace_all_psp()
+const string	&Psp::replace_all_psp()
 {
+  int		i;
+
+  i = BlocParser->get_blocs_found();
   if (BlocParser == NULL)
     {
       cerr << "[PSP] Not initialized" << endl;
-      return -1;
+      return 0;
     }
-  while (!BlocParser->parsing_ended())
+  while (i != -1)
     {
-      replace_one_psp_bloc();
+      cout << "Bloc...";
+      apply_psp();
+      if (i == BlocParser->get_blocs_found())
+	i = -1;
+      else
+	i = BlocParser->get_blocs_found();
+//       replace_one_psp_bloc();
+      cout << "...bloC" << endl;
     }
-  return (BlocParser->get_blocs_found());
+  return (BlocParser->get_computed_page());
+
 }
 
 //AND int	Psp::replace_one_psp_bloc()
@@ -70,11 +80,10 @@ int	Psp::replace_one_psp_bloc()
   printf("[PSP] source code %i : %s\n",
 	 BlocParser->get_blocs_found(),
 	 BlocParser->get_last_bloc_code().c_str());
-  if (BlocParser->parsing_ended())
-    {
-      cout << "[PSPPSP] End encountered" << endl;
-      return (-1);
-    }
+  cout << "Bloc... IN" << endl;
+  if (!BlocParser->parsing_ended())
+    return (-1);
+  cout << "Bloc... IN 2" << endl;
   return (BlocParser->get_blocs_found());
 }
 

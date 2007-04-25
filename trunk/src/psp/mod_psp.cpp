@@ -162,7 +162,6 @@ bool                    ModPsp::proceed()
   int                   req_id;
   bundle                b;
 
-  cout << "Psp proceed()" << endl;
   if (have_buffer_bundle(&req_id))
     {
       b = make_bundle(req_id);
@@ -212,22 +211,23 @@ char			**ModPsp::make_env(EZ_IBasicRequestBuffer *a_buf)
       i++;
     }
   *(env + i) = 0;
-  //XX free env ...
   return(env);
 }
 
+// Psp::env in ModPsp object must have been filled by ModPsp::make_env()
+// second arg of PspData:init_psp take an env** formated as unix environment variable
 void                    ModPsp::psp_entry(bundle a_bundle)
 {
-  // Psp::env in Psp object must have been filled by ModPsp::make_env()
+  cout << "[PSP] data: " << endl << a_bundle.raw_response->getData();
   PspData.init_psp(a_bundle.raw_response->getData(),
 		   make_env(a_bundle.request));
-  PspData.replace_all_psp();
-  cout << "[PSPPSP] last bloc: " << PspData.BlocParser->get_last_bloc_code() << endl;
-  if (!PspData.psp_done())
-    {
-      cout << "[PSPPSP] Bloc applied" << endl;
-      a_bundle.raw_response->setData(PspData.get_computed_page());
-    }
+//   printf("Blocs wrote: %i\n", PspData.replace_all_psp());
+//   if (!PspData.psp_done())
+//     a_bundle.raw_response->setData(PspData.get_computed_page());
+
+// check if at least on <?psp found
+  a_bundle.raw_response->setData(PspData.replace_all_psp());
+				 //PspData.get_computed_page());
 }
 
 
