@@ -35,6 +35,7 @@ EZ_IModule      *ModLoader::load(std::string path)
   char          *err_test_bak, *err_test;
 
 
+  cerr << "Loading a module : " << path << endl;
   dll = dlopen(path.c_str(), RTLD_LAZY);
   if (dll == NULL)
     {

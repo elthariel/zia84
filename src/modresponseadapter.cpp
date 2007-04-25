@@ -1,5 +1,10 @@
 #include "modresponseadapter.hpp"
 
+EZ_IBuffer::TYPE    ResponseAdapter::getBufferType() const
+{
+  return EZ_IBuffer::EZ_REQUEST;
+}
+
 ResponseAdapter::ResponseAdapter(HttpRequest &httpreq, int id)
 : m_httpreq(httpreq), m_id(id)
 {
@@ -10,7 +15,7 @@ ResponseAdapter::ResponseAdapter(HttpRequest &httpreq, int id)
 bool	ResponseAdapter::setHTTPVersion(const std::string &version)
 {
   m_httpreq.m_http_map["version"] = version;
-  
+
   return (1);
 }
 
@@ -28,7 +33,7 @@ bool	ResponseAdapter::setReasonPhrase(const std::string &reason)
 }
 
 bool	ResponseAdapter::setHeader(const std::string &key, const std::string&value)
-{ 
+{
   m_httpreq.m_http_map[key] = value;
   m_headers[key] = value;
 
@@ -43,7 +48,7 @@ bool	ResponseAdapter::setHeaders(const MHEADERS &newmap)
 }
 
 bool 	ResponseAdapter::delHeader(const std::string&key)
-{  
+{
   m_httpreq.m_http_map[key] = "";
   m_headers[key] = "";
 
@@ -62,7 +67,7 @@ const CODE&         ResponseAdapter::getStatusCode(void) const
 
 const std::string&  ResponseAdapter::getReasonPhrase(void) const
 {
-  return (m_httpreq.m_http_map["reason"]); 
+  return (m_httpreq.m_http_map["reason"]);
 }
 
 const MHEADERS&     ResponseAdapter::getHeaders(void) const
@@ -78,10 +83,10 @@ const std::string&  ResponseAdapter::getHeader(const std::string &key) const
 
 const	int& ResponseAdapter::getRequestID(void) const
 {
-  return (m_id); 
+  return (m_id);
 }
 
 void	ResponseAdapter::setRequestID(const int &newid)
 {
-  m_id = newid; 
+  m_id = newid;
 }

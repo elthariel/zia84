@@ -36,7 +36,7 @@ public:
   virtual bool                    needProceed();
   virtual bool                    proceed();
 
-  virtual const EZ_IModule&       getNext() const;
+  virtual EZ_IModule&             getNext() const;
   virtual bool                    setNext(EZ_IModule &);
 
   virtual EZ_IBuffer              *popBuffer();

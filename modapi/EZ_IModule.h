@@ -24,7 +24,7 @@ class   EZ_IModule
         virtual bool                    needProceed() = 0;                         // returns true if the current module needs to proceed the current buffer, else false
         virtual bool                    proceed() = 0;                             // Applies the current module treatement to the current buffer. returns true if everything gone OK
 
-        virtual const EZ_IModule&       getNext() const = 0;                       // returns a reference to the following module
+        virtual EZ_IModule&             getNext() const = 0;                       // returns a reference to the following module
         virtual bool                    setNext(EZ_IModule &) = 0;                 // used to set the next module. returns true if everything gone OK
 
         virtual	EZ_IBuffer              *popBuffer() = 0;                          // returns the next buffer that need to be processed or NULL if none

@@ -19,10 +19,18 @@ bool                    TestMod::needProceed()
 bool                    TestMod::proceed()
 {
   // FIXME
+  cerr << m_id << " : ModTest::proceed()" << endl;
+  while (m_bufs.begin() != m_bufs.end())
+    {
+      EZ_IBuffer *b = popBuffer();
+      m_bufs.pop_front();
+      if (b)
+        getNext().pushBuffer(*b);
+    }
   return (true);
 }
 
-const EZ_IModule&       TestMod::getNext() const
+EZ_IModule&             TestMod::getNext() const
 {
   return (*m_next_mod);
 }
@@ -49,6 +57,7 @@ EZ_IBuffer              *TestMod::popBuffer()
 
 bool                    TestMod::pushBuffer(EZ_IBuffer &a_buf)
 {
+  cerr << m_id << " : You pushed a buffer" << endl;
   m_bufs.push_back(&a_buf);
   return (true);
 }

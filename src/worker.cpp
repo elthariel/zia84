@@ -5,7 +5,6 @@
 // Login   <elthariel@epita.fr>
 //
 // Started on  Fri Feb 23 12:18:15 2007 Nahlwe
-// Last update Mon Apr 23 12:32:13 2007 
 //
 
 #ifdef XNIX
@@ -21,6 +20,10 @@
 #include "worker.hpp"
 #include "help.hpp"
 #include "conf.hpp"
+#include "module_loader.hpp"
+#include "modrawadapter.hpp"
+#include "modrequestadapter.hpp"
+#include "modresponseadapter.hpp"
 
 using namespace std;
 
@@ -84,6 +87,7 @@ Worker::Worker(TaskList &a_tasks, bool a_highlander)
     m_highlander(a_highlander),
     m_thread(*this)
 {
+  load_mods();
 }
 
 void                    Worker::operator()()
@@ -126,10 +130,21 @@ void                    Worker::request_entry(Socket &a_socket)
   string2	header;
   string	file;
   string 	request;
- 
+
   if (httpreq.HttpCheckRequest())
   {
-//XXX   HOOK1 // http_m_map // m_data
+    /*
+     * Module hook point IN.
+     */
+    unsigned int        req_id = Uuid::get().id();
+    RequestAdapter      areq(httpreq, req_id);
+    RawAdapter          apost(httpreq, req_id, EZ_IBasicRawBuffer::REQUEST);
+    m_mods.push_buffer(areq, EZ_IModule::EZ_IN);
+    if (httpreq.m_http_map["method"].compare("POST"))
+      m_mods.push_buffer(apost, EZ_IModule::EZ_IN);
+    m_mods.process_stack(EZ_IModule::EZ_IN);
+    // End hook IN.
+
     try {
          if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
            if (httpreq.reqcgi)
@@ -138,7 +153,20 @@ void                    Worker::request_entry(Socket &a_socket)
 	     httpreq.m_body = httpreq.HttpGetDir();
            if (httpreq.reqfile)
              httpreq.m_body = httpreq.HttpGetFile();
-	//XXX HOOk2  // http_m_map // m_data  //  http_map  // m_body
+
+           /*
+            * Module hook point PROCEED
+            */
+           RawAdapter          adata(httpreq, req_id, EZ_IBasicRawBuffer::RESPONSE);
+           RequestAdapter      aresp(httpreq, req_id);
+           m_mods.push_buffer(areq, EZ_IModule::EZ_PROCEED);
+           if (httpreq.m_http_map["method"].compare("POST"))
+             m_mods.push_buffer(apost, EZ_IModule::EZ_PROCEED);
+           m_mods.push_buffer(aresp, EZ_IModule::EZ_PROCEED);
+           m_mods.push_buffer(adata, EZ_IModule::EZ_PROCEED);
+           m_mods.process_stack(EZ_IModule::EZ_PROCEED);
+           // end of hook proceed
+
 	 //XXX HOOK3 //htt_map /// m_body
          request += httpreq.HttpGetStatus();
          request += httpreq.HttpCreateHeader();
@@ -154,6 +182,32 @@ void                    Worker::request_entry(Socket &a_socket)
    	cout << "error socket" << endl;
     }
   }
+}
+
+void                    Worker::load_mods()
+{
+  string                path(*HttpdConf::get().get_key("/zia/server/mod/folder"));
+  string                modlist(*HttpdConf::get().get_key("/zia/server/mod/load_mod"));
+  string                toload;
+  unsigned int          sep_pos = 0;
+  EZ_IModule            *mod = 0;
+
+  while ((sep_pos = modlist.find(';', 0)) != string::npos)
+    {
+      toload = "";
+      toload += path;
+      toload += '/';
+      toload += modlist.substr(0, sep_pos);
+      if ((mod = ModLoader::get().load(toload)))
+        m_mods.push_module(*mod);
+      modlist = modlist.substr(sep_pos + 1);
+    }
+  toload = "";
+  toload += path;
+  toload += '/';
+  toload += modlist;
+  if ((mod = ModLoader::get().load(toload)))
+    m_mods.push_module(*mod);
 }
 
 /*

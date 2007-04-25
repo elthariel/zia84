@@ -7,7 +7,7 @@
   <!ELEMENT name (#PCDATA)>
   <!ELEMENT root (#PCDATA)>
   <!ELEMENT cgi (#PCDATA)>
-<!ELEMENT mod (folder, load_mod*)>
+<!ELEMENT mod (folder, load_mod?)>
   <!ELEMENT folder (#PCDATA)>
   <!ELEMENT load_mod (#PCDATA)>
 <!ELEMENT intern (workers, thresold, wait)>

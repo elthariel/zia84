@@ -19,7 +19,8 @@ bin_PROGRAMS = zia modapitest cgi_test
 zia_SOURCES = foncteurs.cpp help.cpp thread.cpp \
 	worker.cpp main.cpp conf.cpp http_request.cpp socket.cpp dired.cpp \
 	parsing.cpp modrequestadapter.cpp modresponseadapter.cpp \
-	modrawadapter.cpp my_uuid.cpp mod_manager.cpp mod_q_out.cpp
+	modrawadapter.cpp my_uuid.cpp mod_manager.cpp mod_q_out.cpp \
+	module_loader.cpp
 
 # Don't forget that the order of the libraries _does_ matter
 zia_CPPFLAGS = -g -Wall $(LIBXML_CFLAGS) $(ARCH_CFLAGS) -I../modapi

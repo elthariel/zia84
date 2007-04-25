@@ -1,5 +1,10 @@
 #include "modrequestadapter.hpp"
 
+EZ_IBuffer::TYPE    RequestAdapter::getBufferType() const
+{
+  return EZ_IBuffer::EZ_REQUEST;
+}
+
 const RequestAdapter::METHODE RequestAdapter::RequestAdapterGetMethode(std::string &methode)
 {
   string2  mmethod = (std::string)methode;
@@ -53,7 +58,7 @@ bool RequestAdapter::setMethode(const METHODE &method)
 bool RequestAdapter::setRequestURI(const std::string &str)
 {
   m_httpreq.m_http_map["uri"] = str;
-  
+
 
   return (1);
 }
@@ -61,7 +66,7 @@ bool RequestAdapter::setRequestURI(const std::string &str)
 bool RequestAdapter::setHTTPVersion(const std::string &version)
 {
   m_httpreq.m_http_map["version"] = version;
-  
+
   return (1);
 }
 
@@ -116,10 +121,10 @@ const std::string&  RequestAdapter::getHeader(const std::string&key) const
 
 const	int& RequestAdapter::getRequestID(void) const
 {
-  return (m_id); 
+  return (m_id);
 }
 
 void	RequestAdapter::setRequestID(const int &newid)
 {
-  m_id = newid; 
+  m_id = newid;
 }
