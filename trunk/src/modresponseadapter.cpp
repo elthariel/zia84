@@ -2,14 +2,14 @@
 
 EZ_IBuffer::TYPE    ResponseAdapter::getBufferType() const
 {
-  return EZ_IBuffer::EZ_REQUEST;
+  return EZ_IBuffer::EZ_RESPONSE;
 }
 
 ResponseAdapter::ResponseAdapter(HttpRequest &httpreq, int id)
 : m_httpreq(httpreq), m_id(id)
 {
- m_code = m_httpreq.m_status;
- m_httpreq.m_http_map["reason"] = m_httpreq.m_reason[m_code].reason;
+  /* m_code = m_httpreq.m_status;
+     m_httpreq.m_http_map["reason"] = m_httpreq.m_reason[m_code].reason;*/
 }
 
 bool	ResponseAdapter::setHTTPVersion(const std::string &version)

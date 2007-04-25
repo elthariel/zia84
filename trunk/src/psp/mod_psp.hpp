@@ -26,7 +26,7 @@ enum BufferType
 /**
  * return the type of a_buf
  */
-BufferType      identify_buffer(EZ_IBuffer *a_buf);
+EZ_IBuffer::TYPE      identify_buffer(EZ_IBuffer *a_buf);
 
 struct bundle
 {

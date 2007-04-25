@@ -5,21 +5,20 @@
 
 using namespace std;
 
-// et le module de stat si on le prend, on le rtourne, et on le fait traiter que quand response est ready ou que plus de module a proceed ?
-
 /*
  * Functions
  */
-BufferType      identify_buffer(EZ_IBuffer *a_buf)
+EZ_IBuffer::TYPE      identify_buffer(EZ_IBuffer *a_buf)
 {
-  if (dynamic_cast<EZ_IBasicRequestBuffer *>(a_buf) != 0)
+  /*  if (dynamic_cast<EZ_IBasicRequestBuffer *>(a_buf) != 0)
     return IN;
   else if (dynamic_cast<EZ_IBasicRawBuffer *>(a_buf) != 0)
     return RAW;
   else if (dynamic_cast<EZ_IBasicResponseBuffer *>(a_buf) != 0)
     return OUT;
   else
-    return NONE;
+  return NONE;*/
+  return (a_buf->getBufferType());
 }
 
 /*
@@ -54,25 +53,26 @@ bundle                  ModPsp::make_bundle(int a_req_id)
         {
           switch (identify_buffer(*iter))
             {
-            case IN:
-              b.request = dynamic_cast<EZ_IBasicRequestBuffer *>(*iter);
-              if ((dynamic_cast<EZ_IBasicRequestBuffer *>(*iter))->getMethode()
+            case EZ_IBuffer::EZ_REQUEST:
+              b.request = static_cast<EZ_IBasicRequestBuffer *>(*iter);
+              /*              if ((static_cast<EZ_IBasicRequestBuffer *>(*iter))->getMethode()
                   != EZ_IBasicRequestBuffer::POST)
-                post_found = true;
+                  post_found = true;*/
               break;
-            case RAW:
+            case EZ_IBuffer::EZ_RAW:
               if (post_found)
-                b.raw_response = dynamic_cast<EZ_IBasicRawBuffer *>(*iter);
+                b.raw_response = static_cast<EZ_IBasicRawBuffer *>(*iter);
               else
                 {
-                  b.raw_post = dynamic_cast<EZ_IBasicRawBuffer *>(*iter);
+                  b.raw_post = static_cast<EZ_IBasicRawBuffer *>(*iter);
                   post_found = true;
                 }
               break;
-            case OUT:
-              b.response = dynamic_cast<EZ_IBasicResponseBuffer*>(*iter);
+            case EZ_IBuffer::EZ_RESPONSE:
+              b.response = static_cast<EZ_IBasicResponseBuffer*>(*iter);
               break;
             default:
+              cerr << "I'm not a buffer ?" << endl;
               break;
             }
           iter_to_delete = iter;
@@ -115,19 +115,23 @@ bool                    ModPsp::have_buffer_bundle_id(int a_req_id)
   found[OUT] = false;
   found[4] = false;
 
+  cout << "Checking bundle for " << a_req_id << endl;
+
   while(!res && iter != m_bufs.end())
     {
       if ((*iter)->getRequestID() == a_req_id)
         {
           switch (identify_buffer(*iter))
             {
-            case IN:
+            case EZ_IBuffer::EZ_REQUEST:
+              cout << "found in" << endl;
               found[IN] = true;
-              if (dynamic_cast<EZ_IBasicRequestBuffer *>(*iter)->getMethode()
+              if (static_cast<EZ_IBasicRequestBuffer *>(*iter)->getMethode()
                   != EZ_IBasicRequestBuffer::POST)
                 found[4] = true;
               break;
-            case RAW:
+            case EZ_IBuffer::EZ_RAW:
+              cout << "found raw" << endl;
               if (raw_flag)
                 found[4] = true;
               else
@@ -136,10 +140,12 @@ bool                    ModPsp::have_buffer_bundle_id(int a_req_id)
                   raw_flag = true;
                 }
               break;
-            case OUT:
+            case EZ_IBuffer::EZ_RESPONSE:
+              cout << "found out" << endl;
               found[OUT] = true;
               break;
             default:
+              cerr << "I'm not a buffer ?" << endl;
               break;
             }
         }
@@ -157,10 +163,14 @@ bool                    ModPsp::needProceed()
 bool                    ModPsp::proceed()
 {
   int                   req_id;
+  bundle                b;
 
+  cout << "Psp proceed()" << endl;
   if (have_buffer_bundle(&req_id))
     {
-      psp_entry(make_bundle(req_id));
+      cout << "psp_entry" << endl;
+      b = make_bundle(req_id);
+      psp_entry(b);
       return true;
     }
   else
