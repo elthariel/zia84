@@ -287,28 +287,31 @@ int	HttpRequest::HttpCheckVersion()
 
   chunk = m_http_map[m_http_map["method"]].c_str();
   if (!chunk.split("HTTP/", subchunk))
-    return (0);
+    return (400);
   chunk.strip("\r\n");
   chunk.strip(" ");
   if (chunk.length() != 3)
-    return (0);
+    return (400);
   fdig = chunk[0];
   dot = chunk[1];
   ldig = chunk[2];
   if (dot.compare("."))
-    return (0);
+    return (400);
   if (atoi(fdig.c_str()) > 1)
-   return (0);
-  if (atoi(fdig.c_str()) == 1 && atoi(ldig.c_str()) > 1)
-   return (0);
-  if (atoi(ldig.c_str()) < 0 || atoi(ldig.c_str()) > 9)
-   return (0);
+   return (400);
+  if (atoi(fdig.c_str()) == 0 && (atoi(ldig.c_str()) >= 0 || atoi(ldig.c_str()) <= 9))
+   return (505);
+  if (atoi(fdig.c_str()) == 0 && (atoi(ldig.c_str()) < 0 || atoi(ldig.c_str()) > 9))
+   return (400);
+  if (!((atoi(fdig.c_str()) >= 0 && atoi(fdig.c_str()) <= 1)
+     &&  atoi(ldig.c_str()) >= 0 && atoi(ldig.c_str()) <= 1))
+   return (400);
   subchunk = m_http_map[m_http_map["method"]].c_str();
   chunk = "HTTP/" + fdig + dot + ldig;
   subchunk.strip(chunk.c_str());
   m_http_map[m_http_map["method"]] = subchunk;
   m_http_map["version"] = chunk;
-  return (1);
+  return (0);
 }
 
 
@@ -317,6 +320,7 @@ int	HttpRequest::HttpCheckRequest(void)
   string	chunk;
   string2	subchunk;
   string2	chunk2;
+  int		code;
 
   m_http_map["version"] = "HTTP/1.1";
   reqfile = 0;
@@ -327,8 +331,11 @@ int	HttpRequest::HttpCheckRequest(void)
   chunk2.append(chunk);
   if (!chunk2.is_in_list(m_method))
     return (1);
-  if (!HttpCheckVersion()) 
+  if ((code = HttpCheckVersion())) 
+  {
+    m_status = code;
     return (1);
+  }
   if (!HttpCheckHttpMap())
     return (1);
   m_status = 200;
