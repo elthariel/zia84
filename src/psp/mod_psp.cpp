@@ -5,6 +5,8 @@
 
 using namespace std;
 
+// et le module de stat si on le prend, on le rtourne, et on le fait traiter que quand response est ready ou que plus de module a proceed ?
+
 /*
  * Functions
  */
@@ -209,7 +211,6 @@ char			**ModPsp::make_env(EZ_IBasicRequestBuffer *a_buf)
 
 void                    ModPsp::psp_entry(bundle a_bundle)
 {
-  //make_env();
   // Psp::env in Psp object must have been filled by ModPsp::make_env()
   PspData.init_psp(a_bundle.raw_response->getData(),
 		   make_env(a_bundle.request));
@@ -231,7 +232,7 @@ void                    ModPsp::psp_entry(bundle a_bundle)
  * Obvious code
  */
 
-const EZ_IModule&       ModPsp::getNext() const
+EZ_IModule&		ModPsp::getNext() const
 {
   return (*m_next_mod);
 }
@@ -291,4 +292,11 @@ void                    ModPsp::clean(void)
        i != m_bufs.end(); i++)
     delete *i;
   m_bufs.clear();
+}
+
+EXPORT EZ_IModule	*getInstance()
+{
+  //  static unsigned int	instance
+
+  return (new ModPsp());
 }
