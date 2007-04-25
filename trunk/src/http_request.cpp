@@ -341,10 +341,6 @@ int	HttpRequest::HttpCheckRequest(void)
   m_status = 200;
   if (m_http_map["method"].compare("OPTIONS"))
      m_status = HttpSetFile();
- /*XXX else
-   m_status = 302;
-  if (!m_http_map["method"].compare("HEAD"))
-     m_status = 200;*/
   return (1);
 }
 
@@ -417,8 +413,6 @@ int	HttpRequest::HttpSetFile(void)
     return (400);
   if (! (chunk.find("../") == std::string::npos))
     return (403) ;
-
-    //XXX coment 
   if (!chunk.length())
     return (400);
   if (!chunk.compare("/"))
