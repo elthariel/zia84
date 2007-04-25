@@ -1,7 +1,7 @@
 #include "modresponseadapter.hpp"
 
-ResponseAdapter::ResponseAdapter(HttpRequest &httpreq)
-: m_httpreq(httpreq)
+ResponseAdapter::ResponseAdapter(HttpRequest &httpreq, int id)
+: m_httpreq(httpreq), m_id(id)
 {
  m_code = m_httpreq.m_status;
  m_httpreq.m_http_map["reason"] = m_httpreq.m_reason[m_code].reason;
@@ -75,3 +75,13 @@ const std::string&  ResponseAdapter::getHeader(const std::string &key) const
   return (m_httpreq.m_http_map[key]);
 }
 
+
+const	int& ResponseAdapter::getRequestID(void) const
+{
+  return (m_id); 
+}
+
+void	ResponseAdapter::setRequestID(const int &newid)
+{
+  m_id = newid; 
+}

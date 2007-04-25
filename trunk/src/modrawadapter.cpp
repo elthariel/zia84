@@ -2,8 +2,8 @@
 
 
 
-RawAdapter::RawAdapter(HttpRequest &httpreq, EZ_IBasicRawBuffer::RAWTYPE type)
-: m_httpreq(httpreq), m_rawtype(type)
+RawAdapter::RawAdapter(HttpRequest &httpreq, int id, EZ_IBasicRawBuffer::RAWTYPE type)
+: m_httpreq(httpreq), m_id(id), m_rawtype(type)
 {
   if (m_rawtype == EZ_IBasicRawBuffer::RESPONSE)
   {
@@ -57,4 +57,16 @@ const EZ_IBasicRawBuffer::RAWTYPE&  RawAdapter::getRawType(void) const
 bool  RawAdapter::setRawType(const EZ_IBasicRawBuffer::RAWTYPE& newtype)
 {
    m_rawtype = newtype;
+   return (1);
+}
+
+
+const	int& RawAdapter::getRequestID(void) const
+{
+  return (m_id); 
+}
+
+void	RawAdapter::setRequestID(const int &newid)
+{
+  m_id = newid; 
 }
