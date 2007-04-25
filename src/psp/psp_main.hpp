@@ -5,7 +5,7 @@
 //         <maling_c@lse.epita.fr>
 // 
 // started on    Tue Apr 24 15:07:04 2007   lessyv
-// last update   Wed Apr 25 07:01:36 2007   loic
+// last update   Wed Apr 25 08:53:40 2007   loic
 //
 
 #ifndef		__HAS_PSP_MAIN_H__
@@ -23,7 +23,7 @@ public:
   // false : error encountered, cerr done
   bool		init_psp(const string &, char **);
   // returns number of blocs already found
-  int		replace_all_psp();
+  const string	&replace_all_psp();
   // -1 if no more bloc
   int		replace_one_psp_bloc();
   // returns a reference to the final page
@@ -37,8 +37,6 @@ public:
 private:
   PerlEmbed	PerlInterpreter;
   void		apply_psp();
-
-  // contains header, obtained from server, for perl code
 };
 
 #endif
