@@ -5,7 +5,7 @@
 //         <maling_c@lse.epita.fr>
 // 
 // started on    Fri Apr 20 04:37:44 2007   lessyv
-// last update   Tue Apr 24 19:56:52 2007   lessyv
+// last update   Wed Apr 25 00:58:31 2007   lessyv
 //
 
 #ifndef	__BLOC_H__
@@ -28,7 +28,7 @@ public:
 
   Bloc(); //un autre prenant 1 parametre ; la position dans la page du prochain bloc
   ~Bloc();
-  void		init(string &);
+  void		init(const string &);
   void		find_code_to_replace();
   void		apply_code(string &);
   bool		parsing_ended();

@@ -5,7 +5,7 @@
 //         <maling_c@lse.epita.fr>
 // 
 // started on    Fri Apr 20 04:51:02 2007   lessyv
-// last update   Tue Apr 24 20:10:09 2007   lessyv
+// last update   Wed Apr 25 00:55:44 2007   lessyv
 //
 
 #include <iostream>
@@ -53,7 +53,7 @@ Bloc::~Bloc()
   delete s_out;
 }
 
-void	Bloc::init(string &page_orig)
+void	Bloc::init(const string &page_orig)
 {
   s_out = new string(page_orig);
 }

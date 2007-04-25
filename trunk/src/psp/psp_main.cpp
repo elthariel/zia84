@@ -5,7 +5,7 @@
 //         <maling_c@lse.epita.fr>
 // 
 // started on    Tue Apr 24 15:02:20 2007   lessyv
-// last update   Tue Apr 24 20:17:36 2007   lessyv
+// last update   Wed Apr 25 02:50:44 2007   lessyv
 //
 
 #include <iostream>
@@ -24,7 +24,7 @@ Psp::~Psp()
   delete BlocParser;
 }
 
-bool		Psp::init_psp(const string &real_page)
+bool		Psp::init_psp(const string &real_page, char **env)
 {
   if (real_page.length() <= 0)
     {
@@ -32,7 +32,7 @@ bool		Psp::init_psp(const string &real_page)
       return false;
     }
   BlocParser->init(real_page);
-  PerlInterpreter.init_perl();
+  PerlInterpreter.init_perl(env);
   cout << "[PSP] OK to proceed" << endl;
   return true;
 }
