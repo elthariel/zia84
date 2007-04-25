@@ -165,17 +165,54 @@ bool                    ModPsp::proceed()
     return false;
 }
 
-char                    **ModPsp::make_env(EZ_IBasicRequestBuffer *a_buf)
+char			**ModPsp::make_env(EZ_IBasicRequestBuffer *a_buf)
 {
-  // FIXME : do me
+  MHEADERS::const_iterator	p;
+  char			**env;
+  unsigned int		i;
+
+  if (a_buf == 0)
+    return 0;
+  env = (char **)malloc(sizeof(char *) * a_buf->getHeaders().size() + 1);
+  p = a_buf->getHeaders().begin();
+  i = 0;
+  while (p != a_buf->getHeaders().end() && i < a_buf->getHeaders().size())
+    {
+      *(env + i) = (char *)malloc(strlen(p->first.c_str()) + strlen((p->second.c_str()) + 2) * sizeof(char));
+      if (*(env + i) == NULL)
+	{
+	  cerr << "Unable to alloc more env" << endl;
+	  return (0);
+	}
+      if ((strncpy(*(env + i),
+		   p->first.c_str(),
+		   strlen(p->first.c_str()) - 1)) == NULL)
+	{
+	  cerr << "Unable to copy env key" << endl;
+	  return (0);
+	}
+      *(*(env + i) + strlen(p->first.c_str())) = '=';
+      if ((strncpy(*(env + i + strlen(p->first.c_str())),
+		   p->second.c_str(),
+		   strlen(p->second.c_str()) - 1)) == NULL)
+	{
+	  cerr << "Unable to copy env value" << endl;
+	  return (0);
+	}
+      *(*(env + i) + strlen(p->first.c_str())) = 0;
+      i++;
+    }
+  *(env + i) = 0;
+  //XX free env ...
+  return(env);
 }
 
 void                    ModPsp::psp_entry(bundle a_bundle)
 {
-  //place session data in the header of the response :
-  // in *response, a EZ_IBasicResponseBuffer
-
-  PspData.init_psp(a_bundle.raw_post->getData());
+  //make_env();
+  // Psp::env in Psp object must have been filled by ModPsp::make_env()
+  PspData.init_psp(a_bundle.raw_response->getData(),
+		   make_env(a_bundle.request));
   PspData.replace_all_psp();
 
   if (PspData.psp_done())
