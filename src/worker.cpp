@@ -143,6 +143,7 @@ void                    Worker::request_entry(Socket &a_socket)
     if (httpreq.m_http_map["method"].compare("POST"))
       m_mods.push_buffer(apost, EZ_IModule::EZ_IN);
     m_mods.process_stack(EZ_IModule::EZ_IN);
+    while(m_mods.pop_buffer(EZ_IModule::EZ_IN));
     // End hook IN.
 
     try {
@@ -158,18 +159,21 @@ void                    Worker::request_entry(Socket &a_socket)
             * Module hook point PROCEED
             */
            RawAdapter          adata(httpreq, req_id, EZ_IBasicRawBuffer::RESPONSE);
-           RequestAdapter      aresp(httpreq, req_id);
+           ResponseAdapter      aresp(httpreq, req_id);
            m_mods.push_buffer(areq, EZ_IModule::EZ_PROCEED);
            if (httpreq.m_http_map["method"].compare("POST"))
              m_mods.push_buffer(apost, EZ_IModule::EZ_PROCEED);
            m_mods.push_buffer(aresp, EZ_IModule::EZ_PROCEED);
            m_mods.push_buffer(adata, EZ_IModule::EZ_PROCEED);
-           m_mods.process_stack(EZ_IModule::EZ_PROCEED);
+           if (m_mods.process_stack(EZ_IModule::EZ_PROCEED))
+             cerr << "Modpsp had proceed smth" << endl;
+           while(m_mods.pop_buffer(EZ_IModule::EZ_IN));
            // end of hook proceed
 
-	 //XXX HOOK3 //htt_map /// m_body
-         request += httpreq.HttpGetStatus();
-         request += httpreq.HttpCreateHeader();
+           //XXX HOOK3 //htt_map /// m_body
+           request += httpreq.HttpGetStatus();
+           request += httpreq.HttpCreateHeader();
+
          if (!httpreq.m_http_map["method"].compare("GET") || !httpreq.m_http_map["method"].compare("POST"))
          {
            if (httpreq.reqcgi || httpreq.reqfile || httpreq.reqdir)

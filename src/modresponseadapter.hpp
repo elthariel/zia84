@@ -1,5 +1,5 @@
-#ifndef __MODREQUESTADAPTER_H__
-#define __MODREQUESTADAPTER_H__
+#ifndef __MODRESPONSEADAPTER_H__
+#define __MODRESPONSEADAPTER_H__
 #include "http_request.hpp"
 #include "EZ_IStreamBuffer.h"
 
