@@ -5,7 +5,7 @@
 //         <maling_c@lse.epita.fr>
 // 
 // started on    Tue Apr 24 15:02:20 2007   lessyv
-// last update   Wed Apr 25 02:50:44 2007   lessyv
+// last update   Wed Apr 25 06:59:54 2007   loic
 //
 
 #include <iostream>
@@ -71,7 +71,10 @@ int	Psp::replace_one_psp_bloc()
 	 BlocParser->get_blocs_found(),
 	 BlocParser->get_last_bloc_code().c_str());
   if (BlocParser->parsing_ended())
-    return (-1);
+    {
+      cout << "[PSPPSP] End encountered" << endl;
+      return (-1);
+    }
   return (BlocParser->get_blocs_found());
 }
 
@@ -82,5 +85,5 @@ string	&Psp::get_computed_page()
 
 bool	Psp::psp_done()
 {
-  return (!(BlocParser->parsing_ended()));
+  return (BlocParser->parsing_ended());
 }

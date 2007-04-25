@@ -165,8 +165,8 @@ bool                    ModPsp::proceed()
   cout << "Psp proceed()" << endl;
   if (have_buffer_bundle(&req_id))
     {
-      cout << "psp_entry" << endl;
       b = make_bundle(req_id);
+      cout << "psp_entry" << endl;
       psp_entry(b);
       return true;
     }
@@ -222,9 +222,12 @@ void                    ModPsp::psp_entry(bundle a_bundle)
   PspData.init_psp(a_bundle.raw_response->getData(),
 		   make_env(a_bundle.request));
   PspData.replace_all_psp();
-
-  if (PspData.psp_done())
-    a_bundle.raw_response->setData(PspData.get_computed_page());
+  cout << "[PSPPSP] last bloc: " << PspData.BlocParser->get_last_bloc_code() << endl;
+  if (!PspData.psp_done())
+    {
+      cout << "[PSPPSP] Bloc applied" << endl;
+      a_bundle.raw_response->setData(PspData.get_computed_page());
+    }
 }
 
 

@@ -78,10 +78,10 @@ void                    PerlEmbed::get_perl_api()
 {
   struct stat           api_stat;
 
-  if (stat("zia_psp_api.pl", &api_stat) == -1)
+  if (stat("psp/zia_psp_api.pl", &api_stat) == -1)
     cerr << "Unable to get file stats : " << strerror(errno) << endl;
   else
-    if ((m_perl_api_fd = open("zia_psp_api.pl", O_RDONLY)) != -1)
+    if ((m_perl_api_fd = open("psp/zia_psp_api.pl", O_RDONLY)) != -1)
       m_perl_api = (const char *)mmap(0, api_stat.st_size,
                                       PROT_READ, MAP_PRIVATE,
                                       m_perl_api_fd, 0);

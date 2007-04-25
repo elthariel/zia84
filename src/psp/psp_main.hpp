@@ -5,7 +5,7 @@
 //         <maling_c@lse.epita.fr>
 // 
 // started on    Tue Apr 24 15:07:04 2007   lessyv
-// last update   Wed Apr 25 02:50:12 2007   lessyv
+// last update   Wed Apr 25 07:01:36 2007   loic
 //
 
 #ifndef		__HAS_PSP_MAIN_H__
@@ -31,8 +31,10 @@ public:
   // returns true : psp searching'n'interpreting done
   // false : not computed to the end of page
   bool		psp_done();
-private:
+
   Bloc		*BlocParser;
+
+private:
   PerlEmbed	PerlInterpreter;
   void		apply_psp();
 
