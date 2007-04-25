@@ -6,10 +6,15 @@
 #include <unistd.h>
 #include <string.h>
 #include "perlembed.hpp"
+#include "thread.hpp"
+
+
 //#include "bloc.hpp"
 
 
 using namespace std;
+
+Sync::Mutex           g_perl_mutex;
 
 /*
  * PerlEmbed class
@@ -36,20 +41,27 @@ PerlEmbed::PerlEmbed()
   : my_perl(0),
     m_perl_initialized(false)
 {
+  g_perl_mutex.lock();
   my_perl = perl_alloc();
+  g_perl_mutex.unlock();
   PL_perl_destruct_level = 1;
 }
 
 PerlEmbed::~PerlEmbed()
 {
+  g_perl_mutex.lock();
+  PERL_SET_CONTEXT(my_perl);
   perl_destruct(my_perl);
   perl_free(my_perl);
+  g_perl_mutex.unlock();
 }
 
 void                    PerlEmbed::init_perl(char **a_env)
 {
   char          *perl_opts[] = { "", "-e", "0", "-mCGI" };
 
+  g_perl_mutex.lock();
+  PERL_SET_CONTEXT(my_perl);
   if (m_perl_initialized)
     perl_destruct(my_perl);
 
@@ -59,6 +71,7 @@ void                    PerlEmbed::init_perl(char **a_env)
   perl_run(my_perl);
   m_perl_initialized = true;
   inject_api();
+  g_perl_mutex.unlock();
 }
 
 void                    PerlEmbed::get_perl_api()
@@ -82,12 +95,20 @@ void                    PerlEmbed::inject_api()
   if (m_perl_api == 0)
     get_perl_api();
   if (m_perl_api != 0)
-    perl_eval_pv(m_perl_api, TRUE);
+    {
+      g_perl_mutex.lock();
+      PERL_SET_CONTEXT(my_perl);
+      perl_eval_pv(m_perl_api, TRUE);
+      g_perl_mutex.unlock();
+    }
 };
 
 bool                    PerlEmbed::eval_perl(std::string &a_perl_expr)
 {
+  g_perl_mutex.lock();
+  PERL_SET_CONTEXT(my_perl);
   perl_eval_pv(a_perl_expr.c_str(), TRUE);
+  g_perl_mutex.unlock();
   return (true);
 }
 
@@ -98,6 +119,8 @@ std::string             &PerlEmbed::get_out()
   char                  *real_perl_string;
   STRLEN                real_perl_string_len;
 
+  g_perl_mutex.lock();
+  PERL_SET_CONTEXT(my_perl);
   perl_string = perl_get_sv("main::__psp_out_buffer_magic42", FALSE);
   if (perl_string != NULL)
     {
@@ -105,6 +128,7 @@ std::string             &PerlEmbed::get_out()
       out->append(real_perl_string, real_perl_string_len);
       perl_eval_pv("&__psp_clean_out_buffer", TRUE);
     }
+  g_perl_mutex.unlock();
   return *out;
 }
 
